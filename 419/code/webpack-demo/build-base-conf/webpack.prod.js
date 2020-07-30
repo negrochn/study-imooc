@@ -2,11 +2,11 @@ const path = require('path')
 const webpack = require('webpack')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const webpackCommonConf = require('./webpack.common.js')
-const { smart } = require('webpack-merge')
+const { merge } = require('webpack-merge')
 const { srcPath, distPath } = require('./paths')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-module.exports = smart(webpackCommonConf, {
+module.exports = merge(webpackCommonConf, {
   mode: 'production',
   output: {
     filename: 'bundle.[contentHash:8].js', // 打包代码时，加上 hash
