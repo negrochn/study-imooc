@@ -6,6 +6,7 @@
 - 面试考察基本配置，只是为了快速判断你是否用过 webpack
 - 以下高级配置，也是通过面试的必要条件
 - 多入口
+- 抽离 CSS 文件
 
 
 
@@ -55,3 +56,81 @@
     ]
   }
   ```
+
+
+
+**抽离 CSS 文件**
+
+- development 模式
+
+  ```js
+  module.exports = merge(webpackCommonConf, {
+    mode: 'development',
+    module: {
+      rules: [
+        {
+          test: /\.css$/,
+          // loader 执行顺序：从后往前
+          loader: ['style-loader', 'css-loader', 'postcss-loader']
+        },
+        {
+          test: /\.less$/,
+          // 增加了 less-loader ，注意顺序
+          loader: ['style-loader', 'css-loader', 'less-loader']
+        }
+      ]
+    },
+  }
+  ```
+
+- production 模式
+
+  - module.rules 使用 MiniCssExtractPlugin.loader 代替 style-loader
+  - plugins 使用 new MiniCssExtractPlugin({}) 抽离 CSS 文件
+  - optimization.minimizer 使用 new TerserJSPlugin({}) 和 new OptimizeCssAssetsPlugin({}) 压缩 CSS
+
+  ```js
+  const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+  const TerserJSPlugin = require('terser-webpack-plugin')
+  const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+  
+  module.exports = merge(webpackCommonConf, {
+    mode: 'production',
+    module: {
+      rules: [
+        // 抽离 css
+        {
+          test: /\.css$/,
+          loader: [
+            MiniCssExtractPlugin.loader, // 注意，这里不再用 style-loader
+            'css-loader',
+            'postcss-loader'
+          ]
+        },
+        // 抽离 less --> css
+        {
+          test: /\.less$/,
+          loader: [
+            MiniCssExtractPlugin.loader,
+            'css-loader',
+            'less-loader',
+            'postcss-loader'
+          ]
+        }
+      ]
+    },
+    plugins: [
+      // 抽离 CSS 文件
+      new MiniCssExtractPlugin({
+        filename: 'css/main.[contentHash:8].css'
+      })
+    ],
+    optimization: {
+      // 压缩 CSS
+      minimizer: [new TerserJSPlugin({}), new OptimizeCssAssetsPlugin({})]
+    }
+  })
+  ```
+
+  
+
