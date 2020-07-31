@@ -7,6 +7,7 @@
 - 以下高级配置，也是通过面试的必要条件
 - 多入口
 - 抽离 CSS 文件
+- 抽离公共代码
 
 
 
@@ -132,5 +133,69 @@
   })
   ```
 
-  
+
+
+
+**抽离公共代码**
+
+- entry 配置 index 和 other，plugins 配置HtmlWebpackPlugin 的 chunks
+
+  ```js
+  module.exports = {
+    entry: {
+      index: path.join(srcPath, 'index.js'),
+      other: path.join(srcPath, 'other.js')
+    },
+    plugins: [
+      // 多入口 - 生成 index.html
+      new HtmlWebpackPlugin({
+        template: path.join(srcPath, 'index.html'),
+        filename: 'index.html',
+        // chunks 表示该页面要引用哪些 chunk （即上面的 index 和 other），默认全部引用
+        chunks: ['index', 'vendor', 'common'] // 要考虑代码分割
+      }),
+      // 多入口 - 生成 other.html
+      new HtmlWebpackPlugin({
+        template: path.join(srcPath, 'other.html'),
+        filename: 'other.html',
+        chunks: ['other', 'common'] // 考虑代码分割
+      })
+    ]
+  }
+  ```
+
+- optimization 配置 splitChunks ，拆分第三方模块和公共模块（ production 模式）
+
+  ```js
+  module.exports = merge(webpackCommonConf, {
+    mode: 'production',
+    optimization: {
+      // 分割代码块
+      splitChunks: {
+        // initial 入口 chunk ，对于一部导入的文件不处理
+        // async 异步 chunk ，只对异步导入的文件处理
+        // all 全部 chunk
+        chunks: 'all',
+        // 缓存分组
+        cacheGroups: {
+          // 第三方模块
+          vendor: {
+            name: 'vendor', // chunk 名称
+            priority: 1, // 权限更高，优先抽离，重要！！！
+            test: /node_modules/,
+            minSize: 0, // 大小限制
+            minChunks: 1 // 最少复用过几次
+          },
+          // 公共的模块
+          common: {
+            name: 'common',
+            priority: 0,
+            minSize: 0,
+            minChunks: 2 // 公共模块最少复用几次
+          }
+        }
+      }
+    }
+  })
+  ```
 
