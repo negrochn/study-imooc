@@ -32,6 +32,11 @@ import imgFile2 from './img/2.jpeg'
 insertImgElem(imgFile1)
 insertImgElem(imgFile2)
 
-
-
+// 引入动态数据 - 懒加载
+setTimeout(() => {
+  // 回顾 Vue React 异步组件
+  import('./dynamic-data.js').then(res => {
+    console.log(res.default.message) // 注意这里的 default
+  })
+}, 1500)
 

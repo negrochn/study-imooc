@@ -8,6 +8,9 @@
 - 多入口
 - 抽离 CSS 文件
 - 抽离公共代码
+- 懒加载
+- 处理 JSX
+- 处理 Vue
 
 
 
@@ -199,3 +202,73 @@
   })
   ```
 
+
+
+**懒加载**
+
+```js
+// 引入动态数据 - 懒加载
+setTimeout(() => {
+  // 回顾 Vue React 异步组件
+  import('./dynamic-data.js').then(res => {
+    console.log(res.default.message) // 注意这里的 default
+  })
+}, 1500)
+```
+
+
+
+**处理 JSX**
+
+- module.rules 配置 .jsx 文件处理
+
+  ```js
+  module.exports = {
+    module: {
+      rules: [
+        {
+          test: /\.(js|jsx)$/,
+          loader: ['babel-loader'],
+          include: srcPath,
+          exclude: /node_modules/
+        }
+      ]
+    }
+  }
+  ```
+
+- `npm i @babel/preset-react -D`
+
+- 配置 .babelrc
+
+  ```json
+  {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ],
+    "plugins": []
+  }
+  ```
+
+
+
+**处理 Vue**
+
+- `npm i vue-loader -D`
+
+- module.rules 配置 .vue 文件处理
+
+  ```js
+  module.exports = {
+    module: {
+      rules: [
+        {
+          test: /\.vue$/,
+          loader: ['vue-loader'],
+          include: srcPath
+        }
+      ]
+    }
+  }
+  ```
