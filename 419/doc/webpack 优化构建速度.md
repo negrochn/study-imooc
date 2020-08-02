@@ -91,3 +91,81 @@ module.exports = {
 - IgnorePlugin 直接不引入，代码中没有
 - noParse 引入，但不打包
 
+
+
+**happyPack 多进程打包**
+
+- JS 单线程，开启多进程打包
+- 提高构建速度（特别是多核 CPU ）
+
+```js
+const HappyPack = require('happypack')
+
+module.exports = merge(webpackCommonConf, {
+  mode: 'production',
+  module: {
+    rules: [
+      // 把对 .js 文件的处理转交给 id 为 babel 的 HappyPck 实例
+      {
+        test: /\.js$/,
+        use: ['happypack/loader?id=babel'],
+        include: srcPath
+      }
+    ]
+  },
+  plugins: [
+    // HappyPack 开启多进程打包
+    new HappyPack({
+      // 使用唯一的标识符 id 来代表当前的 HappyPack 是用来处理一类特定的文件
+      id: 'babel',
+      // 如何处理 .js 文件，用法和 loader 配置一样
+      loaders: ['babel-loader?cacheDirectory']
+    })
+  ]
+})
+```
+
+
+
+**ParallelUglifyPlugin 多进程压缩 JS**
+
+- webpack 内置 Uglify 工具压缩 JS
+- JS 单线程，开启多进程压缩更快
+- 和 HappyPack 同理
+
+```js
+const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin')
+
+module.exports = merge(webpackCommonConf, {
+  mode: 'production',
+  plugins: [
+    // 使用 ParallelUglifyPlugin 并行压缩输出的 JS 代码
+    new ParallelUglifyPlugin({
+      // 传递给 UglifyJS 的参数
+      // 还是使用 UglifyJS 压缩，只不过帮助开启了多进程
+      uglifyJS: {
+        output: {
+          beautify: false, // 最紧凑的输出
+          comments: false // 删除所有的注释
+        },
+        compress: {
+          // 删除所有的 console 语句，可以兼容 ie
+          drop_console: true,
+          // 内嵌定义了但是只用到一次的变量
+          collapse_vars: true,
+          // 提取出出现多次但是没有定义成变量去引用的静态值
+          reduce_vars: true
+        }
+      }
+    })
+  ]
+})
+```
+
+
+
+**关于开启多进程**
+
+- 项目较大，打包较慢，开启多进程能提高速度
+- 项目较小，打包很快，开启多进程会降低速度（进程开销）
+- 按需使用

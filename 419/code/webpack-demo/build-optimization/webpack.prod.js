@@ -4,6 +4,8 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserJSPlugin = require('terser-webpack-plugin')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const HappyPack = require('happypack')
+const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin')
 const webpackCommonConf = require('./webpack.common.js')
 const { merge } = require('webpack-merge')
 const { srcPath, distPath } = require('./paths')
@@ -18,6 +20,12 @@ module.exports = merge(webpackCommonConf, {
   },
   module: {
     rules: [
+      // 把对 .js 文件的处理转交给 id 为 babel 的 HappyPck 实例
+      {
+        test: /\.js$/,
+        use: ['happypack/loader?id=babel'],
+        include: srcPath
+      },
       // 图片 - 参考 base64 编码的情况
       {
         test: /\.(png|jpg|jpeg|gif)$/,
@@ -66,7 +74,33 @@ module.exports = merge(webpackCommonConf, {
       filename: 'css/main.[contentHash:8].css'
     }),
     // 忽略 moment 下的 /locale 目录
-    new webpack.IgnorePlugin(/\.\/locale/, /moment/)
+    new webpack.IgnorePlugin(/\.\/locale/, /moment/),
+    // HappyPack 开启多进程打包
+    new HappyPack({
+      // 使用唯一的标识符 id 来代表当前的 HappyPack 是用来处理一类特定的文件
+      id: 'babel',
+      // 如何处理 .js 文件，用法和 loader 配置一样
+      loaders: ['babel-loader?cacheDirectory']
+    }),
+    // 使用 ParallelUglifyPlugin 并行压缩输出的 JS 代码
+    new ParallelUglifyPlugin({
+      // 传递给 UglifyJS 的参数
+      // 还是使用 UglifyJS 压缩，只不过帮助开启了多进程
+      uglifyJS: {
+        output: {
+          beautify: false, // 最紧凑的输出
+          comments: false // 删除所有的注释
+        },
+        compress: {
+          // 删除所有的 console 语句，可以兼容 ie
+          drop_console: true,
+          // 内嵌定义了但是只用到一次的变量
+          collapse_vars: true,
+          // 提取出出现多次但是没有定义成变量去引用的静态值
+          reduce_vars: true
+        }
+      }
+    })
   ],
   optimization: {
     // 压缩 CSS
