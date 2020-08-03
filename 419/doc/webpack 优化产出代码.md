@@ -46,3 +46,42 @@ if (isDev) {
 }
 ```
 
+
+
+**Scope Hosting**
+
+- 代码体积更小
+- 创建函数作用域更少
+- 代码可读性更好
+
+```js
+// hello.js
+export default 'Hello negrochn'
+```
+
+```js
+// main.js
+import str from './hello.js'
+console.log(str)
+```
+
+![](https://img.mukewang.com/szimg/5e8855a7000123c319201080.jpg)
+
+![](https://img.mukewang.com/szimg/5f280a320001615419201080.jpg)
+
+![](https://img.mukewang.com/szimg/5f2518d60001852919201080.jpg)
+
+> 上述 开启 Scope Hosting 后，并未看出区别来。大写的尴尬。
+
+
+
+**webpack 性能优化 - 产出代码**
+
+- 小图片 base64 编码
+- bundle 加 hash
+- 懒加载
+- 提取公共代码
+- 使用 CDN 加速
+- 使用 production
+- Scope Hosting
+

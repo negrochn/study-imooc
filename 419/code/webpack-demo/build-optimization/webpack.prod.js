@@ -6,6 +6,7 @@ const TerserJSPlugin = require('terser-webpack-plugin')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const HappyPack = require('happypack')
 const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin')
+const ModuleConcatenationPlugin = require('webpack/lib/optimize/ModuleConcatenationPlugin')
 const webpackCommonConf = require('./webpack.common.js')
 const { merge } = require('webpack-merge')
 const { srcPath, distPath } = require('./paths')
@@ -18,6 +19,10 @@ module.exports = merge(webpackCommonConf, {
     path: distPath,
     // publicPath: 'http://cdn.abc.com' // 修改所有静态文件 url 的前缀（如 cdn 域名），这里暂时用不到
   },
+  // resolve: {
+  //   // 针对 npm 中的第三方模块优先采用 jsnext:main 中指向 ES6 模块化语法的文件
+  //   mainFields: ['jsnext:main', 'browser', 'main']
+  // },
   module: {
     rules: [
       // 把对 .js 文件的处理转交给 id 为 babel 的 HappyPck 实例
@@ -100,7 +105,9 @@ module.exports = merge(webpackCommonConf, {
           reduce_vars: true
         }
       }
-    })
+    }),
+    // 开启 Scope Hosting
+    // new ModuleConcatenationPlugin()
   ],
   optimization: {
     // 压缩 CSS
