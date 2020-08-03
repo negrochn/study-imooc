@@ -219,3 +219,102 @@ if (module.hot) {
 }
 ```
 
+
+
+**DllPlugin 动态链接库插件**
+
+- 前端框架如 Vue 、React ，体积大，构建慢
+- 较稳定，不常升级版本
+- 同一个版本只构建一次即可，不用每次都重新构建
+- webpack 已内置 DllPlugin 支持
+- DllPlugin - 打包出 dll 文件
+- DllReferencePlugin - 使用 dll 文件
+
+```json
+{
+  "scripts": {
+    "dev": "webpack-dev-server --config build/webpack.dev.js",
+    "dll": "webpack --config build/webpack.dll.js"
+  },
+}
+```
+
+```js
+// webpack.dll.js ，先执行 npm run dll 打包出 dll.js
+const { DllPlugin } = require('webpack')
+
+module.exports = {
+  mode: 'development',
+  entry: {
+    // 把 Vue 相关模块的放到一个单独的动态链接库
+    vue: ['vue']
+  },
+  output: {
+    // 输出的动态链接库的文件名称，[name] 代表当前动态链接库的名称
+    filename: '[name].dll.js',
+    // 输出的文件都放到 dist 文件夹下
+    path: distPath,
+    // 存放动态链接库的全局变量名称，例如对应 vue 来说就是 _dll_vue
+    // 之所以在前面加上 _dll_ 是为了防止全局变量冲突
+    library: '_dll_[name]'
+  },
+  plugins: [
+    // 接入 DllPlugin
+    new DllPlugin({
+      // 动态链接库的全局变量名称，需要和 output.library 中保持一致
+      // 该字段的值也就是输出的 manifest.json 文件中 name 字段的值
+      // 例如 vue.manifest.json 中就有 "name": "_dll_vue"
+      name: '_dll_[name]',
+      // 描述动态链接库的 manifest.json 文件输出时的文件名称
+      path: path.join(distPath, '[name].manifest.json')
+    })
+  ]
+}
+```
+
+```js
+// webpack.dev.js ，执行 npm run dev 使用 dll 文件
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const { DllReferencePlugin } = require('webpack')
+
+module.exports = merge(webpackCommonConf, {
+  mode: 'development',
+  module: {
+    rules: [
+      {
+        test: /\.vue$/,
+        loader: ['vue-loader'],
+        include: srcPath,
+        exclude: /node_modules/
+      }
+    ]
+  },
+  plugins: [
+    new VueLoaderPlugin(),
+    // 告诉 webpack 使用了哪些动态链接库
+    new DllReferencePlugin({
+      manifest: require(path.join(distPath, 'vue.manifest.json'))
+    })
+  ]
+})
+```
+
+```html
+<!-- 需要引入 vue.dll.js -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>webpack dll demo</title>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script src="./vue.dll.js"></script>
+</body>
+
+</html>
+```
+
