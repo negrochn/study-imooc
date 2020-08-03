@@ -318,3 +318,17 @@ module.exports = merge(webpackCommonConf, {
 </html>
 ```
 
+
+
+**webpack 优化构建速度**
+
+- 可用于生产环境
+  - 优化 babel-loader
+  - IgnorePlugin
+  - noParse
+  - happyPack
+  - ParallelUglifyPlugin（必须用于生产环境）
+- 不用于生产环境（即开发环境）
+  - 自动刷新
+  - 热更新
+  - DllPlugin
