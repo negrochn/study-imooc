@@ -1,8 +1,14 @@
 import './style/style1.css'
 import './style/style2.less'
 
-import moment from 'moment'
-import 'moment/locale/zh-cn' // 手动引入中文语言包
-moment.locale('zh-cn')
-console.log('locale', moment.locale())
-console.log('date', moment().format('ll'))
+import { sum } from './math'
+
+const sumRes = sum(10, 40)
+console.log('sumRes', sumRes)
+
+if (module.hot) {
+  module.hot.accept(['./math'], () => {
+    const sumRes = sum(10, 40)
+    console.log('sumRes in hot', sumRes)
+  })
+}

@@ -33,7 +33,9 @@ module.exports = merge(webpackCommonConf, {
     new webpack.DefinePlugin({
       // window.ENV = 'development'
       ENV: JSON.stringify('development')
-    })
+    }),
+    new webpack.NamedModulesPlugin(),
+    new webpack.HotModuleReplacementPlugin()
   ],
   devServer: {
     port: 8080,
@@ -41,6 +43,7 @@ module.exports = merge(webpackCommonConf, {
     contentBase: distPath, // 根目录
     open: true, // 自动打开浏览器
     compress: true, // 启动 gzip 压缩
+    hot: true,
     // 设置代理
     proxy: {
       // 将本地 /api/xxx 代理到 localhost:3000/api/xxx
