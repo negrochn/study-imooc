@@ -7,4 +7,4 @@ export const mult = (a, b) => {
 }
 
 // ES6 Module 才能让 tree-shaking 生效
-// common.js 就不行
+// commonjs 就不行

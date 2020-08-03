@@ -13,3 +13,14 @@
 - 使用 CDN 加速（output 设置 publicPath ，使用 url-loader 时配置 options.publicPath）
 - 使用 production
 - Scope Hosting
+
+
+
+**使用 production**
+
+- 自动开启代码压缩
+- Vue 、React 等会自动删掉调试代码（如开发环境的 warning ）
+- 启动 Tree-Shaking （去掉无用的代码，必须用 ES6 Module 才生效，commonjs 就不行）
+
+
+
