@@ -8,6 +8,15 @@ module.exports = {
     path: path.join(__dirname, '..', 'dist'),
     filename: 'bundle.js'
   },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        loader: ['babel-loader'],
+        exclude: /node_modules/
+      }
+    ]
+  },
   devServer: {
     contentBase: path.join(__dirname, '..', 'dist'),
     port: 8000,
