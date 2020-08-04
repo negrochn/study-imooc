@@ -12,7 +12,7 @@
   
   <div>
     <p>文本插值 {{ message }}</p>
-    <p>JS 表达式 {{ flag ? 'yes' : 'no'}}</p>
+    <p>JS 表达式 {{ flag ? 'yes' : 'no' }}</p>
     
     <p :id="dynamicId">动态属性 id</p>
     
