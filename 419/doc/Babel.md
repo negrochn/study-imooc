@@ -21,7 +21,7 @@
 
 配置 .babelrc 。
 
-```js
+```json
 {
   "presets": [
     "@babel/preset-env"
@@ -64,4 +64,105 @@ preset 是 Babel 插件（ plugin ）的集合。
 - Babel 7.4 之后弃用 babel-polyfill
 - 推荐直接使用 core-js 和 regenerator
 - 但不影响面试会考察它
+
+
+
+`npm i @babel/polyfill --save` 安装 babel-polyfill 。
+
+引入 @babel/polyfill 。
+
+```js
+// src/index.js
+import '@babel/polyfill'
+
+const sum = (a, b) => a + b
+
+Promise.resolve(100).then(data => data);
+
+[10, 20, 30].includes(20)
+
+// 语法，符合 ES5 语法规范
+// 不处理模块化
+```
+
+执行 `npx babel src/index.js` 。
+
+```shell
+PS E:\Coding\github\study-imooc\419\code\babel-demo> npx babel .\src\index.js
+"use strict";
+
+require("@babel/polyfill");
+
+var sum = function sum(a, b) {
+  return a + b;
+};
+
+Promise.resolve(100).then(function (data) {
+  return data;
+});
+[10, 20, 30].includes(20); // 语法，符合 ES5 语法规范
+// 不处理模块化
+```
+
+
+
+**babel-polyfill 按需引入**
+
+- 文件比较大
+- 只有一部分功能，无需全部引入
+- 配置按需引入
+
+配置 .babelrc 。
+
+```json
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "useBuiltIns": "usage",
+        "corejs": 3
+      }
+    ]
+  ],
+  "plugins": []
+}
+```
+
+修改 src/index.js 。
+
+```js
+// 不需要引入 @babel/polyfill
+const sum = (a, b) => a + b
+
+Promise.resolve(100).then(data => data);
+
+[10, 20, 30].includes(20)
+
+// 语法，符合 ES5 语法规范
+// 不处理模块化，模块化处理需要 webpack
+```
+
+执行 `npx babel src/index.js` 。
+
+```shell
+PS E:\Coding\github\study-imooc\419\code\babel-demo> npx babel .\src\index.js
+"use strict";
+
+require("core-js/modules/es.array.includes");
+
+require("core-js/modules/es.object.to-string");
+
+require("core-js/modules/es.promise");
+
+var sum = function sum(a, b) {
+  return a + b;
+};
+
+Promise.resolve(100).then(function (data) {
+  return data;
+});
+[10, 20, 30].includes(20); // 语法，符合 ES5 语法规范
+// 不处理模块化，模块化处理需要 webpack
+```
 
