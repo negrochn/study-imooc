@@ -47,3 +47,21 @@ var sum = function sum(a, b) {
 };
 ```
 
+preset 是 Babel 插件（ plugin ）的集合。
+
+
+
+**babel-polyfill 是什么**
+
+- 什么是 Polyfill （如 Array.prototype.indexOf ）
+- core-js 和 regenerator
+- babel-polyfill 即两者的集合
+
+
+
+**babel-polyfill 现已被弃用**
+
+- Babel 7.4 之后弃用 babel-polyfill
+- 推荐直接使用 core-js 和 regenerator
+- 但不影响面试会考察它
+
