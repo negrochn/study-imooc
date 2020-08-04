@@ -166,3 +166,89 @@ Promise.resolve(100).then(function (data) {
 // 不处理模块化，模块化处理需要 webpack
 ```
 
+
+
+**babel-polyfill 的问题**
+
+- 会污染全局环境
+- 如果做一个独立的 web 系统，则没问题
+- 如果做一个第三方的库，则会有问题
+
+
+
+**babel-runtime**
+
+`npm i @babel/runtime --save` 。
+
+`npm i @babel/plugin-transform-runtime` 。
+
+配置 .babelrc 。
+
+```json
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "useBuiltIns": "usage",
+        "corejs": 3
+      }
+    ]
+  ],
+  "plugins": [
+    [
+      "@babel/plugin-transform-runtime",
+      {
+        "absoluteRuntime": false,
+        "corejs": 3,
+        "helpers": true,
+        "regenerator": true,
+        "useESModules": false
+      }
+    ]
+  ]
+}
+```
+
+执行 `npx babel src/index.js` 。
+
+```shell
+PS E:\Coding\github\study-imooc\419\code\babel-demo> npx babel .\src\index.js
+"use strict";
+
+var _interopRequireDefault = require("@babel/runtime-corejs3/helpers/interopRequireDefault");
+
+require("core-js/modules/es.object.to-string");
+
+require("core-js/modules/es.promise");
+
+var _includes = _interopRequireDefault(require("@babel/runtime-corejs3/core-js-stable/instance/includes"));
+
+var _promise = _interopRequireDefault(require("@babel/runtime-corejs3/core-js-stable/promise"));
+
+var _context;
+
+var sum = function sum(a, b) {
+  return a + b;
+};
+
+_promise["default"].resolve(100).then(function (data) {
+  return data;
+});
+
+(0, _includes["default"])(_context = [10, 20, 30]).call(_context, 20); // 语法，符合 ES5 语法规范
+// 不处理模块化，模块化处理需要 webpack
+// 污染全局环境
+// window.Promise = function () { }
+// Array.prototype.includes = function () { }
+// 使用方
+// window.Promise = 'abc'
+```
+
+
+
+**Babel 总结**
+
+- 环境搭建 & 基本配置
+- babel-polyfill
+- babel-runtime
