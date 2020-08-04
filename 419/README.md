@@ -5,6 +5,7 @@
 ## Vue
 
 1. [Vue 基本使用](https://github.com/negrochn/study-imooc/blob/master/419/doc/Vue%20基本使用.md)
+2. [Vue 组件](https://github.com/negrochn/study-imooc/blob/master/419/doc/Vue%20组件.md)
 
 
 
