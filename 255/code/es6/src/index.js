@@ -11,11 +11,19 @@ class Person {
   }
 }
 
-// 创建实例
-const p1 = new Person('negrochn', 18)
-p1.eat() // negrochn eat something.
-p1.speak() // My name is negrochn, 18 years old.
+// 子类继承父类
+class Student extends Person {
+  constructor(name, age, studentId) {
+    super(name, age)
+    this.studentId = studentId
+  }
+  study() {
+    console.log(`${this.name} is studying.`)
+  }
+}
 
-const p2 = new Person('lexiaodai', 17)
-p2.eat()
-p2.speak()
+const s1 = new Student('negrochn', 18, '02954')
+s1.study() // negrochn is studying.
+console.log(s1.studentId) // 02954
+s1.eat() // negrochn eat something.
+s1.speak() // My name is negrochn, 18 years old.
