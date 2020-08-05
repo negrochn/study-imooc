@@ -339,6 +339,18 @@ new Vue({
 <div v-on:click.self="doThat"></div>
 ```
 
+```html
+<!-- 按键修饰符 -->
+<!-- 即使 Alt 或 Shift 被一同按下也会触发 -->
+<button @click.ctrl="onClick">A</button>
+
+<!-- 有且只有 Ctrl 被按下时才会触发 -->
+<button @click.ctrl.exact="onClick">A</button>
+
+<!-- 没有任何系统修饰符被按下时才会触发 -->
+<button @click.exact="onClick">A</button>
+```
+
 
 
 **表单**
