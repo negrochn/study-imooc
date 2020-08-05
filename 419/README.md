@@ -6,6 +6,7 @@
 
 1. [Vue 基本使用](https://github.com/negrochn/study-imooc/blob/master/419/doc/Vue%20基本使用.md)
 2. [Vue 组件](https://github.com/negrochn/study-imooc/blob/master/419/doc/Vue%20组件.md)
+3. [Vue 高级特性](https://github.com/negrochn/study-imooc/blob/master/419/doc/Vue%20高级特性.md)
 
 
 
