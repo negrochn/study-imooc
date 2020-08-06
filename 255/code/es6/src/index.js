@@ -3,9 +3,6 @@ class Person {
     this.name = name
     this.age = age
   }
-  eat() {
-    console.log(`${this.name} eat something.`)
-  }
   speak() {
     console.log(`My name is ${this.name}, ${this.age} years old.`)
   }
@@ -17,13 +14,23 @@ class Student extends Person {
     super(name, age)
     this.studentId = studentId
   }
-  study() {
-    console.log(`${this.name} is studying.`)
+  speak() {
+    console.log(`My student id is ${this.studentId}.`)
+  }
+}
+
+class Teacher extends Person {
+  constructor(name, age, subject) {
+    super(name, age)
+    this.subject = subject
+  }
+  speak() {
+    console.log(`I'am a ${this.subject} teacher.`)
   }
 }
 
 const s1 = new Student('negrochn', 18, '02954')
-s1.study() // negrochn is studying.
-console.log(s1.studentId) // 02954
-s1.eat() // negrochn eat something.
-s1.speak() // My name is negrochn, 18 years old.
+s1.speak() // My student id is 02954.
+const t1 = new Teacher('lexiaodai', 17, 'english')
+t1.speak() // I'am a english teacher.
+
