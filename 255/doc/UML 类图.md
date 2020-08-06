@@ -38,7 +38,7 @@ class Person {
 }
 ```
 
-
+![](https://github.com/negrochn/study-imooc/blob/master/255/img/uml-person.jpg?raw=true)
 
 
 
@@ -82,3 +82,4 @@ class Teacher extends Person {
 }
 ```
 
+![](https://github.com/negrochn/study-imooc/blob/master/255/img/uml-person-school-student-teacher.jpg?raw=true)
