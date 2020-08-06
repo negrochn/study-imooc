@@ -38,5 +38,47 @@ class Person {
 }
 ```
 
-![](http://assets.processon.com/chart_image/5f2c0935e0b34d4554b2162a.png)
+
+
+
+
+**关系**
+
+- 泛化，表示继承
+- 关联，表示引用
+
+```js
+class Person {
+  constructor(name, age, school) {
+    this.name = name
+    this.age = age
+    this.school = school
+  }
+  eat() {
+    console.log(`${this.name} eat something.`)
+  }
+  speak() {
+    console.log(`My name is ${this.name}, ${this.age} years old.`)
+  }
+}
+
+// 子类继承父类
+class Student extends Person {
+  constructor(name, age, school) {
+    super(name, age, school)
+  }
+  speak() {
+    console.log(`I study in ${this.school}.`)
+  }
+}
+
+class Teacher extends Person {
+  constructor(name, age, school) {
+    super(name, age, school)
+  }
+  speak() {
+    console.log(`I teach English in ${this.school}.`)
+  }
+}
+```
 
