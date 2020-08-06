@@ -473,7 +473,7 @@ function updateChildren (parentElm: Node,
 }
 ```
 
-![snabbdom 的 updateChildren 函数](C:\Users\negrochn\Downloads\snabbdom 的 updateChildren 函数.jpg)
+![](http://assets.processon.com/chart_image/5f2b7971e0b34d4554b03f91.png)
 
 
 

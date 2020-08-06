@@ -8,6 +8,7 @@
 2. [Vue 组件](https://github.com/negrochn/study-imooc/blob/master/419/doc/Vue%20组件.md)
 3. [Vue 高级特性](https://github.com/negrochn/study-imooc/blob/master/419/doc/Vue%20高级特性.md)
 4. [Vue 响应式原理](https://github.com/negrochn/study-imooc/blob/master/419/doc/Vue%20响应式原理.md)
+5. [Vue 虚拟 DOM 和 diff 算法](https://github.com/negrochn/study-imooc/blob/master/419/doc/Vue%20虚拟%20DOM%20和%20diff%20算法.md)
 
 
 
