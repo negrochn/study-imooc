@@ -473,7 +473,7 @@ function updateChildren (parentElm: Node,
 }
 ```
 
-![](http://assets.processon.com/chart_image/5f2b7971e0b34d4554b03f91.png)
+![](https://github.com/negrochn/study-imooc/blob/master/419/img/snabbdom-updateChildren.jpg?raw=true)
 
 
 
