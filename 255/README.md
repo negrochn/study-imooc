@@ -10,6 +10,8 @@
 
 ## 设计原则
 
+1. [何为设计](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E4%BD%95%E4%B8%BA%E8%AE%BE%E8%AE%A1.md)
+
 
 
 ## 设计模式
