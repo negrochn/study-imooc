@@ -83,3 +83,21 @@ class Teacher extends Person {
 ```
 
 ![](https://github.com/negrochn/study-imooc/blob/master/255/img/uml-person-school-student-teacher.jpg?raw=true)
+
+
+
+**总结**
+
+- 类图，属性、方法
+- 关系，泛化、关联
+- 示例演示
+- 后面学习设计模式，会继续画 UML 类图
+
+
+
+**面向对象 - 总结**
+
+- 搭建开发环境：npm init 、webpack 、Babel
+- 面向对象：概念、三要素、应用举例、意义
+- UML 类图：类图、关系、示例
+
