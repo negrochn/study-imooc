@@ -1,32 +1,25 @@
-class Person {
-  constructor(name, age, school) {
-    this.name = name
-    this.age = age
-    this.school = school
-  }
-  eat() {
-    console.log(`${this.name} eat something.`)
-  }
-  speak() {
-    console.log(`My name is ${this.name}, ${this.age} years old.`)
-  }
+function loadImg(src) {
+  return new Promise((resolve, reject) => {
+    const img = document.createElement('img')
+    img.onload = function() {
+      resolve(img)
+    }
+    img.onerror = function() {
+      reject('图片加载失败')
+    }
+    img.src = src
+  })
 }
 
-// 子类继承父类
-class Student extends Person {
-  constructor(name, age, school) {
-    super(name, age, school)
-  }
-  speak() {
-    console.log(`I study in ${this.school}.`)
-  }
-}
+const url = 'https://img.mukewang.com/szimg/5bc16811000192b219201080.jpg'
+const result = loadImg(url)
 
-class Teacher extends Person {
-  constructor(name, age, school) {
-    super(name, age, school)
-  }
-  speak() {
-    console.log(`I teach English in ${this.school}.`)
-  }
-}
+result.then(img => {
+  console.log(img.width)
+  return img
+}).then(img => {
+  console.log(img.height)
+  return img
+}).catch(err => {
+  console.error(err)
+})
