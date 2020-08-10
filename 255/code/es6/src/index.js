@@ -33,7 +33,7 @@ class Park {
   }
   // 车辆进入停车场
   in(car) {
-    if (!this.getEmptyNumber()) {
+    if (!this.getEmptyNumber().reduce((prev, cur) => prev + cur, 0)) {
       console.log('停车场车位已满，非常抱歉！')
       return
     }
@@ -47,7 +47,6 @@ class Park {
   out(car) {
     const plateNumber = car.plateNumber
     const info = this.carList[plateNumber]
-    console.log(this.screen.show(car, info.inTime))
     info.place.out()
     delete this.carList[plateNumber]
   }
@@ -121,7 +120,7 @@ for (let i = 0; i < 3; i++) {
 
 const park = new Park(floors)
 
-for (let k = 0; k < 50; k++) {
+for (let k = 0; k < 300; k++) {
   const car = new Car('浙A·' + ('00000' + (k + 1)).slice(-5))
   park.in(car)
 }
