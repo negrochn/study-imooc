@@ -12,10 +12,13 @@
 
 1. [何为设计](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E4%BD%95%E4%B8%BA%E8%AE%BE%E8%AE%A1.md)
 2. [设计原则](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99.md)
+3. [设计模式](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.md)
+4. [面试题](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E9%9D%A2%E8%AF%95%E9%A2%98.md)
 
 ## 设计模式
 
-
+- 创建型
+  1. [工厂模式](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F.md)
 
 ## 综合示例
 
