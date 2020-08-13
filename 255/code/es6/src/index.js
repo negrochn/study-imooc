@@ -1,25 +1,40 @@
-class Product {
-  constructor(name) {
-    this.name = name
+class LoginForm {
+  constructor() {
+    this.state = 'hide'
   }
-  init() {
-    console.log('init')
+  show() {
+    if (this.state === 'show') {
+      console.log('已经显示')
+      return
+    }
+    this.state = 'show'
+    console.log('登录框成功显示')
   }
-  fn1() {
-    console.log('fn1')
-  }
-  fn2() {
-    console.log('fn2')
+  hide() {
+    if (this.state === 'hide') {
+      console.log('已经隐藏')
+      return
+    }
+    this.state = 'hide'
+    console.log('登录框成功隐藏')
   }
 }
 
-class Creator {
-  create(name) {
-    return new Product(name)
+LoginForm.getInstance = (function() {
+  let instance
+  return function() {
+    if (!instance) {
+      instance = new LoginForm()
+    }
+    return instance
   }
-}
+})()
 
-let c = new Creator()
-let p = c.create('iPhone')
-p.init()
-p.fn1()
+// 测试
+let login1 = LoginForm.getInstance()
+login1.show()
+
+let login2 = LoginForm.getInstance()
+login2.hide()
+
+console.log('login1 === login2', login1 === login2)
