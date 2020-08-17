@@ -1,22 +1,24 @@
-class Math {
-  // 装饰方法
-  @log
-  add(a, b) {
-    return a + b
-  }
+import { deprecate } from 'core-decorators'
+
+class Person {
+  @deprecate
+  facepalm() {}
+
+  @deprecate('We stopped facepalming')
+  facepalmHard() {}
+
+  @deprecate('We stopped facepalming', { url: 'http://knwoyourmeme.com/memes/facepalm' })
+  facepalmHarder() {}
 }
 
-function log(target, name, descriptor) {
-  let oldValue = descriptor.value
+let person = new Person()
 
-  descriptor.value = function() {
-    console.log(`Calling ${name} with`, arguments)
-    return oldValue.apply(this, arguments)
-  }
+person.facepalm()
+// DEPRECATION Person#facepalm: This function will be removed in future versions.
 
-  return descriptor
-}
+person.facepalmHard()
+// DEPRECATION Person#facepalmHard: We stopped facepalming
 
-const math = new Math()
-const result = math.add(1, 3) // 会打印日志
-console.log(result)
+person.facepalmHarder()
+// DEPRECATION Person#facepalmHarder: We stopped facepalming
+// See http://knwoyourmeme.com/memes/facepalm for more details.
