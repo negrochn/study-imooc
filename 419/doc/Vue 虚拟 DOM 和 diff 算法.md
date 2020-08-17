@@ -135,14 +135,17 @@ HTML 中使用 snabbdom
 ```
 
 ```js
-const snabbdom = window.snabbdom
+const { classModule } = snabbdom_class
+const { propsModule } = snabbdom_props
+const { styleModule } = snabbdom_style
+const { eventListenersModule } = snabbdom_eventlisteners
 
 // 定义 patch
 const patch = snabbdom.init([
-  snabbdom_class,
-  snabbdom_props,
-  snabbdom_style,
-  snabbdom_eventlisteners
+  classModule,
+  propsModule,
+  styleModule,
+  eventListenersModule
 ])
 
 // 定义 h
@@ -151,24 +154,33 @@ const h = snabbdom.h
 const container = document.getElementById('container')
 
 // 生成 vnode
-let vnode = h('ul#list', {}, [
-  h('li.item', {}, 'Item 1'),
-  h('li.item', {}, 'Item 2')
+let vnode = h('div#container.two.classes', { on: { click: someFn } }, [
+  h('span', { style: { fontWeight: 'bold' } }, 'This is bold'),
+  ' and this is just normal text',
+  h('a', { props: { href: '/foo' } }, 'I\'ll take you places!')
 ])
 
 patch(container, vnode)
 
 document.getElementById('btn').addEventListener('click', () => {
   // 生成 newVnode
-  const newVnode = h('ul#list', {}, [
-    h('li.item', {}, 'Item 1'),
-    h('li.item', {}, 'Item B'),
-    h('li.item', {}, 'Item 3')
+  const newVnode = h('div#container.two.classes', { on: { click: anotherEventHandler } }, [
+    h('span', { style: { fontWeight: 'normal', fontStyle: 'italic' } }, 'This is now italic type'),
+    ' and this is still just normal text',
+    h('a', { props: { href: '/bar' } }, 'I\'ll take you places!')
   ])
 
   patch(vnode, newVnode)
   vnode = newVnode
 })
+
+function someFn() {
+  console.log('some fn')
+}
+
+function anotherEventHandler() {
+  console.log('another')
+}
 ```
 
 
@@ -333,14 +345,14 @@ function sameVnode (vnode1: VNode, vnode2: VNode): boolean {
 
 patchVnode 函数
 
-1. 设置 elm ，获取新旧 vnode
+1. 设置 elm ，获取新旧 children
 2. 如果新旧 vnode 相同，则直接返回
 3. 如果新 text  为 undefined ，则进一步判断
    1. 如果新旧 children 都有，则执行 updateChildren 函数（后续再讲）
    2. 如果新 children 有，旧 children 无，则清空 text ，添加 children
    3. 如果旧 children 有，新 children 无，则移除 children
    4. 如果旧 text 有，则清空 text
-4. 如果新 text 有 且新旧 text 不相等，移除旧 children ，设置新 text
+4. 如果新 text 有且新旧 text 不相等，移除旧 children ，设置新 text
 
 ```typescript
 function patchVnode (oldVnode: VNode, vnode: VNode, insertedVnodeQueue: VNodeQueue) {
