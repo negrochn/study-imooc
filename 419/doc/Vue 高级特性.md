@@ -27,7 +27,7 @@
 ```html
 <!-- 自定义 v-model ，演示地址：https://codepen.io/02954/pen/jObjbRQ -->
 <div id="app">
-  <span>{{ inputVa l}}</span>
+  <span>{{ inputVal }}</span>
   <custom-v-model v-model="inputVal" />
 </div>
 ```
@@ -65,7 +65,7 @@ new Vue({
 
 **$nextTick**
 
-- Vue 是异步渲染
+- Vue 是异步渲染的
 
 - data 改变之后，DOM 不会立即渲染
 
@@ -320,5 +320,5 @@ mixin 的问题
 
 1. 变量来源不明确，不利于阅读
 2. 多 mixin 可能会造成命名冲突
-3. mixin 和 组件可能出现多对多的关系，复杂度高
+3. mixin 和组件可能出现多对多的关系，复杂度高
 
