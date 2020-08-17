@@ -1,19 +1,23 @@
-class Adaptee {
-  specificRequest() {
-    return '德标插头'
+class Circle {
+  draw() {
+    console.log('画一个圆')
   }
 }
 
-class Target {
-  constructor() {
-    this.adaptee = new Adaptee()
+class Decorator {
+  constructor(circle) {
+    this.circle = circle
   }
-  request() {
-    const info = this.adaptee.specificRequest()
-    return `${info} - 转换器 - 国标插头`
+  draw() {
+    this.circle.draw()
+    this.setRedBorder(this.circle)
+  }
+  setRedBorder(circle) {
+    console.log('设置红色边框')
   }
 }
 
-// 测试
-const target = new Target()
-console.log(target.request())
+const c = new Circle()
+const d = new Decorator(c)
+
+d.draw()
