@@ -22,6 +22,7 @@
   2. [单例模式](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F.md)
 - 结构型
   1. [适配器模式](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.md)
+  2. [装饰器模式](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F.md)
 - 行为型
 
 ## 综合示例
