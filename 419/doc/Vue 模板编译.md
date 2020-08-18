@@ -17,7 +17,7 @@ with 语法
 
 - 改变 {} 内自由变量的查找规则，当做 obj 属性来查找
 - 如果找不到匹配的 obj 属性，就会报错
-- with 要慎用，它打破了作用于规则，易读性变差
+- with 要慎用，它打破了作用域规则，易读性变差
 
  ```js
 const obj =  { a: 100, b: 300 }
@@ -48,7 +48,7 @@ with(obj) {
 - 因此，模板一定是转换为某种 JS 代码，即模板编译
 - 模板编译为 render 函数，执行 render 函数返回 vnode
 - 基于 vnode 再执行 patch 和 diff
-- 使用 webpack vue-loader ，会在开发环境下编译模板（重要）
+- 使用 webpack 的 vue-loader ，会在开发环境下编译模板（重要）
 
 ```js
 const compiler = require('vue-template-compiler')
@@ -129,7 +129,7 @@ const template = `
 
 ```js
 Vue.component('heading', {
-	render: function(createElement) {
+  render: function(createElement) {
     return createElement('h' + this.level, [
       createElement('a', {
         attrs: {
@@ -144,7 +144,7 @@ Vue.component('heading', {
 
 - 讲完模板编译，再讲这个 render ，就比较号理解了
 - 在有些复杂情况中，不能用 template ，可用考虑用 render
-- React 一直都用 redner（没有模板），和这里一样
+- React 一直都用 render（没有模板），和这里一样
 
 
 
