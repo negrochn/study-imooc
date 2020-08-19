@@ -14,7 +14,7 @@
 
 ```vue
 <template>
-	<p>
+  <p>
     {{ message }}
   </p>
 </template>
