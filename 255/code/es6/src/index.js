@@ -1,24 +1,38 @@
-import { deprecate } from 'core-decorators'
-
-class Person {
-  @deprecate
-  facepalm() {}
-
-  @deprecate('We stopped facepalming')
-  facepalmHard() {}
-
-  @deprecate('We stopped facepalming', { url: 'http://knwoyourmeme.com/memes/facepalm' })
-  facepalmHarder() {}
+// 明星
+let star = {
+  name: 'negrochn',
+  age: 18,
+  phone: '13305720001'
 }
 
-let person = new Person()
+// 经纪人
+let agent = new Proxy(star, {
+  get: function(target, key) {
+    if (key === 'phone') {
+      // 返回经纪人自己的手机号
+      return '18868870001'
+    }
+    if (key === 'price') {
+      // 明星不报价，经纪人报价
+      return 120000
+    }
+    return target[key]
+  },
+  set: function(target, key, val) {
+    if (key === 'customPrice') {
+      if (val < 100000) {
+        // 最低 10 万
+        throw new Error('价格太低')
+      } else {
+        target[key] = val
+        return true
+      }
+    }
+  }
+})
 
-person.facepalm()
-// DEPRECATION Person#facepalm: This function will be removed in future versions.
-
-person.facepalmHard()
-// DEPRECATION Person#facepalmHard: We stopped facepalming
-
-person.facepalmHarder()
-// DEPRECATION Person#facepalmHarder: We stopped facepalming
-// See http://knwoyourmeme.com/memes/facepalm for more details.
+console.log(agent.name)
+console.log(agent.phone)
+console.log(agent.price)
+agent.customPrice = 90000
+console.log(agent.price)
