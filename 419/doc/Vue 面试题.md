@@ -3,8 +3,8 @@
 **1. v-show 和 v-if 的区别**
 
 - v-if 是“真正”的条件渲染，切换过程中条件块内的事件监听器和子组件适当地销毁和重建
-- v-if 是“惰性”的，初始条件为假时什么都不做，直到条件变为真才会开始渲染
-- v-show 是不管初始条件是什么都会渲染，基于 CSS 进行切换（display: none）
+- v-if 是“惰性”的，初始条件为假时什么都不做，直到条件变为真才开始渲染
+- v-show 不管初始条件是什么都会渲染，基于 CSS（ display ） 进行切换
 - v-if 有更高的切换开销，v-show 有更高的初始渲染开销
 - v-show 适用于非常频繁切换的场景，v-if 适用于运行条件较少改变的场景
 
@@ -60,9 +60,10 @@
 
 
 
-**9. 为何组件必须是一个函数？**
+**9. 为何组件 data 必须是一个函数？**
 
-- 定义的 Vue 组件是一个 class ，每个地方去使用这个组件，其实是这个 class 的实例化
+- 组件会被多个地方使用（实例化）
+- data 不是函数，会导致多个实例相互影响 data
 
 
 
@@ -86,8 +87,8 @@
 
 ```vue
 <!-- 注意：
-				1. 上面使用 :value 而没用 v-model
-				2. 上面的 change 和 model.event 对应起来，即名字自己改
+  1. 上面使用 :value 而没用 v-model
+  2. 上面的 change 和 model.event 对应起来，即名字自己改
 -->
 <template>
   <input type="text" :value="text" @input="$emit('change', $event.target.value)" />
@@ -138,14 +139,14 @@ export default {
 
 
 
-**17. 什么是作用于插槽**
+**17. 什么是作用域插槽**
 
 ```vue
 <template>
-	<a :href="url">
+  <a :href="url">
     <slot :website="website">
       {{ website.subTitle }}
-  	</slot>
+    </slot>
   </a>
 </template>
 
@@ -172,11 +173,11 @@ export default {
 
 ```vue
 <template>
-	<Child :url="website.url">
+  <Child :url="website.url">
     <template v-slot="slotProps">
       <!-- slotProps 名字可自定义 -->
       {{ slotProps.website.title }}
-		</template>
+    </template>
   </Child>
 </template>
 
@@ -277,7 +278,7 @@ export default new VueRouter({
 
 - Object.defineProperty
 - 以及深度监听、监听数组
-- 有何缺电
+- 有何缺点
 
 
 
@@ -296,7 +297,7 @@ export default new VueRouter({
 
 
 
-**25. diff 算法的事件复杂度**
+**25. diff 算法的时间复杂度**
 
 - O(n)
 - 在O(n^3) 基础上做了一些调整
@@ -314,20 +315,21 @@ export default new VueRouter({
 **27. Vue 为何是异步渲染，$nextTick 何用？**
 
 - 异步渲染（以及合并 data 修改），可以提高渲染性能
-- $nextTick 在 DOM 更新完之后，触发回调
+- $nextTick 在 DOM 更新之后，触发回调
 
 
 
 **28.  Vue 常见性能优化方式**
 
-- 合理使用 v-show 和 v-if
-- 合理使用 computed
-- v-for 时加 key ，以及避免和 v-if 同时使用
-- 自定义事件、DOM 事件及时销毁
-- 合理使用异步组件
-- 合理使用 keep-alive
-- data 层级不要太深
-- 使用 vue-loader 在开发环境做模板编译（预编译）
+- Vue 层级的优化
+  - 合理使用 v-show 和 v-if
+  - 合理使用 computed
+  - v-for 时加 key ，以及避免和 v-if 同时使用
+  - 自定义事件、DOM 事件及时销毁
+  - 合理使用异步组件
+  - 合理使用 keep-alive
+  - data 层级不要太深
 - webpack 层级的优化
+  - 使用 vue-loader 在开发环境做模板编译（预编译）
 - 前端通用的性能优化，如图片懒加载
 - 使用 SSR
