@@ -1,12 +1,15 @@
-const callbacks = $.Callbacks() // 注意大小写
-callbacks.add(function(info) {
-  console.log('fn1', info)
+const fs = require('fs')
+const readline = require('readline')
+
+const rl = readline.createInterface({
+  input: fs.createReadStream('./index.html')
 })
-callbacks.add(function(info) {
-  console.log('fn2', info)
+
+let lineNum = 0
+rl.on('line', (line) => {
+  console.log(line)
+  lineNum++
 })
-callbacks.add(function(info) {
-  console.log('fn2', info)
+rl.on('close', () => {
+  console.log(lineNum)
 })
-callbacks.fire('gogogo')
-callbacks.fire('fire')
