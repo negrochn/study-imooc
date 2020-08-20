@@ -20,7 +20,14 @@ module.exports = {
   devServer: {
     contentBase: path.join(__dirname, '..', 'dist'),
     port: 8000,
-    open: true
+    open: true,
+    proxy: {
+      '/img': {
+        target: 'https://github.com/negrochn/study-imooc/blob/master/255',
+        secure: false,
+        changeOrigin: true
+      }
+    }
   },
   plugins: [
     new HtmlWebpackPlugin({
