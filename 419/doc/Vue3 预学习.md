@@ -6,7 +6,7 @@ Vue3 要来了
 
 - ~~Vue3 尚未发布，还在研发中~~
 - 面试会考察候选人对新技术的关注程度
-- ~~新版本发布之后，~~再做补充
+- ~~新版本发布之后~~，再做补充
 
 
 
@@ -108,9 +108,9 @@ Proxy 实现响应式
 
 ```js
 function reactive(target = {}) {
+  // 不是对象或数组，则返回
   if (typeof target !== 'object' || target == null) {
-    // 不是对象或数组，则返回
-		return target
+    return target
   }
   
   // 代理配置
@@ -127,7 +127,7 @@ function reactive(target = {}) {
     },
     set(target, key, val, receiver) {
       // 重复的数据，不处理
-			if (target[key] === val) {
+      if (target[key] === val) {
         return true
       }
       
