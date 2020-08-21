@@ -1,15 +1,14 @@
-const fs = require('fs')
-const readline = require('readline')
+const arr = [1, 2, 3, 4, 5]
+const nodeList = document.getElementsByTagName('a')
+const $a = $('a')
 
-const rl = readline.createInterface({
-  input: fs.createReadStream('./index.html')
-})
+function each(data) {
+  const $data = $(data)
+  $data.each((key, val) => {
+    console.log(key, val)
+  })
+}
 
-let lineNum = 0
-rl.on('line', (line) => {
-  console.log(line)
-  lineNum++
-})
-rl.on('close', () => {
-  console.log(lineNum)
-})
+each(arr)
+each(nodeList)
+each($a)
