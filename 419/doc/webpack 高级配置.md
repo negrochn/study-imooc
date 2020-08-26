@@ -141,32 +141,6 @@
 
 **抽离公共代码**
 
-- entry 配置 index 和 other，plugins 配置HtmlWebpackPlugin 的 chunks
-
-  ```js
-  module.exports = {
-    entry: {
-      index: path.join(srcPath, 'index.js'),
-      other: path.join(srcPath, 'other.js')
-    },
-    plugins: [
-      // 多入口 - 生成 index.html
-      new HtmlWebpackPlugin({
-        template: path.join(srcPath, 'index.html'),
-        filename: 'index.html',
-        // chunks 表示该页面要引用哪些 chunk （即上面的 index 和 other），默认全部引用
-        chunks: ['index', 'vendor', 'common'] // 要考虑代码分割
-      }),
-      // 多入口 - 生成 other.html
-      new HtmlWebpackPlugin({
-        template: path.join(srcPath, 'other.html'),
-        filename: 'other.html',
-        chunks: ['other', 'common'] // 考虑代码分割
-      })
-    ]
-  }
-  ```
-
 - optimization 配置 splitChunks ，拆分第三方模块和公共模块（ production 模式）
 
   ```js
@@ -202,6 +176,32 @@
   })
   ```
 
+- entry 配置 index 和 other，plugins 配置HtmlWebpackPlugin 的 chunks
+
+  ```js
+  module.exports = {
+    entry: {
+      index: path.join(srcPath, 'index.js'),
+      other: path.join(srcPath, 'other.js')
+    },
+    plugins: [
+      // 多入口 - 生成 index.html
+      new HtmlWebpackPlugin({
+        template: path.join(srcPath, 'index.html'),
+        filename: 'index.html',
+        // chunks 表示该页面要引用哪些 chunk （即上面的 index 和 other），默认全部引用
+        chunks: ['index', 'vendor', 'common'] // 要考虑代码分割
+      }),
+      // 多入口 - 生成 other.html
+      new HtmlWebpackPlugin({
+        template: path.join(srcPath, 'other.html'),
+        filename: 'other.html',
+        chunks: ['other', 'common'] // 考虑代码分割
+      })
+    ]
+  }
+  ```
+
 
 
 **懒加载**
@@ -220,6 +220,20 @@ setTimeout(() => {
 
 **处理 JSX**
 
+- `npm i @babel/preset-react -D`
+
+- 配置 .babelrc
+
+  ```json
+  {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ],
+    "plugins": []
+  }
+  ```
+
 - module.rules 配置 .jsx 文件处理
 
   ```js
@@ -234,20 +248,6 @@ setTimeout(() => {
         }
       ]
     }
-  }
-  ```
-
-- `npm i @babel/preset-react -D`
-
-- 配置 .babelrc
-
-  ```json
-  {
-    "presets": [
-      "@babel/preset-env",
-      "@babel/preset-react"
-    ],
-    "plugins": []
   }
   ```
 
@@ -278,5 +278,5 @@ setTimeout(() => {
 **module 、chunk 和 bundle 的区别**
 
 - module ，各个源码文件，webpack 中一切皆模块
-- chunk ，多模块合并成的，如 entry 、import() 、splitChunk
+- chunk ，多模块合并成的，如 entry 、import() 、splitChunks
 - bundle ，最终的输出文件
