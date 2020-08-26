@@ -65,7 +65,7 @@
 
 **抽离 CSS 文件**
 
-- development 模式
+- development 模式，没有做任何处理
 
   ```js
   module.exports = merge(webpackCommonConf, {
@@ -90,7 +90,7 @@
 - production 模式
 
   - module.rules 使用 MiniCssExtractPlugin.loader 代替 style-loader
-  - plugins 使用 new MiniCssExtractPlugin({}) 抽离 CSS 文件
+  - plugins 使用 new MiniCssExtractPlugin({ filename: 'main.[contentHash:8].css' }) 抽离 CSS 文件
   - optimization.minimizer 使用 new TerserJSPlugin({}) 和 new OptimizeCssAssetsPlugin({}) 压缩 CSS
 
   ```js
@@ -149,7 +149,7 @@
     optimization: {
       // 分割代码块
       splitChunks: {
-        // initial 入口 chunk ，对于一部导入的文件不处理
+        // initial 入口 chunk ，对于异步导入的文件不处理
         // async 异步 chunk ，只对异步导入的文件处理
         // all 全部 chunk
         chunks: 'all',
@@ -176,7 +176,7 @@
   })
   ```
 
-- entry 配置 index 和 other，plugins 配置HtmlWebpackPlugin 的 chunks
+- entry 配置 index 和 other，plugins 配置 HtmlWebpackPlugin 的 chunks
 
   ```js
   module.exports = {
