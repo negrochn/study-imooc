@@ -27,6 +27,7 @@
   4. [外观模式](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F.md)
 - 行为型
   1. [观察者模式](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F.md)
+  2. [迭代器模式](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F.md)
 
 ## 综合示例
 
