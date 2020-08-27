@@ -1,38 +1,52 @@
-// 状态（红灯、绿灯、黄灯）
-class State {
-  constructor(color) {
-    this.color = color
+import StateMachine from 'javascript-state-machine'
+
+// 初始化状态机
+let fsm = new StateMachine({
+  init: '未收藏',
+  transitions: [
+    {
+      name: 'doStore',
+      from: '未收藏',
+      to: '已收藏'
+    },
+    {
+      name: 'cancelStore',
+      from: '已收藏',
+      to: '未收藏'
+    }
+  ],
+  methods: {
+    // 监听执行收藏
+    onDoStore() {
+      console.log('收藏成功')
+      updateText()
+    },
+    // 监听取消收藏
+    onCancelStore() {
+      console.log('取消收藏成功')
+      updateText()
+    }
   }
-  handle(context) {
-    console.log(`turn to ${this.color} light`)
-    context.setState(this)
+})
+
+const $btn = $('#btn')
+
+$btn.click(function() {
+  if (fsm.is('未收藏')) {
+    fsm.doStore()
+  } else {
+    fsm.cancelStore()
+  }
+})
+
+// 更新按钮的文案
+function updateText() {
+  if (fsm.is('未收藏')) {
+    $btn.text('收藏')
+  } else {
+    $btn.text('取消收藏')
   }
 }
 
-// 主体
-class Context {
-  constructor() {
-    this.state = null
-  }
-  // 获取状态
-  getState() {
-    return this.state
-  }
-  // 设置状态
-  setState(state) {
-    this.state = state
-  }
-}
-
-// 测试
-let c = new Context()
-let g = new State('green')
-let r = new State('red')
-let y = new State('yellow')
-
-g.handle(c)
-console.log(c.getState())
-r.handle(c)
-console.log(c.getState())
-y.handle(c)
-console.log(c.getState())
+// 初始化文案
+updateText()
