@@ -1,52 +1,70 @@
 import StateMachine from 'javascript-state-machine'
 
-// 初始化状态机
+// 状态机
 let fsm = new StateMachine({
-  init: '未收藏',
+  init: 'pending',
   transitions: [
     {
-      name: 'doStore',
-      from: '未收藏',
-      to: '已收藏'
+      name: 'resolve',
+      from: 'pending',
+      to: 'fullfilled'
     },
     {
-      name: 'cancelStore',
-      from: '已收藏',
-      to: '未收藏'
+      name: 'reject',
+      from: 'pending',
+      to: 'rejected'
     }
   ],
   methods: {
-    // 监听执行收藏
-    onDoStore() {
-      console.log('收藏成功')
-      updateText()
+    // 监听 resolve
+    onResolve(state, data) {
+      // state - 当前状态机实例
+      // data - fsm.resolve() 传递的参数
+      data.successList.forEach(fn => fn())
     },
-    // 监听取消收藏
-    onCancelStore() {
-      console.log('取消收藏成功')
-      updateText()
+    // 监听 reject
+    onReject(state, data) {
+      data.failList.forEach(fn => fn())
     }
   }
 })
 
-const $btn = $('#btn')
+// 定义 Promise
+class MyPromise {
+  constructor(fn) {
+    this.successList = []
+    this.failList = []
 
-$btn.click(function() {
-  if (fsm.is('未收藏')) {
-    fsm.doStore()
-  } else {
-    fsm.cancelStore()
+    fn(() => { // resolve 函数
+      fsm.resolve(this)
+    }, () => { // reject 函数
+      fsm.reject(this)
+    })
   }
-})
-
-// 更新按钮的文案
-function updateText() {
-  if (fsm.is('未收藏')) {
-    $btn.text('收藏')
-  } else {
-    $btn.text('取消收藏')
+  then(successFn, failFn) {
+    this.successList.push(successFn)
+    this.failList.push(failFn)
   }
 }
 
-// 初始化文案
-updateText()
+// 测试
+function loadImg(src) {
+  const mp = new MyPromise(function(resolve, reject) {
+    let img = document.createElement('img')
+    img.onload = function() {
+      resolve(img)
+    }
+    img.onerror = function(error) {
+      reject(error)
+    }
+    img.src = src
+  })
+  return mp
+}
+
+let result = loadImg('/img/uml-state.jpg?raw=true')
+result.then(function() {
+  console.log('success')
+}, function() {
+  console.log('failed')
+})
