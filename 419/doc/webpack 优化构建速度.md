@@ -12,10 +12,10 @@
 
 - 优化 babel-loader
 - IgnorePlugin
-- noParsse
-- happyPack
+- noParse
+- HappyPack
 - ParallelUglifyPlugin
-- 自动刷新
+- 自动刷新（一般用不到）
 - 热更新
 - DllPlugin
 
@@ -77,7 +77,7 @@ index.a56473d7.js    60.7 KiB       0  [emitted] [immutable]  index
 
 ```js
 module.exports = {
-	module: {
+  module: {
     // 忽略对 react.min.js 文件的递归解析处理
     noParse: [/react\.min\.js$/]
   }
@@ -86,14 +86,14 @@ module.exports = {
 
 
 
-**IgnorePlugin vs noParse**
+IgnorePlugin vs noParse
 
 - IgnorePlugin 直接不引入，代码中没有
 - noParse 引入，但不打包
 
 
 
-**happyPack 多进程打包**
+**HappyPack 多进程打包**
 
 - JS 单线程，开启多进程打包
 - 提高构建速度（特别是多核 CPU ）
@@ -178,7 +178,7 @@ module.exports = merge(webpackCommonConf, {
 // 一般用不到
 module.exports = {
   // 注意，开启监听之后，webpack-dev-server 会自动开启刷新浏览器
-	watch: true, // 开启监听，默认为 false
+  watch: true, // 开启监听，默认为 false
   // 监听配置
   watchOptions: {
     ignored: /node_modules/, // 忽略哪些
@@ -226,7 +226,7 @@ if (module.hot) {
 - 前端框架如 Vue 、React ，体积大，构建慢
 - 较稳定，不常升级版本
 - 同一个版本只构建一次即可，不用每次都重新构建
-- webpack 已内置 DllPlugin 支持
+- webpack 已内置 DllPlugin
 - DllPlugin - 打包出 dll 文件
 - DllReferencePlugin - 使用 dll 文件
 
@@ -326,7 +326,7 @@ module.exports = merge(webpackCommonConf, {
   - 优化 babel-loader
   - IgnorePlugin
   - noParse
-  - happyPack
+  - HappyPack
   - ParallelUglifyPlugin（必须用于生产环境）
 - 不用于生产环境（即开发环境）
   - 自动刷新
