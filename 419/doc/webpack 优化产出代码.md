@@ -28,7 +28,7 @@
 
 - ES6 Module 静态引入，编译时引入
 - CommonJS 动态引入，执行时引入
-- 只有 ES6 Module 才能静态分析，实现 Tree-Shaking`
+- 只有 ES6 Module 才能静态分析，实现 Tree-Shaking
 
 ```js
 let apiList = require('../config/api.js')
@@ -55,23 +55,12 @@ if (isDev) {
 - 代码可读性更好
 
 ```js
-// hello.js
-export default 'Hello negrochn'
+module.exports = {
+  optimization: {
+    concatenateModules: true
+  }
+}
 ```
-
-```js
-// main.js
-import str from './hello.js'
-console.log(str)
-```
-
-![](https://img.mukewang.com/szimg/5e8855a7000123c319201080.jpg)
-
-![](https://img.mukewang.com/szimg/5f280a320001615419201080.jpg)
-
-![](https://img.mukewang.com/szimg/5f2518d60001852919201080.jpg)
-
-> 上述 开启 Scope Hosting 后，并未看出区别来。大写的尴尬。
 
 
 
