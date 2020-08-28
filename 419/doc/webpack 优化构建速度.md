@@ -105,7 +105,7 @@ module.exports = merge(webpackCommonConf, {
   mode: 'production',
   module: {
     rules: [
-      // 把对 .js 文件的处理转交给 id 为 babel 的 HappyPck 实例
+      // 把对 .js 文件的处理转交给 id 为 babel 的 HappyPack 实例
       {
         test: /\.js$/,
         use: ['happypack/loader?id=babel'],
