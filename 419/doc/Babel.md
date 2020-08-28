@@ -180,7 +180,7 @@ Promise.resolve(100).then(function (data) {
 
 `npm i @babel/runtime --save` 。
 
-`npm i @babel/plugin-transform-runtime` 。
+`npm i @babel/plugin-transform-runtime -D` 。
 
 配置 .babelrc 。
 
