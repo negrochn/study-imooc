@@ -137,6 +137,7 @@ new Vue({
 - 使用驼峰式写法
 
 ```html
+<!-- class 和 style ，演示地址：https://codepen.io/02954/pen/MWaRLJO -->
 <div id="app">
   
   <div>
@@ -189,7 +190,7 @@ new Vue({
 - v-if 和 v-show 的区别？
   - v-if 是“真正”的条件渲染，切换过程中条件块内的事件监听器和子组件适当地销毁和重建
   - v-if 是“惰性”的，初始条件为假时什么都不做，直到条件变为真才会开始渲染
-  - v-show 不管初始条件是什么都会渲染，基于 CSS 进行切换（ display:none ）
+  - v-show 不管初始条件是什么都会渲染，基于 CSS（ display ）进行切换
   - v-if 有更高的切换开销，v-show 有更高的初始渲染开销
 - v-if 和 v-show 的使用场景
   - v-show 适用于非常频繁切换的场景
