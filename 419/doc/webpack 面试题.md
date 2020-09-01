@@ -1,4 +1,4 @@
-# webpack 面试真题
+# webpack 面试题
 
 **前端为何要进行打包和构建？**
 
@@ -14,7 +14,7 @@
 **module 、chunk 和 bundle 的区别**
 
 - module ，各个源码文件，webpack 中一切皆模块
-- chunk ，多模块合并成的（内存中未产出的代码块），如 entry 、import() 、splitChunk
+- chunk ，多模块合并成的（内存中未产出的代码块），如 entry 、import() 、splitChunks
 - bundle ，最终的输出文件
 
 
@@ -31,6 +31,8 @@
 - https://www.webpackjs.com/loaders/
 - https://www.webpackjs.com/plugins/
 - 把此前示例中的 loader 和 plugin 答出来即可
+  - loader ：style-loader 、css-loader 、postcss-loader 、less-loader 、vue-loader 、file-loader 、url-loader 、babel-loader
+  - plugin ：html-webpack-plugin 、clean-webpack-plugin 、mini-css-extract-plugin 、terser-webpack-plugin 、optimize-css-assets-webpack-plugin 、webpack.HotModuleReplacementPlugin 、webpack.IgnorePlugin 、happypack 、webpack-parallel-uglify-plugin 、webpack.DllPlugin 、webpack.DllReferencePlugin
 
 
 
@@ -85,7 +87,7 @@ module.exports = {
 
 **为何 Proxy 不能被 Polyfill ？**
 
-- 如 Class 可以用 function 模拟
+- 如 class 可以用 function 模拟
 - 如 Promise 可以用 callback 来模拟
 - 但 Proxy 的功能用 Object.defineProperty 无法模拟
 
@@ -96,7 +98,7 @@ module.exports = {
 - 优化 babel-loader
 - IgnorePlugin
 - noParse
-- happyPack
+- HappyPack
 - ParallelUglifyPlugin
 
 
@@ -116,6 +118,5 @@ module.exports = {
 - 懒加载
 - 提取公共代码
 - 使用 CDN 加速
-- IgnorePlugin
 - 使用 production
 - Scope Hosting

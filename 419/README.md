@@ -25,5 +25,5 @@
 4. [webpack 优化构建速度](https://github.com/negrochn/study-imooc/blob/master/419/doc/webpack%20优化构建速度.md)
 5. [webpack 优化产出代码](https://github.com/negrochn/study-imooc/blob/master/419/doc/webpack%20优化产出代码.md)
 6. [Babel](https://github.com/negrochn/study-imooc/blob/master/419/doc/Babel.md)
-7. [webpack 面试真题](https://github.com/negrochn/study-imooc/blob/master/419/doc/webpack%20面试真题.md)
+7. [webpack 面试题](https://github.com/negrochn/study-imooc/blob/master/419/doc/webpack%20%E9%9D%A2%E8%AF%95%E9%A2%98.md)
 
