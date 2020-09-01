@@ -361,6 +361,7 @@ new Vue({
 - 修饰符：lazy 、number 、trim
 
 ```html
+<!-- 表单，演示地址：https://codepen.io/02954/pen/eYpavbv -->
 <div id="app">
   
   <div>
