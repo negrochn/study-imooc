@@ -1,23 +1,24 @@
-class Color {
-  constructor(name) {
-    this.name = name
+class OrdinaryUser {
+  buy() {
+    console.log('普通用户购买')
   }
 }
 
-class Shape {
-  constructor(name, color) {
-    this.name = name
-    this.color = color
-  }
-  draw() {
-    console.log(`画一个颜色为${this.color.name}的${this.name}`)
+class MemberUser {
+  buy() {
+    console.log('会员用户购买')
   }
 }
 
-// 测试
-let red = new Color('red')
-let yellow = new Color('yellow')
-let circle = new Shape('circle', red)
-circle.draw()
-let triangle = new Shape('triangle', yellow)
-triangle.draw()
+class VipUser {
+  buy() {
+    console.log('vip 用户购买')
+  }
+}
+
+let u1 = new OrdinaryUser()
+u1.buy()
+let u2 = new MemberUser()
+u2.buy()
+let u3 = new VipUser()
+u3.buy()
