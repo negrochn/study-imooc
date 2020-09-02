@@ -3,9 +3,7 @@
 **自定义 v-model**
 
 - v-bind 只能实现单向绑定
-
 - v-model 实现双向绑定
-
 - 在自定义组件中使用 model 选项来指定 prop 和 event
 
 ```js
@@ -66,15 +64,12 @@ new Vue({
 **$nextTick**
 
 - Vue 是异步渲染的
-
 - data 改变之后，DOM 不会立即渲染
-
 - $nextTick 会在 DOM 渲染之后被触发，以获取最新的 DOM 节点
-
 - 页面渲染时会将 data 的修改做整合，多次 data 修改只会渲染一次（即只调用一次 $nextTick ）
 
 ```html
-<!-- $nextTick ，演示地址：https://codepen.io/02954/pen/jObjbRQ -->
+<!-- $nextTick ，演示地址：https://codepen.io/02954/pen/ZEbdQeY -->
 <div id="app">
   
   <div>
@@ -305,7 +300,6 @@ keep-alive 通常用于 tab 的切换。
 v-show 和 keep-alive 的区别
 
 1. v-show 通过改变 CSS 属性（ display ）来控制元素的显示或隐藏
-
 2. keep-alive 是在 Vue 框架层级进行的 JS 对象的渲染
 
 
