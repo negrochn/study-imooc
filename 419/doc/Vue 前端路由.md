@@ -19,7 +19,7 @@ location.protocol // 'http:'
 location.hostname // '127.0.0.1'
 location.host // '127.0.0.1:8000'
 location.port // '8000'
-location.pathname // '01-hash.html'
+location.pathname // '/01-hash.html'
 location.search // '?a=100&b=20'
 location.hash // '#/aaa/bbb'
 ```
@@ -30,7 +30,7 @@ hash 的特点
 
 - hash 变化会触发页面跳转，即浏览器的前进、后退
 - hash 变化不会刷新页面，SPA 必需的特点
-- hash 永远不会提交到 server 端（前端自生自灭）
+- hash 变化永远不会提交到 server 端（前端自生自灭）
 
 ```html
 <!DOCTYPE html>
@@ -109,7 +109,7 @@ H5 history
   <button id="btn">修改 url</button>
 
   <script>
-    // 页面初次加载，获取 hash
+    // 页面初次加载，获取 pathname
     document.addEventListener('DOMContentLoaded', () => {
       console.log('load: ', location.pathname)
     })

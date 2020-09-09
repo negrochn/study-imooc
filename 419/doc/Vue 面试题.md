@@ -144,7 +144,7 @@ export default {
 ```vue
 <template>
   <a :href="url">
-    <slot :website="website">
+    <slot :slotData="website">
       {{ website.subTitle }}
     </slot>
   </a>
@@ -176,7 +176,7 @@ export default {
   <Child :url="website.url">
     <template v-slot="slotProps">
       <!-- slotProps 名字可自定义 -->
-      {{ slotProps.website.title }}
+      {{ slotProps.slotData.title }}
     </template>
   </Child>
 </template>
@@ -300,7 +300,7 @@ export default new VueRouter({
 **25. diff 算法的时间复杂度**
 
 - O(n)
-- 在O(n^3) 基础上做了一些调整
+- 在 O(n^3) 基础上做了一些调整
 
 
 
