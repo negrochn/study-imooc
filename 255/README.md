@@ -8,5 +8,7 @@
 - 结构型
   1. [**适配器模式**](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E7%BB%93%E6%9E%84%E5%9E%8B/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.md)
   2. [**装饰器模式**](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E7%BB%93%E6%9E%84%E5%9E%8B/%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F.md)
+  3. [**代理模式**](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E7%BB%93%E6%9E%84%E5%9E%8B/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F.md)
+  4. [外观模式](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E7%BB%93%E6%9E%84%E5%9E%8B/%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F.md)
 - 行为型
 
