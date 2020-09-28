@@ -19,3 +19,4 @@
   2. [**迭代器模式**](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E8%A1%8C%E4%B8%BA%E5%9E%8B/%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F.md)
   3. [**状态模式**](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E8%A1%8C%E4%B8%BA%E5%9E%8B/%E7%8A%B6%E6%80%81%E6%A8%A1%E5%BC%8F.md)
   4. [策略模式](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E8%A1%8C%E4%B8%BA%E5%9E%8B/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F.md)
+  5. [模板方法模式](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E8%A1%8C%E4%B8%BA%E5%9E%8B/%E6%A8%A1%E6%9D%BF%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F.md)
