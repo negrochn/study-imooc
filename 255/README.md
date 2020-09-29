@@ -22,3 +22,4 @@
   5. [模板方法模式](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E8%A1%8C%E4%B8%BA%E5%9E%8B/%E6%A8%A1%E6%9D%BF%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F.md)
   6. [职责链模式](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E8%A1%8C%E4%B8%BA%E5%9E%8B/%E8%81%8C%E8%B4%A3%E9%93%BE%E6%A8%A1%E5%BC%8F.md)
   7. [命令模式](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E8%A1%8C%E4%B8%BA%E5%9E%8B/%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F.md)
+  8. [备忘录模式](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E8%A1%8C%E4%B8%BA%E5%9E%8B/%E5%A4%87%E5%BF%98%E5%BD%95%E6%A8%A1%E5%BC%8F.md)
