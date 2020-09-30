@@ -3,7 +3,7 @@
 ## 设计模式
 
 - 创建型
-  1. [**工厂模式**](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E5%88%9B%E5%BB%BA%E5%9E%8B/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F.md)
+  1. [**工厂模式**](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E5%88%9B%E5%BB%BA%E5%9E%8B/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F.md)（工厂方法模式，抽象工厂模式，建造者模式）
   2. [**单例模式**](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E5%88%9B%E5%BB%BA%E5%9E%8B/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F.md)
   3. [原型模式](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E5%88%9B%E5%BB%BA%E5%9E%8B/%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F.md)
 - 结构型
@@ -23,3 +23,7 @@
   6. [职责链模式](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E8%A1%8C%E4%B8%BA%E5%9E%8B/%E8%81%8C%E8%B4%A3%E9%93%BE%E6%A8%A1%E5%BC%8F.md)
   7. [命令模式](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E8%A1%8C%E4%B8%BA%E5%9E%8B/%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F.md)
   8. [备忘录模式](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E8%A1%8C%E4%B8%BA%E5%9E%8B/%E5%A4%87%E5%BF%98%E5%BD%95%E6%A8%A1%E5%BC%8F.md)
+  9. [中介者模式](https://github.com/negrochn/study-imooc/blob/master/255/doc/%E8%A1%8C%E4%B8%BA%E5%9E%8B/%E4%B8%AD%E4%BB%8B%E8%80%85%E6%A8%A1%E5%BC%8F.md)
+  10. 访问者模式
+  11. 解释器模式
+
