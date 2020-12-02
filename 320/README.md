@@ -100,21 +100,9 @@ https://github.com/coreybutler/nvm-windows/releases
 
 ### 需求
 
-- 首页、作者页、博客详情页
-- 登录页
-- 管理中心，新建页、编辑页
-
-<img src="https://img.mukewang.com/szimg/5c87a0690001899e19201080.jpg" alt="首页" style="zoom: 33%;" />
-
-<img src="https://img.mukewang.com/szimg/5c87a0740001aa6f19201080.jpg" alt="作者页" style="zoom: 33%;" />
-
-<img src="https://img.mukewang.com/szimg/5c87a0870001ab1d19201080.jpg" alt="博客详情页" style="zoom: 33%;" />
-
-<img src="https://img.mukewang.com/szimg/5c87a0940001542019201080.jpg" alt="登录页" style="zoom: 33%;" />
-
-<img src="https://img.mukewang.com/szimg/5c87a0ab000102e119201080.jpg" alt="管理中心" style="zoom: 33%;" />
-
-<img src="https://img.mukewang.com/szimg/5c87a0cc0001440f19201080.jpg" alt="新建&编辑页" style="zoom: 33%;" />
+- [首页](https://img.mukewang.com/szimg/5c87a0690001899e19201080.jpg)、[作者页](https://img.mukewang.com/szimg/5c87a0740001aa6f19201080.jpg)、[博客详情页](https://img.mukewang.com/szimg/5c87a0870001ab1d19201080.jpg)
+- [登录页](https://img.mukewang.com/szimg/5c87a0940001542019201080.jpg)
+- [管理中心](https://img.mukewang.com/szimg/5c87a0ab000102e119201080.jpg)，[新建页、编辑页](https://img.mukewang.com/szimg/5c87a0cc0001440f19201080.jpg)
 
 
 
@@ -125,13 +113,9 @@ https://github.com/coreybutler/nvm-windows/releases
 
 #### 数据存储
 
-- 博客
-- 用户
-
-<img src="https://img1.sycdn.imooc.com/szimg/5c87a4480001ca9319201080.jpg" alt="博客" style="zoom:33%;" />
-
-<img src="https://img1.sycdn.imooc.com/szimg/5c87a45c0001f58119201080.jpg" alt="用户" style="zoom:33%;" />
+- [博客](https://img1.sycdn.imooc.com/szimg/5c87a4480001ca9319201080.jpg)
+- [用户](https://img1.sycdn.imooc.com/szimg/5c87a45c0001f58119201080.jpg)
 
 #### 接口设计
 
-<img src="https://img1.sycdn.imooc.com/szimg/5c87a46900014d6419201080.jpg" alt="接口设计" style="zoom:33%;" />
+- [API](https://img1.sycdn.imooc.com/szimg/5c87a46900014d6419201080.jpg)
