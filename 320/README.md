@@ -175,5 +175,5 @@ server.listen(8000)
 
 下载并安装 [Postman](https://www.postman.com/downloads/) ，按如下步骤使用 Postman 。
 
-![使用 Postman]()
+![使用 Postman](https://raw.githubusercontent.com/negrochn/study-imooc/master/320/img/%E4%BD%BF%E7%94%A8%20Postman.jpg)
 
