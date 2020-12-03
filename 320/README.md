@@ -218,3 +218,64 @@ const server = http.createServer((req, res) => {
 server.listen(8000)
 ```
 
+
+
+### 搭建开发环境
+
+- 不使用任何框架
+- **使用 nodemon 监测文件变化**，自动重启 Node
+- **使用 cross-env 设置环境变量**，兼容 Mac 、Linux 和 Windows
+
+#### 步骤
+
+1. 初始化项目，创建并进入 blog 文件夹，执行 `npm init -y`
+
+2. 创建 app.js 和 www/bin.js 文件
+
+   ```js
+   // app.js
+   
+   const handleServer = (req, res) => {
+     // 设置返回数据格式为 JSON
+     res.setHeader('Content-Type', 'application/json')
+   
+     const resData = {
+       name: 'negrochn',
+       age: 18,
+       env: process.env.NODE_ENV
+     }
+   
+     res.end(JSON.stringify(resData))
+   }
+   
+   module.exports = handleServer
+   ```
+
+   ```js
+   // bin/www.js
+   
+   const http = require('http')
+   const handleServer = require('../app')
+   const PORT = 8000
+   
+   const server = http.createServer(handleServer)
+   
+   server.listen(PORT)
+   ```
+
+3. 安装 nodemon 和 cross-env ，执行 `npm i nodemon cross-env -D --registry=https://registry.npm.taobao.org`
+
+4. 修改 package.json
+
+   ```json
+   {
+     "scripts": {
+       "dev": "cross-env NODE_ENV=dev nodemon bin/www.js"
+     }
+   }
+   ```
+
+5. 开启 Node 服务，执行 `npm run dev`
+
+6. 测试服务是否正常，通过浏览器或 Postman 访问 http://localhost:8000
+
