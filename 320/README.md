@@ -85,12 +85,6 @@ https://github.com/coreybutler/nvm-windows/releases
 
 ## 项目介绍
 
-1. 目标
-2. 需求
-3. 技术方案
-
-
-
 ### 目标
 
 - 开发一个博客系统，具有博客的基本功能
@@ -109,13 +103,77 @@ https://github.com/coreybutler/nvm-windows/releases
 ### 技术方案
 
 - 数据存储
-- 接口设计
+  - [博客](https://img1.sycdn.imooc.com/szimg/5c87a4480001ca9319201080.jpg)
+  - [用户](https://img1.sycdn.imooc.com/szimg/5c87a45c0001f58119201080.jpg)
+- [接口设计](https://img1.sycdn.imooc.com/szimg/5c87a46900014d6419201080.jpg)
 
-#### 数据存储
 
-- [博客](https://img1.sycdn.imooc.com/szimg/5c87a4480001ca9319201080.jpg)
-- [用户](https://img1.sycdn.imooc.com/szimg/5c87a45c0001f58119201080.jpg)
 
-#### 接口设计
+## 博客项目之接口
 
-- [API](https://img1.sycdn.imooc.com/szimg/5c87a46900014d6419201080.jpg)
+### http 概述
+
+1. DNS 解析，建立 TCP 连接，发送 http 请求
+2. 服务端接收到 http 请求，处理并返回数据
+3. 客户端接收到返回数据，处理数据，如渲染页面、执行 JS 等
+
+
+
+[从输入 URL 到页面加载完成，发生了什么？](https://user-gold-cdn.xitu.io/2018/10/18/16685737b823244c?imageslim)
+
+[三次握手](https://user-gold-cdn.xitu.io/2019/8/30/16ce0862026cea13?imageslim)
+
+[四次挥手](https://user-gold-cdn.xitu.io/2019/8/30/16ce08696d48c3ba?imageView2/0/w/1280/h/960/format/webp/ignore-error/1)
+
+
+
+### get 请求
+
+```js
+const http = require('http')
+// 用于解析和格式化 URL 查询字符串
+const querystring = require('querystring')
+
+const server = http.createServer((req, res) => {
+  console.log(req.method) // GET
+  const url = req.url
+  // 将 URL 查询字符串解析为键值对的集合
+  req.query = querystring.parse(url.split('?')[1])
+  res.end(JSON.stringify(req.query))
+})
+
+server.listen(8000)
+```
+
+
+
+### post 请求
+
+```js
+const http = require('http')
+
+const server = http.createServer((req, res) => {
+  if (req.method === 'POST') {
+    // 数据格式，注意 req.headers 中的键都是小写。
+    console.log('Content-Type: ', req.headers['content-type'])
+    // 接收数据
+    let postData = ''
+    req.on('data', chunk => {
+      postData += chunk.toString()
+    })
+    req.on('end', () => {
+      console.log(postData)
+      res.end('Hello Node.js!')
+    })
+  }
+})
+
+server.listen(8000)
+```
+
+#### 使用 Postman
+
+下载并安装 [Postman](https://www.postman.com/downloads/) ，按如下步骤使用 Postman 。
+
+![使用 Postman]()
+
