@@ -392,5 +392,5 @@ server.listen(8000)
 
 4. Postman 导入 blog.postman_collection.json ，分别测试获取博客列表、获取一篇博客的内容、新增一篇博客、更新一篇博客、删除一篇博客和登录接口
 
-   ![Postman 导入 JSON]()
+   ![Postman 导入 JSON](https://raw.githubusercontent.com/negrochn/study-imooc/master/320/img/Postman%20%E5%AF%BC%E5%85%A5%20JSON.gif)
 
