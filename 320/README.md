@@ -394,3 +394,355 @@ server.listen(8000)
 
    ![Postman 导入 JSON](https://raw.githubusercontent.com/negrochn/study-imooc/master/320/img/Postman%20%E5%AF%BC%E5%85%A5%20JSON.gif)
 
+
+
+### 开发路由
+
+#### 博客列表
+
+1. 进入 src 文件夹，创建并进入 model 文件夹，创建 resModel.js 文件
+
+   ```js
+   // src/model/resModel.js
+   
+   class BaseModel {
+     constructor(data, message) {
+       if (typeof data === 'string') {
+         this.message = data
+         data = null
+         message = null
+       }
+       if (data) {
+         this.data = data
+       }
+       if (message) {
+         this.message = message
+       }
+     }
+   }
+   
+   class SuccessModel extends BaseModel {
+     constructor(data, message) {
+       super(data, message)
+       this.errno = 0
+     }
+   }
+   
+   class ErrorModel extends BaseModel {
+     constructor(data, message) {
+       super(data, message)
+       this.errno = -1
+     }
+   }
+   
+   module.exports = {
+     SuccessModel,
+     ErrorModel
+   }
+   ```
+
+2. 进入 src 文件夹，创建并进入 controller 文件夹，创建 blog.js 文件
+
+   ```js
+   // src/controller/blog.js
+   
+   const getList = (author, keyword) => {
+     return [
+       {
+         id: 1,
+         title: 'Node.js从零开发Web Server博客项目 前端晋升全栈工程师必备',
+         content: '前端开发人员必备技能Node.js提升课程。本课程以博客项目为主线，由浅入深讲解 Node.js 基础知识、框架和插件原理、web Server 的特点与必备模块；同时运用 Node.js 原生和常用框架 Express、Koa2框架三种方式开发web Server，在项目开发过程中全面掌握Node.js。掌握全栈工程师必备技能，为你带来开发和求职的双重收获！',
+         createTime: '1607305440732',
+         author: 'negrochn'
+       },
+       {
+         id: 2,
+         title: '从基础到实战 手把手带你掌握新版Webpack4.0',
+         content: 'Webpack 目前无论在求职还是工作中，使用越来越普及。而想要学懂，学会Webpack更绝非易事。本课程完整讲清最新版本下的 Webpack 4 知识体系，通过 基础 + 实例 + 原理代码编写 + 复杂案例分析 完成Webpack4的分析与讲解。更重要的是让你对整个前端项目的构建有一个全局化的认识，实现能力思想双升级。',
+         createTime: '1607305511915',
+         author: 'lexiaodai'
+       }
+     ]
+   }
+   
+   module.exports = {
+     getList
+   }
+   ```
+
+3. 修改 app.js 文件
+
+   ```js
+   // app.js
+   const querystring = require('querystring')
+   
+   const handleServer = (req, res) => {
+     // 获取 path
+     const [path, query] = req.url.split('?')
+     req.path = path
+   
+     // 解析 query
+     req.query = querystring.parse(query)
+   }
+   ```
+
+4. 修改 src/router/blog.js 文件
+
+   ```js
+   // src/router/blog.js
+   
+   const { getList } = require('../controller/blog')
+   const { SuccessModel, ErrorModel } = require('../model/resModel')
+   
+   const handleBlogRouter = (req, res) => {
+     // 获取博客列表
+     if (method === 'GET' && path === '/api/blog/list') {
+       const { author, keyword } = req.query
+       return new SuccessModel(getList(author, keyword))
+     }
+   }
+   ```
+
+5. 启动 Node 服务后，通过 Postman 测试获取博客列表接口
+
+   ![返回结果]()
+
+
+
+#### 博客详情
+
+1. 修改 src/controller/blog.js 文件
+
+   ```js
+   // src/controller/blog.js
+   
+   const getDetail = (id) => {
+     return {
+       id: 1,
+       title: 'Node.js从零开发Web Server博客项目 前端晋升全栈工程师必备',
+       content: '前端开发人员必备技能Node.js提升课程。本课程以博客项目为主线，由浅入深讲解 Node.js 基础知识、框架和插件原理、web Server 的特点与必备模块；同时运用 Node.js 原生和常用框架 Express、Koa2框架三种方式开发web Server，在项目开发过程中全面掌握Node.js。掌握全栈工程师必备技能，为你带来开发和求职的双重收获！',
+       createTime: '1607305440732',
+       author: 'negrochn'
+     }
+   }
+   
+   module.exports = {
+     getDetail
+   }
+   ```
+
+2. 修改 src/router/blog.js 文件
+
+   ```js
+   // src/router/blog.js
+   
+   const { getDetail } = require('../controller/blog')
+   
+   const handleBlogRouter = (req, res) => {
+     // 获取博客详情
+     if (method === 'GET' && path === '/api/blog/detail') {
+       const { id } = req.query
+       return new SuccessModel(getDetail(id))
+     }
+   }
+   ```
+
+
+
+#### 处理 post data
+
+修改 app.js 文件
+
+```js
+// app.js
+
+// 用于处理 post data
+const getPostData = (req) => {
+  return new Promise((resolve, reject) => {
+    if (req.method !== 'POST' || req.headers['content-type'] !== 'application/json') {
+      resolve({})
+      return
+    }
+
+    let postData = ''
+    req.on('data', chunk => {
+      postData += chunk.toString()
+    })
+    req.on('end', () => {
+      if (!postData) {
+        resolve({})
+        return
+      }
+      resolve(JSON.parse(postData))
+    })
+  })
+}
+
+const handleServer = (req, res) => {
+  // 处理 post data
+  getPostData(req).then(postData => {
+    req.body = postData
+
+    // 处理 blog 路由
+
+    // 处理 user 路由
+
+    // 未命中路由返回 404
+
+  })
+}
+```
+
+
+
+#### 新建博客
+
+1. 修改 src/controller/blog.js 文件
+
+   ```js
+   // src/controller/blog.js
+   
+   const addBlog = (blogData = {}) => {
+     return {
+       id: 3
+     }
+   }
+   
+   module.exports = {
+     addBlog
+   }
+   ```
+
+2. 修改 src/router/blog.js 文件
+
+   ```js
+   // src/router/blog.js
+   
+   const { addBlog } = require('../controller/blog')
+   
+   const handleBlogRouter = (req, res) => {
+     // 新增博客
+     if (method === 'POST' && path === '/api/blog/new') {
+       return new SuccessModel(addBlog(req.body))
+     }
+   }
+   ```
+
+
+
+#### 更新博客
+
+1. 修改 src/controller/blog.js 文件
+
+   ```js
+   // src/controller/blog.js
+   
+   const updateBlog = (id, blogData = {}) => {
+     return true
+   }
+   
+   module.exports = {
+     updateBlog
+   }
+   ```
+
+2. 修改 src/router/blog.js 文件
+
+   ```js
+   // src/router/blog.js
+   
+   const { updateBlog } = require('../controller/blog')
+   
+   const handleBlogRouter = (req, res) => {
+     // 将获取 id 操作挪到上面
+     const { id } = req.query
+     
+     // 更新博客
+     if (method === 'POST' && path === '/api/blog/update') {
+       return new SuccessModel(updateBlog(id, req.body))
+     }
+   }
+   ```
+
+
+
+#### 删除博客
+
+1. 修改 src/controller/blog.js 文件
+
+   ```js
+   // src/controller/blog.js
+   
+   const delBlog = (id) => {
+     return true
+   }
+   
+   module.exports = {
+     delBlog
+   }
+   ```
+
+2. 修改 src/router/blog.js 文件
+
+   ```js
+   // src/router/blog.js
+   
+   const { delBlog } = require('../controller/blog')
+   
+   const handleBlogRouter = (req, res) => {
+     // 删除博客
+     if (method === 'POST' && path === '/api/blog/del') {
+       const result = delBlog(id)
+       if (result) {
+         return new SuccessModel()
+       } else {
+         return new ErrorModel('删除博客失败')
+       }
+     }
+   }
+   ```
+
+
+
+#### 登录
+
+1. 进入 src/controller 文件夹，创建 user.js 文件
+
+   ```js
+   // src/controller/user.js
+   
+   const login = (username, password) => {
+     if (username === 'negrochn' && password === '123') {
+       return true
+     }
+     return false
+   }
+   
+   module.exports = {
+     login
+   }
+   ```
+
+2. 修改 src/router/user.js 文件
+
+   ```js
+   // src/router/user.js
+   
+   const { login } = require('../controller/user')
+   const { SuccessModel, ErrorModel } = require('../model/resModel')
+   
+   const handleUserRouter = (req, res) => {
+     // 登录
+     if (method === 'POST' && path === '/api/user/login') {
+       const { username, password } = req.body
+       const result = login(username, password)
+       if (result) {
+         return new SuccessModel()
+       } else {
+         return new ErrorModel('登录失败')
+       }
+     }
+   }
+   ```
+
+   
