@@ -505,7 +505,7 @@ server.listen(8000)
 
 5. 启动 Node 服务后，通过 Postman 测试获取博客列表接口
 
-   ![返回结果]()
+   ![返回结果](https://raw.githubusercontent.com/negrochn/study-imooc/master/320/img/Postman%20%E8%BF%94%E5%9B%9E%E7%BB%93%E6%9E%9C.png)
 
 
 
