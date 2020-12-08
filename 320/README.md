@@ -745,4 +745,110 @@ const handleServer = (req, res) => {
    }
    ```
 
-   
+
+
+
+## 博客项目之数据存储
+
+### MySQL
+
+#### 下载地址
+
+https://dev.mysql.com/downloads/installer/
+
+
+
+#### 安装
+
+- 执行安装，**选择 Server only**
+- 过程中需要输入 root 用户名的密码，要记住这个密码
+
+> 如果安装过程中出现`Microsoft Visual C++ 2019 Redistributable Package (x64) is not installed. Latest binary compatible version will be installed if agreed` ，点击 `Execute` 执行安装 `Microsoft Visual C++ 2019 Redistributable Package (x64)` ，然后再继续安装 MySQL 。
+
+
+
+### MySQL Workbench
+
+操作 MySQL 的客户端。
+
+#### 下载地址
+
+https://dev.mysql.com/downloads/workbench/
+
+
+
+#### 使用
+
+![使用 MySQL Workbench]()
+
+
+
+### 数据库操作
+
+#### 建库
+
+```sql
+CREATE SCHEMA `myblog` ;
+```
+
+#### 建表
+
+- users 表
+
+  ```sql
+  CREATE TABLE `myblog`.`users` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `username` VARCHAR(20) NOT NULL,
+    `password` VARCHAR(20) NOT NULL,
+    `realname` VARCHAR(10) NOT NULL,
+    PRIMARY KEY (`id`));
+  ```
+
+- blogs 表
+
+  ```sql
+  CREATE TABLE `myblog`.`blogs` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `title` VARCHAR(50) NOT NULL,
+    `content` LONGTEXT NOT NULL,
+    `createtime` BIGINT(20) NOT NULL DEFAULT 0,
+    `author` VARCHAR(20) NOT NULL,
+    PRIMARY KEY (`id`));
+  ```
+
+#### 增删改查
+
+```sql
+use myblog;
+
+-- show tables;
+
+-- 增
+insert into users(username, `password`, realname)
+	values('negrochn', '123456', '泥垢樂');
+insert into users(username, `password`, realname)
+	values('lexiaodai', '123456', '乐小呆');
+
+insert into blogs(title, content, createtime, author)
+	values('标题1', '内容1', 1607305440732, 'negrochn');
+insert into blogs(title, content, createtime, author)
+	values('标题2', '内容2', 1607305511915, 'lexiaodai');
+
+-- 查
+select * from users;
+select id, username from users;
+select * from users where username = 'negrochn' && `password` = '123456';
+
+select * from blogs;
+select * from blogs where title like '%标题%' order by createtime desc;
+
+-- 改
+set SQL_SAFE_UPDATES = 0;
+update users set realname = '乐小呆爱画画' where username = 'lexiaodai';
+
+-- 删
+delete from blogs where author = 'negrochn';
+```
+
+> 执行 `set SQL_SAFE_UPDATES = 0;` 解决 MySQL 的 update 操作报错问题，`Error Code: 1175. You are using safe update mode and you tried to update a table without a WHERE that uses a KEY column.  To disable safe mode, toggle the option in Preferences -> SQL Editor and reconnect.` 。
+
