@@ -779,7 +779,7 @@ https://dev.mysql.com/downloads/workbench/
 
 #### 使用
 
-![使用 MySQL Workbench]()
+![使用 MySQL Workbench](https://raw.githubusercontent.com/negrochn/study-imooc/master/320/img/%E4%BD%BF%E7%94%A8%20MySQL%20Workbench.gif)
 
 
 
