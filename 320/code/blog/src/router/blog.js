@@ -9,15 +9,16 @@ const handleBlogRouter = (req, res) => {
   // 获取博客列表
   if (method === 'GET' && path === '/api/blog/list') {
     const { author, keyword } = req.query
-    return new SuccessModel(getList(author, keyword))
+    return getList(author, keyword).then(data => new SuccessModel(data))
   }
   // 获取博客详情
   if (method === 'GET' && path === '/api/blog/detail') {
-    return new SuccessModel(getDetail(id))
+    return getDetail(id).then(data => new SuccessModel(data))
   }
   // 新增博客
   if (method === 'POST' && path === '/api/blog/new') {
-    return new SuccessModel(addBlog(req.body))
+    req.body.author = 'negrochn' // 先将 author 硬编码
+    return addBlog(req.body).then(data => new SuccessModel(data))
   }
   // 更新博客
   if (method === 'POST' && path === '/api/blog/update') {

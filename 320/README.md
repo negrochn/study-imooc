@@ -852,3 +852,184 @@ delete from blogs where author = 'negrochn';
 
 > 执行 `set SQL_SAFE_UPDATES = 0;` 解决 MySQL 的 update 操作报错问题，`Error Code: 1175. You are using safe update mode and you tried to update a table without a WHERE that uses a KEY column.  To disable safe mode, toggle the option in Preferences -> SQL Editor and reconnect.` 。
 
+
+
+### 对接 MySQL
+
+#### 获取博客列表
+
+1. 安装 mysql ，执行 `npm i mysql --save --registry=https://registry.npm.taobao.org`
+
+2. 进入 src 文件夹，创建并进入 conf 文件夹，创建 db.js 文件
+
+   ```js
+   // src/conf/db.js
+   
+   let MYSQL_CONF
+   const env = process.env.NODE_ENV
+   
+   if (env === 'dev') {
+     MYSQL_CONF = {
+       host: 'localhost',
+       port: 3306,
+       user: 'root',
+       password: '123456',
+       database: 'myblog'
+     }
+   }
+   
+   if (env === 'production') {
+     MYSQL_CONF = {
+       host: 'localhost',
+       port: 3306,
+       user: 'root',
+       password: '123456',
+       database: 'myblog'
+     }
+   }
+   
+   module.exports = {
+     MYSQL_CONF
+   }
+   ```
+
+3. 进入 src 文件夹，创建并进入 db 文件夹，创建 mysql.js 文件
+
+   ```js
+   // src/db/mysql.js
+   
+   const mysql = require('mysql')
+   const { MYSQL_CONF } = require('../conf/db')
+   
+   // 创建连接对象
+   const conn = mysql.createConnection(MYSQL_CONF)
+   
+   // 开始连接
+   conn.connect()
+   
+   // 统一执行 sql 的函数
+   function exec(sql) {
+     return new Promise((resolve, reject) => {
+       conn.query(sql, (err, data) => {
+         if (err) {
+           reject(err)
+           return
+         }
+         resolve(data)
+       })
+     })
+   }
+   
+   module.exports = {
+     exec
+   }
+   ```
+
+4. 修改 src/controller/blog.js 文件
+
+   ```js
+   // src/controller/blog.js
+   
+   const { exec } = require('../db/mysql')
+   
+   const getList = (author, keyword) => {
+     let sql = `select * from blogs where 1=1 `
+     if (author) {
+       sql += `and author='${author}' `
+     }
+     if (keyword) {
+       sql += `and title like '%${keyword}%' `
+     }
+     sql += `order by createtime desc;`
+     return exec(sql)
+   }
+   ```
+
+5. 修改 src/router/blog.js 文件
+
+   ```js
+   // src/router/blog.js
+   
+   const handleBlogRouter = (req, res) => {
+     // 获取博客列表
+     if (method === 'GET' && path === '/api/blog/list') {
+       const { author, keyword } = req.query
+       return getList(author, keyword).then(data => new SuccessModel(data))
+     }
+   }
+   ```
+
+6. 修改 app.js 文件
+
+   ```js
+   // app.js
+   
+   const handleServer = (req, res) => {
+     // 处理 post data
+     getPostData(req).then(postData => {
+       // 处理 blog 路由
+       const blogResult = handleBlogRouter(req, res)
+       if (blogResult) {
+         blogResult.then(blogData => {
+           res.end(JSON.stringify(blogData))
+         })
+         return
+       }
+     }
+   }
+   ```
+
+7. 启动 Node 服务后，通过 Postman 测试获取博客列表接口
+
+
+
+#### 获取一篇博客的内容
+
+1. 修改 src/controller/blog.js 文件
+
+   ```js
+   // src/controller/blog.js
+   
+   const getDetail = (id) => {
+     let sql = `select * from blogs where id =${id};`
+     return exec(sql).then(([row]) => row)
+   }
+   ```
+
+2. 修改 src/router/blog.js 文件
+
+   ```js
+   // src/router/blog.js
+   
+   const handleBlogRouter = (req, res) => {
+     // 获取博客详情
+     if (method === 'GET' && path === '/api/blog/detail') {
+       return getDetail(id).then(data => new SuccessModel(data))
+     }
+   }
+   ```
+
+   
+
+#### 新增一篇博客
+
+1. 修改 src/controller/blog.js 文件
+
+   ```js
+   // src/controller/blog.js
+   
+   const addBlog = (blogData = {}) => {
+     const { title, content, author } = blogData
+     const createTime = Date.now()
+     let sql = `insert into blogs(title, content, createtime, author) values('${title}', '${content}', ${createTime}, '${author}');`
+     return exec(sql).then(({ insertId }) => ({ id: insertId }))
+   }
+   ```
+
+2. 修改 src/router/blog.js 文件
+
+   ```js
+   
+   ```
+
+   
