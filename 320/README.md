@@ -1029,7 +1029,15 @@ delete from blogs where author = 'negrochn';
 2. 修改 src/router/blog.js 文件
 
    ```js
+   // src/router/blog.js
    
+   const handleBlogRouter = (req, res) => {
+     // 新增博客
+     if (method === 'POST' && path === '/api/blog/new') {
+       req.body.author = 'negrochn' // 先将 author 硬编码
+       return addBlog(req.body).then(data => new SuccessModel(data))
+     }
+   }
    ```
 
    
