@@ -1168,3 +1168,109 @@ delete from blogs where author = 'negrochn';
    }
    ```
 
+
+
+## 博客项目之登录
+
+### Cookie
+
+存储在浏览器的一段字符串，最大 4KB 。
+
+#### 特性
+
+1. 跨域不共享
+2. 格式如 `k1=v1; k2=v2; k3=v3;` ，因此可以存储结构化数据
+3. 每次发送 http 请求，会将请求域的 Cookie 一起发送给服务端
+4. 服务端可以修改 Cookie 并返回给浏览器
+5. 浏览器中可以通过 JS 修改 Cookie（有限制）
+
+
+
+### 操作 Cookie
+
+#### 步骤
+
+1. 修改 app.js 文件
+
+   ```js
+   // app.js
+   
+   const handleServer = (req, res) => {
+     // 解析 cookie
+     req.cookie = querystring.parse(req.headers['cookie'], '; ', '=')
+   }
+   ```
+
+2. 修改 src/router/user.js 文件
+
+   ```js
+   // src/router/user.js
+   
+   const handleUserRouter = (req, res) => {
+     // 登录
+     if (method === 'POST' && path === '/api/user/login') {
+       const { username, password } = req.body
+       return login(username, password).then(data => {
+         if (data) {
+           // 操作 cookie
+           res.setHeader('Set-Cookie', `username=${username}; path=/`)
+   
+           return new SuccessModel()
+         } else {
+           return new ErrorModel('登录失败')
+         }
+       })
+     }
+   
+     // 登录验证测试
+     if (method === 'GET' && path === '/api/user/login-test') {
+       if (req.cookie.username) {
+         return Promise.resolve(new SuccessModel({
+           username: req.cookie.username
+         }))
+       }
+       return Promise.resolve(new ErrorModel('尚未登录'))
+     }
+   }
+   ```
+
+3. 在 Postman 中调用登录接口前后，分别测试登录验证接口是否正常
+
+
+
+#### Cookie 做限制
+
+修改 src/router/user.js 文件
+
+```js
+// src/router/user.js
+
+// 获取 cookie 的过期时间
+function getCookieExpires() {
+  const d = new Date()
+  d.setTime(d.getTime() + 24 * 60 * 60 * 1000)
+  return d.toGMTString()
+}
+
+const handleUserRouter = (req, res) => {
+  const { method, path } = req
+
+  // 登录
+  if (method === 'POST' && path === '/api/user/login') {
+    const { username, password } = req.body
+    return login(username, password).then(data => {
+      if (data) {
+        // 操作 cookie
+        res.setHeader('Set-Cookie', `username=${username}; path=/; httpOnly; expires=${getCookieExpires()}`)
+
+        return new SuccessModel()
+      } else {
+        return new ErrorModel('登录失败')
+      }
+    })
+  }
+}
+```
+
+
+

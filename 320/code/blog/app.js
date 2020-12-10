@@ -35,6 +35,9 @@ const handleServer = (req, res) => {
   // 解析 query
   req.query = querystring.parse(query)
 
+  // 解析 cookie
+  req.cookie = querystring.parse(req.headers['cookie'], '; ', '=')
+
   // 处理 post data
   getPostData(req).then(postData => {
     req.body = postData
