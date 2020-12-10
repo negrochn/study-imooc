@@ -856,7 +856,7 @@ delete from blogs where author = 'negrochn';
 
 ### 对接 MySQL
 
-#### 获取博客列表
+#### 博客列表
 
 1. 安装 mysql ，执行 `npm i mysql --save --registry=https://registry.npm.taobao.org`
 
@@ -983,7 +983,7 @@ delete from blogs where author = 'negrochn';
 
 
 
-#### 获取一篇博客的内容
+#### 博客详情
 
 1. 修改 src/controller/blog.js 文件
 
@@ -1011,7 +1011,7 @@ delete from blogs where author = 'negrochn';
 
    
 
-#### 新增一篇博客
+#### 新增博客
 
 1. 修改 src/controller/blog.js 文件
 
@@ -1040,4 +1040,131 @@ delete from blogs where author = 'negrochn';
    }
    ```
 
+
+
+
+#### 更新博客
+
+1. 修改 src/controller/blog.js 文件
+
+   ```js
+   // src/controller/blog.js
    
+   const updateBlog = (id, blogData = {}) => {
+     const { title, content } = blogData
+     const sql = `update blogs set title='${title}', content='${content}' where id=${id};`
+     return exec(sql).then(({ affectedRows }) => affectedRows > 0)
+   }
+   ```
+
+2. 修改 src/router/blog.js 文件
+
+   ```js
+   // src/router/blog.js
+   
+   const handleBlogRouter = (req, res) => {
+     // 更新博客
+     if (method === 'POST' && path === '/api/blog/update') {
+       return updateBlog(id, req.body).then(data => {
+         if (data) {
+           return new SuccessModel()
+         } else {
+           return new ErrorModel('更新博客失败')
+         }
+       })
+     }
+   }
+   ```
+
+
+
+#### 删除博客
+
+1. 修改 src/controller/blog.js 文件
+
+   ```js
+   // src/controller/blog.js
+   
+   const delBlog = (id, author) => {
+     const sql = `delete from blogs where id=${id} and author='${author}';`
+     return exec(sql).then(({ affectedRows }) => affectedRows > 0)
+   }
+   ```
+
+2. 修改 src/router/blog.js 文件
+
+   ```js
+   // src/router/blog.js
+   
+   const handleBlogRouter = (req, res) => {
+     // 删除博客
+     if (method === 'POST' && path === '/api/blog/del') {
+       const author = 'negrochn' // // 先将 author 硬编码
+       return delBlog(id, author).then(data => {
+         if (data) {
+           return new SuccessModel()
+         } else {
+           return new ErrorModel('删除博客失败')
+         }
+       })
+     }
+   }
+   ```
+
+
+
+#### 登录
+
+1. 修改 src/controller/user.js 文件
+
+   ```js
+   // src/controller/user.js
+   
+   const { exec } = require('../db/mysql')
+   
+   const login = (username, password) => {
+     const sql = `select username, realname from users where username='${username}' and password='${password}';`
+     return exec(sql).then((rows) => rows.length > 0)
+   }
+   ```
+
+2. 修改 src/router/user.js 文件
+
+   ```js
+   // src/router/user.js
+   
+   const handleUserRouter = (req, res) => {
+     // 登录
+     if (method === 'POST' && path === '/api/user/login') {
+       const { username, password } = req.body
+       return login(username, password).then(data => {
+         if (data) {
+           return new SuccessModel()
+         } else {
+           return new ErrorModel('登录失败')
+         }
+       })
+     }
+   }
+   ```
+
+3. 修改 app.js
+
+   ```js
+   // app.js
+   
+   const handleServer = (req, res) => {
+     // 处理 post data
+     getPostData(req).then(postData => {
+       // 处理 user 路由
+       const userResult = handleUserRouter(req, res)
+       if (userResult) {
+         userResult.then(userData => {
+           res.end(JSON.stringify(userData))
+         })
+         return
+       }
+     })
+   }
+   ```
+
