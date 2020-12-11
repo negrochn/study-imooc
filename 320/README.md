@@ -1124,7 +1124,7 @@ delete from blogs where author = 'negrochn';
    
    const login = (username, password) => {
      const sql = `select username, realname from users where username='${username}' and password='${password}';`
-     return exec(sql).then((rows) => rows.length > 0)
+     return exec(sql).then(([row]) => row)
    }
    ```
 
@@ -1184,11 +1184,7 @@ delete from blogs where author = 'negrochn';
 4. 服务端可以修改 Cookie 并返回给浏览器
 5. 浏览器中可以通过 JS 修改 Cookie（有限制）
 
-
-
-### 操作 Cookie
-
-#### 步骤
+#### 操作 Cookie
 
 1. 修改 app.js 文件
 
@@ -1236,8 +1232,6 @@ delete from blogs where author = 'negrochn';
 
 3. 在 Postman 中调用登录接口前后，分别测试登录验证接口是否正常
 
-
-
 #### Cookie 做限制
 
 修改 src/router/user.js 文件
@@ -1273,4 +1267,117 @@ const handleUserRouter = (req, res) => {
 ```
 
 
+
+### Session
+
+#### Session 解决的问题
+
+- 上一节的 Cookie 方案存在暴露 username 风险
+- 解决方案，Cookie 存储 userid ，服务端对应 username
+- Session 方案，服务端存储用户信息
+
+#### 操作 Session
+
+1. 修改 src/router/user.js 文件
+
+   ```js
+   // src/router/user.js
+   
+   const { login } = require('../controller/user')
+   const { SuccessModel, ErrorModel } = require('../model/resModel')
+   
+   const handleUserRouter = (req, res) => {
+     const { method, path } = req
+   
+     // 登录
+     if (method === 'POST' && path === '/api/user/login') {
+       const { username, password } = req.body
+       return login(username, password).then(data => {
+         if (data) {
+           // 设置 session
+           req.session.username = data.username
+           req.session.realname = data.realname
+   
+           return new SuccessModel()
+         } else {
+           return new ErrorModel('登录失败')
+         }
+       })
+     }
+   
+     // 登录验证测试
+     if (method === 'GET' && path === '/api/user/login-test') {
+       // 判断 session 中的 username
+       if (req.session.username) {
+         return Promise.resolve(new SuccessModel(req.session))
+       }
+       return Promise.resolve(new ErrorModel('尚未登录'))
+     }
+   }
+   
+   module.exports = handleUserRouter
+   ```
+
+2. 修改 app.js 文件
+
+   ```js
+   // app.js
+   
+   // session 数据
+   const SESSION_DATA = {}
+   
+   // 获取 cookie 的过期时间
+   function getCookieExpires() {
+     const d = new Date()
+     d.setTime(d.getTime() + 24 * 60 * 60 * 1000)
+     return d.toGMTString()
+   }
+   
+   const handleServer = (req, res) => {
+     // 解析 session
+     let needSetCookie = false
+     let userid = req.cookie.userid
+     if (userid) {
+       if (!SESSION_DATA[userid]) {
+         SESSION_DATA[userid] = {}
+       }
+     } else {
+       needSetCookie = true
+       userid = `${Date.now()}_${Math.random()}`
+       SESSION_DATA[userid] = {}
+     }
+     req.session = SESSION_DATA[userid]
+     
+     // 处理 post data
+     getPostData(req).then(postData => {
+       // 处理 blog 路由
+       const blogResult = handleBlogRouter(req, res)
+       if (blogResult) {
+         blogResult.then(blogData => {
+           // 操作 cookie
+           if (needSetCookie) {
+             res.setHeader('Set-Cookie', `userid=${userid}; path=/; httpOnly; expires=${getCookieExpires()}`)
+           }
+   
+           res.end(JSON.stringify(blogData))
+         })
+         return
+       }
+   
+       // 处理 user 路由
+       const userResult = handleUserRouter(req, res)
+       if (userResult) {
+         userResult.then(userData => {
+           // 操作 cookie
+           if (needSetCookie) {
+             res.setHeader('Set-Cookie', `userid=${userid}; path=/; httpOnly; expires=${getCookieExpires()}`)
+           }
+           
+           res.end(JSON.stringify(userData))
+         })
+         return
+       }
+     })
+   }
+   ```
 
