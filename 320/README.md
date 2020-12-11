@@ -1381,3 +1381,49 @@ const handleUserRouter = (req, res) => {
    }
    ```
 
+
+
+### Redis
+
+#### Session 方案的问题
+
+目前 Session 直接是 JS 变量，放在 Node.js 进程内存中，导致以下两个问题：
+
+1. 进程内存有限，访问量过大，内存暴增
+2. 正式线上运行是多线程，进程之间内存无法共享
+
+#### Redis 解决方案
+
+Redis 是 Web Server 最常用的缓存数据库，数据存放在内存中。
+
+- 相比于 MySQL ，访问速度快（内存和硬盘不是一个数量级的）
+- 但是成本更高，可存储的数据量更小（内存的硬伤）
+- 将 Web Server 和 Redis 拆分为两个独立的服务，都是可扩展的（例如扩展成集群）
+
+**为何 Session 适合用 Redis ？**
+
+- Session 访问频繁，对性能要求极高
+- Session 可不考虑断电丢失数据的问题（内存的硬伤）
+- Session 数据量不会太大（相比于 MySQL 中存储的数据）
+
+**为何网站数据不适合用 Redis ？**
+
+- 操作频率不是太高（相比于 Session 操作）
+- 断电不能丢失，必须保留
+- 数据量太大，内存成本太高
+
+#### 安装
+
+- 下载 [.msi](https://github.com/microsoftarchive/redis/releases)
+- 执行安装，勾选 `Add the Redis installation folder to the PATH environment variable.`
+- 安装完成后，已启动 redis-server
+
+#### Redis 命令
+
+1. `redis-server` 或 `redis-server --service-start` ，启动服务
+2. `redis-server --service-stop` ，停止服务
+3. `redis-cli` ，启动客户端
+4. `set key value` ，设置指定的 key 的值
+5. `get key` ，获取指定的 key 的值
+6. `keys *` ，查找所有符合给定模式的 key
+7. `del key` ，删除 key
