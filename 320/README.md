@@ -1581,5 +1581,69 @@ Redis 是 Web Server 最常用的缓存数据库，数据存放在内存中。
 
 
 
+### 服务端登录
+
+#### 步骤
+
+1. 修改 src/router/user.js 文件，删除登录验证测试的代码
+
+2. 修改 src/router/blog.js 文件
+
+   ```js
+   // src/router/blog.js
+   
+   // 统一的登录验证函数
+   const loginCheck = (req) => {
+     if (!req.session.username) {
+       return Promise.resolve(new ErrorModel('尚未登录'))
+     }
+   }
+   
+   const handleBlogRouter = (req, res) => {
+     // 新增博客
+     if (method === 'POST' && path === '/api/blog/new') {
+       const checkResult = loginCheck(req)
+       if (checkResult) {
+         return checkResult
+       }
+       req.body.author = req.session.username
+     }
+     // 更新博客
+     if (method === 'POST' && path === '/api/blog/update') {
+       const checkResult = loginCheck(req)
+       if (checkResult) {
+         return checkResult
+       }
+     }
+     // 删除博客
+     if (method === 'POST' && path === '/api/blog/del') {
+       const checkResult = loginCheck(req)
+       if (checkResult) {
+         return checkResult
+       }
+       const author = req.session.username
+     }
+   }
+   ```
+
+3. 开启 Redis 服务和 Node 服务后，通过 Postman 测试 blog 所有接口及 user 的登录接口
+
+
+
+### 联调
+
+#### 和前端联调
+
+- 登录功能依赖 Cookie ，必须用浏览器来联调（其实 Postman 也是可以的）
+- Cookie 跨域不共享，前端和服务端必须同域
+- 用 Nginx 做代理，让前后端同域
+
+#### 开发前端页面
+
+1. 创建并进入 blog-html 文件夹，放入 6 个 HTML 页面
+2. 全局安装 http-server ，执行 `npm i -g http-server --registry=https://registry.npm.taobao.org`
+3. 启动 http-server 服务，执行 `http-server -p 8001`
+4. 通过浏览器访问 http://127.0.0.1:8001/
+
 
 

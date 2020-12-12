@@ -22,16 +22,6 @@ const handleUserRouter = (req, res) => {
       }
     })
   }
-
-  // 登录验证测试
-  if (method === 'GET' && path === '/api/user/login-test') {
-    console.log(req.session)
-    // 判断 session 中的 username
-    if (req.session.username) {
-      return Promise.resolve(new SuccessModel(req.session))
-    }
-    return Promise.resolve(new ErrorModel('尚未登录'))
-  }
 }
 
 module.exports = handleUserRouter
