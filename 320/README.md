@@ -1336,17 +1336,17 @@ const handleUserRouter = (req, res) => {
    const handleServer = (req, res) => {
      // 解析 session
      let needSetCookie = false
-     let userid = req.cookie.userid
-     if (userid) {
-       if (!SESSION_DATA[userid]) {
-         SESSION_DATA[userid] = {}
+     let userId = req.cookie.userid
+     if (userId) {
+       if (!SESSION_DATA[userId]) {
+         SESSION_DATA[userId] = {}
        }
      } else {
        needSetCookie = true
        userid = `${Date.now()}_${Math.random()}`
-       SESSION_DATA[userid] = {}
+       SESSION_DATA[userId] = {}
      }
-     req.session = SESSION_DATA[userid]
+     req.session = SESSION_DATA[userId]
      
      // 处理 post data
      getPostData(req).then(postData => {
@@ -1356,7 +1356,7 @@ const handleUserRouter = (req, res) => {
          blogResult.then(blogData => {
            // 操作 cookie
            if (needSetCookie) {
-             res.setHeader('Set-Cookie', `userid=${userid}; path=/; httpOnly; expires=${getCookieExpires()}`)
+             res.setHeader('Set-Cookie', `userid=${userId}; path=/; httpOnly; expires=${getCookieExpires()}`)
            }
    
            res.end(JSON.stringify(blogData))
@@ -1370,7 +1370,7 @@ const handleUserRouter = (req, res) => {
          userResult.then(userData => {
            // 操作 cookie
            if (needSetCookie) {
-             res.setHeader('Set-Cookie', `userid=${userid}; path=/; httpOnly; expires=${getCookieExpires()}`)
+             res.setHeader('Set-Cookie', `userid=${userId}; path=/; httpOnly; expires=${getCookieExpires()}`)
            }
            
            res.end(JSON.stringify(userData))
@@ -1427,3 +1427,159 @@ Redis 是 Web Server 最常用的缓存数据库，数据存放在内存中。
 5. `get key` ，获取指定的 key 的值
 6. `keys *` ，查找所有符合给定模式的 key
 7. `del key` ，删除 key
+
+
+
+### 连接 Redis
+
+#### 步骤
+
+1. 安装 redis ，执行 `npm i redis --save --registry=https://registry.npm.taobao.org`
+
+2. 修改 src/conf/db.js 文件
+
+   ```js
+   // src/conf/db.js
+   
+   let REDIS_CONF
+   
+   if (env === 'dev') {
+     REDIS_CONF = {
+       host: 'localhost',
+       port: 6379
+     }
+   }
+   
+   if (env === 'production') {
+     REDIS_CONF = {
+       host: 'localhost',
+       port: 6379
+     }
+   }
+   
+   module.exports = {
+     REDIS_CONF
+   }
+   ```
+
+3. 进入 src 文件夹，进入 db 文件夹，创建 redis.js 文件
+
+   ```js
+   // src/db/redis.js
+   
+   const redis = require('redis')
+   const { REDIS_CONF } = require('../conf/db')
+   
+   const redisClient = redis.createClient({
+     host: REDIS_CONF.host,
+     port: REDIS_CONF.port
+   })
+   
+   redisClient.on('error', err => {
+     if (err) {
+       console.error(err)
+     }
+   })
+   
+   function set(key, val) {
+     if (typeof val === 'object') {
+       val = JSON.stringify(val)
+     }
+     redisClient.set(key, val, redis.print)
+   }
+   
+   function get(key) {
+     return new Promise((resolve, reject) => {
+       redisClient.get(key, (err, val) => {
+         if (err) {
+           reject(err)
+           return
+         }
+         if (val == null) {
+           resolve(null)
+           return
+         }
+         try {
+           resolve(JSON.parse(val))
+         } catch (error) {
+           resolve(val)
+         }
+       })
+     })
+   }
+   
+   module.exports = {
+     set,
+     get
+   }
+   ```
+
+4. 修改 app.js 文件
+
+   ```js
+   // app.js
+   
+   // 删除原有的 SESSION_DATA 变量，引入 set 和 get 函数
+   const { set, get } = require('./src/db/redis')
+   
+   const handleServer = (req, res) => {
+     // 解析 session
+     let userId = req.cookie.userid
+     let needSetCookie = false
+     if (!userId) {
+       needSetCookie = true
+       userId = `${Date.now()}_${Math.random()}`
+       set(userId, {})
+     }
+     req.sessionId = userId
+     get(userId).then(redisData => {
+       if (redisData == null) {
+         set(userId, {})
+         req.session = {}
+       } else {
+         req.session = redisData
+       }
+       // 处理 post data
+       return getPostData(req)
+     }).then(postData => {
+       
+     })
+   }
+   ```
+
+5. 修改 src/router/user.js 文件
+
+   ```js
+   // src/router/user.js
+   
+   const { set } = require('../db/redis')
+   
+   const handleUserRouter = (req, res) => {
+     // 登录
+     if (method === 'POST' && path === '/api/user/login') {
+       const { username, password } = req.body
+       return login(username, password).then(data => {
+         if (data) {
+           // 设置 session
+           req.session.username = data.username
+           req.session.realname = data.realname
+           // 同步到 redis
+           set(req.sessionId, req.session)
+   
+           return new SuccessModel()
+         } else {
+           return new ErrorModel('登录失败')
+         }
+       })
+     }
+   }
+   ```
+
+6. 启动 Redis 服务，在 Windows PowerShell 中执行 `redis-server`
+
+7. 启动 Node 服务后，通过 Postman 测试登录接口和登录验证接口
+
+
+
+
+
