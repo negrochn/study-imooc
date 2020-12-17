@@ -1647,3 +1647,87 @@ Redis 是 Web Server 最常用的缓存数据库，数据存放在内存中。
 
 
 
+### Nginx
+
+高性能的 web 服务器，开源免费。
+
+#### 用途
+
+1. 用做静态服务、负载均衡
+2. 反向代理
+
+#### 下载地址
+
+http://nginx.org/en/download.html
+
+#### 配置 Nginx
+
+1. 用记事本或 VS Code 打开 D:\Program Files\nginx-1.16.1\conf\nginx.conf 文件
+
+2. 修改第 3 行 `worker_processes 2;`
+
+3. 修改第 36 行 `listen    8080;`
+
+4. 修改第 43-46 行
+
+   ```
+   location / {
+       proxy_pass  http://localhost:8001;
+   }
+   ```
+
+5. 追加以下代码
+
+   ```
+   location /api/ {
+       proxy_pass  http://localhost:8000;
+       proxy_set_header  Host  $host;
+   }
+   ```
+
+6. 进入 D:\Program Files\nginx-1.16.1 文件夹，在 Power Shell 中运行 `nginx -t` 测试配置文件是否有效
+
+#### Nginx 命令
+
+1. `nginx -t` ，测试配置文件格式是否正确
+2. `start nginx` ，启动服务
+3. `nginx -s reload` ，重启服务
+4. `nginx -s stop` ，停止服务
+
+> 执行 Nginx 命令时如果出现 `nginx : 无法将“nginx”项识别为 cmdlet、函数、脚本文件或可运行程序的名称。请检查名称的拼写，如果包括路径，请确保路径正确，然后再试一次。` 报错，请尝试设置环境变量，在 Path 中添加 D:\Program Files\nginx-1.16.1 。
+
+
+
+### 联调演示
+
+#### 步骤
+
+1. 修改 src/router/blog.js 文件
+
+   ```js
+   // 获取博客列表
+   if (method === 'GET' && path === '/api/blog/list') {
+     let { author, keyword, isadmin } = req.query
+     if (isadmin) {
+       // 管理员界面
+       const checkResult = loginCheck(req)
+       if (checkResult) {
+         return checkResult
+       }
+       // 强制查看自己的博客
+       author = req.session.username
+     }
+     return getList(author, keyword).then(data => new SuccessModel(data))
+   }
+   ```
+
+2. 依次启动以下服务
+
+   1. MySQL ，不需要主动启动
+   2. Redis ，`redis-server`
+   3. http-server ，`http-server -p 8001`
+   4. node ，`npm run dev`
+   5. nginx ，`start nginx`
+
+3. 访问 http://localhost:8080/ ，测试博客项目的所有功能
+

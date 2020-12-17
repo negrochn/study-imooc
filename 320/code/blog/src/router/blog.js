@@ -15,7 +15,16 @@ const handleBlogRouter = (req, res) => {
 
   // 获取博客列表
   if (method === 'GET' && path === '/api/blog/list') {
-    const { author, keyword } = req.query
+    let { author, keyword, isadmin } = req.query
+    if (isadmin) {
+      // 管理员界面
+      const checkResult = loginCheck(req)
+      if (checkResult) {
+        return checkResult
+      }
+      // 强制查看自己的博客
+      author = req.session.username
+    }
     return getList(author, keyword).then(data => new SuccessModel(data))
   }
   // 获取博客详情
