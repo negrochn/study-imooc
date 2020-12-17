@@ -1726,8 +1726,124 @@ http://nginx.org/en/download.html
    1. MySQL ，不需要主动启动
    2. Redis ，`redis-server`
    3. http-server ，`http-server -p 8001`
-   4. node ，`npm run dev`
-   5. nginx ，`start nginx`
+   4. Node ，`npm run dev`
+   5. Nginx ，`start nginx`
 
 3. 访问 http://localhost:8080/ ，测试博客项目的所有功能
+
+
+
+## 博客项目之日志
+
+### 日志
+
+1. 访问日志 access.log ，服务端最重要的日志
+2. 自定义日志，包括自定义事件、错误记录等
+
+
+
+### Node.js 文件操作
+
+#### 读取文件
+
+```js
+const fs = require('fs')
+const path = require('path')
+
+const fileName = path.join(__dirname, 'log.log')
+
+// 读取文件内容
+fs.readFile(fileName, (err, data) => {
+  if (err) {
+    console.error(err)
+    return
+  }
+  // data 是二进制类型，需要转为字符串
+  console.log(data.toString())
+})
+```
+
+#### 写入文件
+
+```js
+// 写入文件
+const content = '这是新写入的内容\n'
+const option = {
+  flag: 'a' // a 表示追加写入，w 表示覆盖
+}
+fs.writeFile(fileName, content, option, (err, data) => {
+  if (err) {
+    console.error(err)
+  }
+})
+```
+
+#### 判断文件是否存在
+
+```js
+// 判断文件是否存在
+console.log(fs.existsSync(fileName))
+```
+
+
+
+### stream
+
+![stream 流](https://img.mukewang.com/szimg/5ea444c10001935619201080.jpg)
+
+```js
+// 标准输入输出，pipe 就是管道（符合水流管道的模型图）
+// process.stdin 获取数据，直接通过管道传递给 process.stdout
+process.stdin.pipe(process.stdout)
+```
+
+```js
+const http = require('http')
+
+const server = http.createServer((req, res) => {
+  if (req.method === 'POST') {
+    req.pipe(res)
+  }
+})
+
+server.listen(8000)
+```
+
+```js
+// 复制文件
+const fs = require('fs')
+const path = require('path')
+
+const fileName1 = path.join(__dirname, 'data.txt')
+const fileName2 = path.join(__dirname, 'data-bak.txt')
+
+const readStream = fs.createReadStream(fileName1)
+const writeStream = fs.createWriteStream(fileName2)
+
+readStream.pipe(writeStream)
+readStream.on('data', chunk => {
+  console.log(chunk.toString())
+})
+readStream.on('end', () => {
+  console.log('拷贝完成')
+})
+```
+
+```js
+const http = require('http')
+const fs = require('fs')
+const path = require('path')
+
+const fileName1 = path.resolve(__dirname, 'data.txt')
+const server = http.createServer((req, res) => {
+  if (req.method === 'GET') {
+    const readStream = fs.createReadStream(fileName1)
+    readStream.pipe(res)
+  }
+})
+
+server.listen(8000)
+```
+
+
 
