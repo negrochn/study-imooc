@@ -1847,3 +1847,58 @@ server.listen(8000)
 
 
 
+### 写日志
+
+#### 步骤
+
+1. 创建并进入 logs 文件夹，创建 access.log 、error.log 、event.log 文件
+
+2. 进入 src 文件夹，创建并进入 utils 文件夹，创建 log.js 文件
+
+   ```js
+   // src/utils/log.js
+   
+   const fs = require('fs')
+   const path = require('path')
+   
+   // 写日志
+   function writeLog(writeStream, log) {
+     writeStream.write(log + '\n') // 关键代码
+   }
+   
+   // 生成 writeStream
+   function createWriteStream(fileName) {
+     const fullName = path.join(__dirname, '../', '../', 'logs', fileName)
+     const writeStream = fs.createWriteStream(fullName, {
+       flags: 'a'
+     })
+     return writeStream
+   }
+   
+   const accessWriteStream = createWriteStream('access.log')
+   
+   // 写访问日志
+   function access(log) {
+     writeLog(accessWriteStream, log)
+   }
+   
+   module.exports = {
+     access
+   }
+   ```
+
+3. 修改 app.js 文件
+
+   ```js
+   // app.js
+   
+   const { access } = require('./src/utils/log')
+   
+   const handleServer = (req, res) => {
+     // 记录 access.log
+     access(`${req.method} -- ${req.url} -- ${req.headers['user-agent']} -- ${Date.now()}`)
+   }
+   ```
+
+4. 访问 http://localhost:8080/ ，测试博客项目功能，并查看logs/access.log 文件内容
+
