@@ -1847,9 +1847,9 @@ server.listen(8000)
 
 
 
-### 写日志
+### 日志
 
-#### 步骤
+#### 写日志
 
 1. 创建并进入 logs 文件夹，创建 access.log 、error.log 、event.log 文件
 
@@ -1901,4 +1901,65 @@ server.listen(8000)
    ```
 
 4. 访问 http://localhost:8080/ ，测试博客项目功能，并查看logs/access.log 文件内容
+
+
+
+#### 拆分日志
+
+通过 Linux 的 crontab 命令，按时间划分日志文件，如 2020-12-18.access.log 。
+
+**步骤**
+
+1. 设置定时任务，格式：`* * * * * command`（分钟 小时 日期 月份 星期 + .sh 脚本）
+2. 将 access.log 拷贝并重命名为 2020-12-18.access.log
+3. 清空 access.log 文件，继续积累日志
+
+#### 分析日志
+
+日志是按行存储的，使用 Node.js 的 readline（基于 stream）读取 access.log ，分析 Chrome 的占比。
+
+**步骤**
+
+1. 进入 src/utils 文件夹，创建 readline.js 文件
+
+   ```js
+   // src/utils/readline.js
+   
+   const fs = require('fs')
+   const path = require('path')
+   const readline = require('readline')
+   
+   // 文件名
+   const fileName = path.join(__dirname, '../', '../', 'logs', 'access.log')
+   // 创建 readStream
+   const readStream = fs.createReadStream(fileName)
+   
+   // 创建 readline 对象
+   const rl = readline.createInterface({
+     input: readStream
+   })
+   
+   let chromeNum = 0
+   let num = 0
+   
+   // 逐行读取
+   rl.on('line', lineData => {
+     if (!lineData) {
+       return
+     }
+     // 记录总行数
+     num++
+     const arr = lineData.split(' -- ')
+     if (arr[2] && arr[2].indexOf('Chrome') > -1) {
+       chromeNum++
+     }
+   })
+   
+   rl.on('close', () => {
+     console.log('Chrome 占比：', chromeNum / num)
+   })
+   
+   ```
+
+2. 查看 Chrome 的占比，执行 `node src/utils/readline.js`
 
