@@ -2146,7 +2146,7 @@ server.listen(8000)
 5. 安全
 6. 上线（最后再一起讲）
 
-![流程图]()
+![流程图](https://raw.githubusercontent.com/negrochn/study-imooc/master/320/img/%E6%B5%81%E7%A8%8B%E5%9B%BE.jpg)
 
 
 
