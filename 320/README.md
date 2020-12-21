@@ -1971,7 +1971,7 @@ server.listen(8000)
 
 窃取数据库内容。
 
-![SQL 注入]()
+![SQL 注入](https://raw.githubusercontent.com/negrochn/study-imooc/master/320/img/SQL%20%E6%B3%A8%E5%85%A5.gif)
 
 #### 攻击方式
 
@@ -2010,7 +2010,7 @@ server.listen(8000)
 
 3. 使用用户名 `negrochn'; -- ` 和密码 `123` 登录，验证是否登录失败
 
-   ![SQL 注入处理]()
+   ![SQL 注入处理](https://raw.githubusercontent.com/negrochn/study-imooc/master/320/img/SQL%20%E6%B3%A8%E5%85%A5%E5%A4%84%E7%90%86.gif)
 
 
 
@@ -2018,7 +2018,7 @@ server.listen(8000)
 
 窃取前端的 Cookie 等内容。
 
-![XSS 攻击]()
+![XSS 攻击](https://raw.githubusercontent.com/negrochn/study-imooc/master/320/img/XSS%20%E6%94%BB%E5%87%BB.gif)
 
 #### 攻击方式
 
@@ -2061,7 +2061,7 @@ server.listen(8000)
 
 3. 新建博客，标题为 `<script>alert(123)</script>` ，内容为 `演示 XSS 攻击`，验证 XSS 攻击是否失效
 
-   ![XSS 攻击处理]()
+   ![XSS 攻击处理](https://raw.githubusercontent.com/negrochn/study-imooc/master/320/img/XSS%20%E6%94%BB%E5%87%BB%E5%A4%84%E7%90%86.gif)
 
 
 
