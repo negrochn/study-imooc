@@ -1963,3 +1963,173 @@ server.listen(8000)
 
 2. 查看 Chrome 的占比，执行 `node src/utils/readline.js`
 
+
+
+## 博客项目之安全
+
+### SQL 注入
+
+窃取数据库内容。
+
+![SQL 注入]()
+
+#### 攻击方式
+
+输入一个 SQL 片段，最终拼接成一段攻击代码。
+
+#### 预防措施
+
+使用 MySQL 的 escape 函数处理输入内容。
+
+#### 步骤
+
+1. 修改 src/db/mysql.js 文件
+
+   ```js
+   // src/db/mysql.js
+   
+   module.exports = {
+     escape: mysql.escape
+   }
+   ```
+
+2. 修改 src/controller/user.js 文件（blog.js 文件也需要做相应修改）
+
+   ```js
+   // src/controller/user.js
+   
+   const { escape } = require('../db/mysql')
+   
+   const login = (username, password) => {
+     username = escape(username)
+     password = escape(password)
+     // 使用 escape 之后会自动带上 ''
+     const sql = `select username, realname from users where username=${username} and password=${password};`
+   }
+   ```
+
+3. 使用用户名 `negrochn'; -- ` 和密码 `123` 登录，验证是否登录失败
+
+   ![SQL 注入处理]()
+
+
+
+### XSS 攻击
+
+窃取前端的 Cookie 等内容。
+
+![XSS 攻击]()
+
+#### 攻击方式
+
+在页面展示内容中掺杂 JS 代码，以获取网页信息。
+
+#### 预防措施
+
+转换成 JS 的特殊字符。
+
+```
+& → &amp;
+< → &lt;
+> → &gt;
+" → &quot;
+' → &#x27;
+/ → &#x2F;
+```
+
+#### 步骤
+
+1. 安装 xss ，执行 `npm i xss --save --registry=https://registry.npm.taobao.org`
+
+2. 修改 src/controller/blog.js
+
+   ```js
+   // src/controller/blog.js
+   
+   const xss = require('xss')
+   
+   const addBlog = (blogData = {}) => {
+     let { title, content, author } = blogData
+     const createTime = Date.now()
+     title = escape(xss(title))
+     content = escape(xss(content))
+     author = escape(author)
+     const sql = `insert into blogs(title, content, createtime, author) values(${title}, ${content}, ${createTime}, ${author});`
+     return exec(sql).then(({ insertId }) => ({ id: insertId }))
+   }
+   ```
+
+3. 新建博客，标题为 `<script>alert(123)</script>` ，内容为 `演示 XSS 攻击`，验证 XSS 攻击是否失效
+
+   ![XSS 攻击处理]()
+
+
+
+### 密码加密
+
+保障用户信息安全。
+
+#### 攻击方式
+
+获取用户名和密码，再去尝试登录其他系统。
+
+#### 预防措施
+
+将密码加密，即便拿到密码也不知道明文。
+
+#### 步骤
+
+1. 将 users 表的 password 字段调整为 32 位，因为通过 crypto 加密后的密文是 32 位
+
+   ```sql
+   ALTER TABLE `myblog`.`users` 
+   CHANGE COLUMN `password` `password` VARCHAR(32) NOT NULL ;
+   ```
+
+2. 更新 users 表的所有记录的 password 字段为 `2cd954d409b91616224476ac46846afa`
+
+   ```sql
+   update users set `password`='2cd954d409b91616224476ac46846afa';
+   ```
+
+3. 进入 src 文件夹，进入 utils 文件夹，创建 crypto.js 文件
+
+   ```js
+   // src/utils/crypto.js
+   
+   const crypto = require('crypto')
+   
+   // 密钥
+   const SECRET_KEY = 'Negrochn_1221#'
+   
+   // md5 加密
+   function md5(content) {
+     let md5 = crypto.createHash('md5')
+     return md5.update(content).digest('hex')
+   }
+   
+   // 加密函数
+   function genPassword(password) {
+     const str = `password=${password}&key=${SECRET_KEY}`
+     return md5(str)
+   }
+   
+   module.exports = {
+     genPassword
+   }
+   ```
+
+4. 修改 src/controller/user.js 文件
+
+   ```js
+   // src/controller/user.js
+   
+   const { genPassword } = require('../utils/crypto')
+   
+   const login = (username, password) => {
+     password = escape(genPassword(password))
+   }
+   ```
+
+5. 使用用户名 `negrochn` 和密码 `123456` 登录，验证是否登录成功
+
