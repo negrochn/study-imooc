@@ -230,7 +230,7 @@ server.listen(8000)
 
 1. 初始化项目，创建并进入 blog 文件夹，执行 `npm init -y`
 
-2. 创建 app.js 和 www/bin.js 文件
+2. 创建 app.js 和 bin/www.js 文件
 
    ```js
    // app.js
@@ -350,47 +350,45 @@ server.listen(8000)
    ```js
    // app.js
    
-   const handleBlogRouter = (req, res) => {
-     const { method, path } = req
+   const handleBlogRouter = require('./src/router/blog')
+   const handleUserRouter = require('./src/router/user')
    
-     // 获取博客列表
-     if (method === 'GET' && path === '/api/blog/list') {
-       return {
-         msg: '这是获取博客列表的接口'
-       }
+   const handleServer = (req, res) => {
+     // 设置返回格式 JSON
+     res.setHeader('Content-Type', 'application/json')
+   
+     // 获取 path
+     const [path] = req.url.split('?')
+     req.path = path
+     
+     // 处理 blog 路由
+     const blogData = handleBlogRouter(req, res)
+     if (blogData) {
+       res.end(JSON.stringify(blogData))
+       return
      }
-     // 获取博客详情
-     if (method === 'GET' && path === '/api/blog/detail') {
-       return {
-         msg: '这是获取博客详情的接口'
-       }
+   
+     // 处理 user 路由
+     const userData = handleUserRouter(req, res)
+     if (userData) {
+       res.end(JSON.stringify(userData))
+       return
      }
-     // 新增博客
-     if (method === 'POST' && path === '/api/blog/new') {
-       return {
-         msg: '这是新增博客的接口'
-       }
-     }
-     // 更新博客
-     if (method === 'POST' && path === '/api/blog/update') {
-       return {
-         msg: '这是更新博客的接口'
-       }
-     }
-     // 删除博客
-     if (method === 'POST' && path === '/api/blog/del') {
-       return {
-         msg: '这是删除博客的接口'
-       }
-     }
+   
+     // 未命中路由返回 404
+     res.writeHead(404, {
+       'Content-Type': 'text/plain'
+     })
+     res.write('404 Not Found')
+     res.end()
    }
    
-   module.exports = handleBlogRouter
+   module.exports = handleServer
    ```
-
+   
 3. 启动 Node 服务，执行 `npm run serve`
 
-4. Postman 导入 blog.postman_collection.json ，分别测试获取博客列表、获取一篇博客的内容、新增一篇博客、更新一篇博客、删除一篇博客和登录接口
+4. Postman 导入 [log.postman_collection.json](https://github.com/negrochn/study-imooc/blob/master/320/blog.postman_collection.json) ，分别测试获取博客列表、获取一篇博客的内容、新增一篇博客、更新一篇博客、删除一篇博客和登录接口
 
    ![Postman 导入 JSON](https://raw.githubusercontent.com/negrochn/study-imooc/master/320/img/Postman%20%E5%AF%BC%E5%85%A5%20JSON.gif)
 
@@ -2172,5 +2170,5 @@ server.listen(8000)
 
 ### 下一步
 
-- express
-- koa2
+- [使用 Express 重构博客项目](https://github.com/negrochn/study-imooc/blob/master/320/%E4%BD%BF%E7%94%A8%20Express%20%E9%87%8D%E6%9E%84%E5%8D%9A%E5%AE%A2%E9%A1%B9%E7%9B%AE.md)
+- 使用 Koa2 重构博客项目

@@ -137,7 +137,7 @@ Express 是 Node.js 最常用的 Web Server 框架。
 
 3. 启动服务，执行 `npm run dev` ，通过 Postman 访问获取博客列表接口，查看 Cookie 是否存在记录
 
-   ![Postman 中查看 Cookie]()
+   ![Postman 中查看 Cookie](https://raw.githubusercontent.com/negrochn/study-imooc/master/320/img/Postman%20%E4%B8%AD%E6%9F%A5%E7%9C%8B%20Cookie.gif)
 
 
 
@@ -213,7 +213,7 @@ Express 是 Node.js 最常用的 Web Server 框架。
 
 6. 启动 Node ，通过 Postman 访问登录接口，并查看是否已同步到 Redis
 
-   ![Postman 调用并查看 Redis]()
+   ![Postman 调用并查看 Redis](https://raw.githubusercontent.com/negrochn/study-imooc/master/320/img/Postman%20%E8%B0%83%E7%94%A8%E5%B9%B6%E6%9F%A5%E7%9C%8B%20Redis.gif)
 
 
 
@@ -402,4 +402,120 @@ router.post('/del', loginCheck, (req, res, next) => {
 4. 启动 Node 服务，执行 `npm run prd`
 
 5. 访问 http://localhost:8080/ ，测试博客项目的功能，并查看 logs/access.log 是否有对应的日志
+
+
+
+## Express 中间件原理
+
+### 分析
+
+- app.use 用来注册中间件，先收集起来
+- 遇到 http 请求，根据 path 和 method 判断触发哪些
+- 实现 next 机制，即上一个通过 next 触发下一个
+
+### 代码实现
+
+```js
+const { stat } = require('fs')
+const http = require('http')
+const router = require('./320/code/blog-express/routes/blog')
+const slice = Array.prototype.slice
+
+class LikeExpress {
+  constructor() {
+    // 存放中间件的列表
+    this.routes = {
+      all: [], // app.use()
+      get: [], // app.get()
+      post: [] // app.post()
+    }
+  }
+
+  register(path) {
+    const info = {}
+    if (typeof path === 'string') {
+      info.path = path
+      // 从第二个参数开始，转换为数组，存入 stack
+      info.stack = slice.call(arguments, 1)
+    } else {
+      info.path = '/'
+      // 从第一个参数开始，转换为数组，存入 stack
+      info.stack = slice.call(arguments, 0)
+    }
+    return info
+  }
+
+  use() {
+    const info = this.register.apply(this, arguments)
+    this.routes.all.push(info)
+  }
+
+  get() {
+    const info = this.register.apply(this, arguments)
+    this.routes.get.push(info)
+  }
+
+  post() {
+    const info = this.register.apply(this, arguments)
+    this.routes.post.push(info)
+  }
+
+  match(method, url) {
+    let stack = []
+    if (url === '/favicon.ico') {
+      return stack
+    }
+    // 获取 routes
+    let curRoutes = []
+    curRoutes = curRoutes.concat(this.routes.all)
+    curRoutes = curRoutes.concat(this.routes[method])
+
+    curRoutes.forEach(routeInfo => {
+      if (url.indexOf(routeInfo.path) === 0) {
+        // url === '/api/get-cookie' 且 routeInFO.path === '/'
+        // url === '/api/get-cookie' 且 routeInFO.path === '/api'
+        // url === '/api/get-cookie' 且 routeInFO.path === '/api/get-cookie'
+        stack = stack.concat(routeInfo.stack)
+      }
+    })
+    return stack
+  }
+
+  handle(req, res, stack) {
+    const next = () => {
+      // 拿到第一个匹配的中间件
+      const middleware = stack.shift()
+      if (middleware) {
+        // 执行中间件函数
+        middleware(req, res, next)
+      }
+    }
+    next()
+  }
+
+  callback() {
+    return (req, res) => {
+      res.json = (data) => {
+        res.setHeader('Content-Type', 'application/json')
+        res.end(JSON.stringify(data))
+      }
+      const url = req.url
+      const method = req.method.toLowerCase()
+
+      const resultList = this.match(method, url)
+      this.handle(req, res, resultList)
+    }
+  }
+
+  listen(...args) {
+    const server = http.createServer(this.callback())
+    server.listen(...args)
+  }
+}
+
+// 工厂函数
+module.exports = () => {
+  return new LikeExpress()
+}
+```
 
