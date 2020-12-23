@@ -1,6 +1,7 @@
 var createError = require('http-errors');
 var express = require('express');
-var path = require('path');
+const fs = require('fs')
+const path = require('path')
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const session = require('express-session')
@@ -12,7 +13,18 @@ const userRouter = require('./routes/user')
 
 var app = express();
 
-app.use(logger('dev'));
+// 正式环境则写入 access.log 文件，开发环境则输出到控制台
+if (process.env.NODE_ENV === 'production') {
+  const fileName = path.join(__dirname, 'logs', 'access.log')
+  const writeStream = fs.createWriteStream(fileName, {
+    flags: 'a'
+  })
+  app.use(logger('combined', {
+    stream: writeStream
+  }))
+} else {
+  app.use(logger('dev'))
+}
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());

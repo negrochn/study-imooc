@@ -354,3 +354,52 @@ router.post('/del', loginCheck, (req, res, next) => {
    5. Nginx ，`start nginx`
 2. 访问 http://localhost:8000/ ，测试博客项目的所有功能
 
+
+
+### 日志
+
+- access 日志，直接使用脚手架推荐的 morgan
+- 自定义日志使用 console.log 和 console.error
+
+#### morgan
+
+1. 创建 logs 文件夹
+
+2. 修改 package.json 文件
+
+   ```js
+   // package.json
+   
+   {
+     "scripts": {
+       "prd": "cross-env NODE_ENV=production nodemon ./bin/www"
+     },
+   }
+   ```
+
+3. 修改 app.js 文件
+
+   ```js
+   // app.js
+   
+   const fs = require('fs')
+   const path = require('path')
+   
+   // 正式环境则写入 access.log 文件，开发环境则输出到控制台
+   if (process.env.NODE_ENV === 'production') {
+     const fileName = path.join(__dirname, 'logs', 'access.log')
+     const writeStream = fs.createWriteStream(fileName, {
+       flags: 'a'
+     })
+     app.use(logger('combined', {
+       stream: writeStream
+     }))
+   } else {
+     app.use(logger('dev'))
+   }
+   ```
+
+4. 启动 Node 服务，执行 `npm run prd`
+
+5. 访问 http://localhost:8080/ ，测试博客项目的功能，并查看 logs/access.log 是否有对应的日志
+
