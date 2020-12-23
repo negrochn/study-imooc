@@ -63,7 +63,7 @@ https://github.com/coreybutler/nvm-windows/releases
 
 - 前端独占一个浏览器，内存和 CPU 都不是问题
 - 服务端要承载很多请求，内存和 CPU 都是稀缺资源
-- **使用 stream 写日志（优化），使用 redis 存 session（扩展）**
+- **使用 stream 写日志（优化），使用 Redis 存 Session（扩展）**
 
 #### 日志记录
 
@@ -74,7 +74,7 @@ https://github.com/coreybutler/nvm-windows/releases
 #### 安全
 
 - 服务端要随时准备接收各种恶意攻击，前端则少很多，如越权操作、数据库攻击等
-- **登录验证，预防 xss 攻击和 sql 注入**
+- **登录验证，预防 XSS 攻击和 SQL 注入**
 
 #### 集群和服务拆分
 

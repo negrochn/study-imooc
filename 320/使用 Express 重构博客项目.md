@@ -16,8 +16,6 @@ Express 是 Node.js 最常用的 Web Server 框架。
 
 ### 搭建开发环境
 
-#### 步骤
-
 1. 初始化项目，执行 `express blog-express`
 
 2. 进入 blog-express 文件夹，执行 `cd blog-express` 
@@ -45,15 +43,21 @@ Express 是 Node.js 最常用的 Web Server 框架。
    }
    ```
 
-7. 启动服务，执行 `npm run dev`
+7. 修改 bin/www 文件
 
-8. 测试服务是否正常，通过浏览器访问 http://localhost:3000/
+   ```js
+   // bin/www
+   
+   var port = normalizePort(process.env.PORT || '8000');
+   ```
+
+8. 启动服务，执行 `npm run dev`
+
+9. 测试服务是否正常，通过浏览器访问 http://localhost:8000/
 
 
 
 ### 初始化环境
-
-#### 步骤
 
 1. 删除 blog-express 项目中不相关的代码
 
@@ -105,7 +109,248 @@ Express 是 Node.js 最常用的 Web Server 框架。
    app.use('/api/user', userRouter)
    ```
 
-7. 启动服务，执行 `npm run dev` ，通过 Postman 访问获取博客列表接口（端口号改为 3000）
+7. 启动服务，执行 `npm run dev` ，通过 Postman 访问获取博客列表接口
 
 
+
+### Session
+
+1. 安装 express-session ，执行 `npm i express-session -save --registry=https://registry.npm.taobao.org`
+
+2. 修改 app.js 文件
+
+   ```js
+   // app.js
+   
+   const session = require('express-session')
+   
+   // 在 app.use(cookieParser()); 之后
+   app.use(session({
+     secret: 'Negrochn_1222',
+     cookie: {
+       // path: '/', // 默认配置
+       // httpOnly: true, // 默认配置
+       maxAge: 24 * 60 * 60 * 1000
+     }
+   }))
+   ```
+
+3. 启动服务，执行 `npm run dev` ，通过 Postman 访问获取博客列表接口，查看 Cookie 是否存在记录
+
+   ![Postman 中查看 Cookie]()
+
+
+
+### Redis
+
+1. 安装 redis 和 connect-redis ，执行 `npm i redis connect-redis --save --registry=https://registry.npm.taobao.org`
+
+2. 修改 routes/user.js 文件
+
+   ```js
+   // routes/user.js
+   
+   const { login } = require('../controller/user')
+   const { SuccessModel, ErrorModel } = require('../model/resModel')
+   
+   router.post('/login', (req, res, next) => {
+     const { username, password } = req.body
+     return login(username, password).then(data => {
+       if (data) {
+         // 设置 session
+         req.session.username = data.username
+         req.session.realname = data.realname
+         // express-session 直接同步到 redis 中，不需要再 set(req.sessionId, req.session)
+         // // 同步到 redis
+         // set(req.sessionId, req.session)
+   
+         res.json(new SuccessModel())
+       } else {
+         res.json(new ErrorModel('登录失败'))
+       }
+     })
+   })
+   ```
+
+3. 修改 db/redis.js 文件
+
+   ```js
+   // db/redis.js
+   
+   const redis = require('redis')
+   const { REDIS_CONF } = require('../conf/db')
+   
+   const redisClient = redis.createClient({
+     host: REDIS_CONF.host,
+     port: REDIS_CONF.port
+   })
+   
+   redisClient.on('error', err => {
+     if (err) {
+       console.error(err)
+     }
+   })
+   
+   module.exports = redisClient
+   ```
+
+4. 修改 app.js 文件
+
+   ```js
+   // app.js
+   
+   const RedisStore = require('connect-redis')(session)
+   const redisClient = require('./db/redis')
+   
+   app.use(session({
+     store: new RedisStore({
+       client: redisClient
+     })
+   }))
+   ```
+
+5. 启动 Redis
+
+6. 启动 Node ，通过 Postman 访问登录接口，并查看是否已同步到 Redis
+
+   ![Postman 调用并查看 Redis]()
+
+
+
+### 登录中间件
+
+创建并进入 middleware 文件夹，创建 loginCheck.js 文件
+
+```js
+// middleware/loginCheck.js
+
+const { ErrorModel } = require('../model/resModel')
+
+const loginCheck = (req, res, next) => {
+  if (req.session.username) {
+    next()
+    return
+  }
+  res.json(new ErrorModel('未登录'))
+}
+
+module.exports = loginCheck
+```
+
+
+
+### 开发路由
+
+#### 博客列表
+
+1. 修改 routes/blog.js 文件
+
+   ```js
+   // routes/blog.js
+   const { getList } = require('../controller/blog')
+   
+   router.get('/list', (req, res, next) => {
+     let { author, keyword, isadmin } = req.query
+     // 管理员界面
+     if (isadmin) {
+       // 未用到 loginCheck 中间件来判断，而是直接使用 req.session.username 来判断
+       if (req.session.username == null) {
+         res.json(new ErrorModel('尚未登录'))
+         return
+       }
+       // 强制查看自己的博客
+       author = req.session.username
+     }
+     return getList(author, keyword).then(data => {
+       res.json(new SuccessModel(data))
+     })
+   })
+   ```
+
+2. 启动 Redis ，启动 Nginx ，启动 Node
+
+3. 通过 Postman 测试获取博客列表接口
+
+#### 博客详情
+
+修改 routes/blog.js 文件
+
+```js
+// routes/blog.js
+
+const { getDetail } = require('../controller/blog')
+
+router.get('/detail', (req, res, next) => {
+  return getDetail(req.query.id).then(data => {
+    res.json(new SuccessModel(data))
+  })
+})
+```
+
+#### 新建博客
+
+修改 routes/blog.js 文件
+
+```js
+// routes/blog.js
+
+const { addBlog } = require('../controller/blog')
+const loginCheck = require('../middleware/loginCheck')
+
+router.post('/new', loginCheck, (req, res, next) => {
+  req.body.author = req.session.username
+  return addBlog(req.body).then(data => {
+    res.json(new SuccessModel(data))
+  })
+})
+```
+
+#### 更新博客
+
+```js
+// routes/blog.js
+
+const { updateBlog } = require('../controller/blog')
+
+router.post('/update', loginCheck, (req, res, next) => {
+  return updateBlog(req.query.id, req.body).then(data => {
+    if (data) {
+      res.json(new SuccessModel())
+    } else {
+      res.json(new ErrorModel('更新博客失败'))
+    }
+  })
+})
+```
+
+#### 删除博客
+
+```js
+// routes/blog.js
+
+const { delBlog } = require('../controller/blog')
+
+router.post('/del', loginCheck, (req, res, next) => {
+  const author = req.session.username
+  return delBlog(req.query.id, author).then(data => {
+    if (data) {
+      res.json(new SuccessModel())
+    } else {
+      res.json(new ErrorModel('删除博客失败'))
+    }
+  })
+})
+```
+
+
+
+#### 联调演示
+
+1. 依次启动以下服务
+   1. MySQL ，不需要手动启动
+   2. Redis ，`redis-server`
+   3. http-server ，`http-server -p 8001`
+   4. Node ，`npm run dev`
+   5. Nginx ，`start nginx`
+2. 访问 http://localhost:8000/ ，测试博客项目的所有功能
 
