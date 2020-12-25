@@ -307,3 +307,53 @@ router.post('/del', loginCheck, async (ctx, next) => {
 
 
 
+### 日志
+
+- access 日志，使用 morgan
+- 自定义日志使用 console.log 和 console.error
+
+#### morgan
+
+1. 安装 koa-morgan ，执行 `npm i koa-morgan --save --registry=https://registry.npm.taobao.org`
+
+2. 创建 logs 文件夹
+
+3. 修改 package.json 文件
+
+   ```js
+   {
+     "scripts": {
+       "prd": "cross-env NODE_ENV=production ./node_modules/.bin/nodemon bin/www",
+     }
+   }
+   ```
+
+4. 修改 app.js 文件
+
+   ```js
+   // app.js
+   
+   const morgan = require('koa-morgan')
+   const fs = require('fs')
+   const path = require('path')
+   
+   // logger 之后
+   // morgan
+   // 正式环境则写入 access.log 文件，开发环境则输出到控制台
+   if (process.env.NODE_ENV === 'production') {
+     const fileName = path.join(__dirname, 'logs', 'access.log')
+     const writeStream = fs.createWriteStream(fileName, {
+       flags: 'a'
+     })
+     app.use(morgan('combined', {
+       stream: writeStream
+     }))
+   } else {
+     app.use(morgan('dev'))
+   }
+   ```
+
+5. 启动 Node 服务，执行 `npm run prd`
+
+6. 访问 http://localhost:8080/ ，测试博客项目的功能，并查看 logs/access.log 是否有对应的日志
+

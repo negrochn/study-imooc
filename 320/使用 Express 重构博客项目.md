@@ -348,7 +348,7 @@ router.post('/del', loginCheck, (req, res, next) => {
    3. http-server ，`http-server -p 8001`
    4. Node ，`npm run dev`
    5. Nginx ，`start nginx`
-2. 访问 http://localhost:8000/ ，测试博客项目的所有功能
+2. 访问 http://localhost:8080/ ，测试博客项目的所有功能
 
 
 
