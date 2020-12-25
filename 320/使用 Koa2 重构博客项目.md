@@ -190,7 +190,7 @@ const { ErrorModel } = require('../model/resModel')
 
 const loginCheck = async (ctx, next) => {
   if (ctx.session.username) {
-    next()
+    await next() // 此处必须使用 await ，否则访问接口时会显示 Not Found
     return
   }
   ctx.body = new ErrorModel('未登录')
@@ -215,12 +215,12 @@ module.exports = loginCheck
      // 管理员界面
      if (isadmin) {
        // 未用到 loginCheck 中间件来判断，而是直接使用 req.session.username 来判断
-       if (req.session.username == null) {
+       if (ctx.session.username == null) {
          ctx.body = new ErrorModel('尚未登录')
          return
        }
        // 强制查看自己的博客
-       author = req.session.username
+       author = ctx.session.username
      }
      
      const data = await getList(author, keyword)
@@ -231,4 +231,79 @@ module.exports = loginCheck
 2. 启动 Redis ，启动 Nginx ，启动 Node
 
 3. 通过 Postman 测试获取博客列表接口
+
+#### 博客详情
+
+```js
+// routes/blog.js
+const { getDetail } = require('../controller/blog')
+
+router.get('/detail', async (ctx, next) => {
+  const data = await getDetail(ctx.query.id)
+  ctx.body = new SuccessModel(data) 
+})
+```
+
+#### 新建博客
+
+```js
+// routes/blog.js
+
+const { addBlog } = require('../controller/blog')
+
+const loginCheck = require('../middleware/loginCheck')
+
+router.post('/new', loginCheck, async (ctx, next) => {
+  ctx.request.body.author = ctx.session.username
+  const data = await addBlog(ctx.request.body)
+  ctx.body = new SuccessModel(data)
+})
+```
+
+#### 更新博客
+
+```js
+// routes/blog.js
+
+const { updateBlog } = require('../controller/blog')
+
+router.post('/update', loginCheck, async (ctx, next) => {
+  const data = await updateBlog(ctx.query.id, ctx.request.body)
+  if (data) {
+    ctx.body = new SuccessModel()
+  } else {
+    ctx.body = new ErrorModel('更新博客失败')
+  }
+})
+```
+
+#### 删除博客
+
+```js
+// routes/blog.js
+
+const { delBlog } = require('../controller/blog')
+
+router.post('/del', loginCheck, async (ctx, next) => {
+  const author = ctx.session.username
+  const data = await delBlog(ctx.query.id, author)
+  if (data) {
+    ctx.body = new SuccessModel()
+  } else {
+    ctx.body = new ErrorModel('删除博客失败')
+  }
+})
+```
+
+#### 联调演示
+
+1. 依次启动以下服务
+   1. MySQL ，不需要手动启动
+   2. Redis ，`redis-server`
+   3. http-server ，`http-server -p 8001`
+   4. Node ，`npm run dev`
+   5. Nginx ，`start nginx`
+2. 访问 http://localhost:8080/ ，测试博客项目的所有功能
+
+
 

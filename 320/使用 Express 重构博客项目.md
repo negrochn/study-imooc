@@ -273,8 +273,6 @@ module.exports = loginCheck
 
 #### 博客详情
 
-修改 routes/blog.js 文件
-
 ```js
 // routes/blog.js
 
@@ -288,8 +286,6 @@ router.get('/detail', (req, res, next) => {
 ```
 
 #### 新建博客
-
-修改 routes/blog.js 文件
 
 ```js
 // routes/blog.js
