@@ -357,3 +357,78 @@ router.post('/del', loginCheck, async (ctx, next) => {
 
 6. 访问 http://localhost:8080/ ，测试博客项目的功能，并查看 logs/access.log 是否有对应的日志
 
+
+
+## Koa2 中间件原理
+
+### 分析
+
+- app.use 用来注册中间件，先收集起来
+- 实现 next 机制，即上一个通过 next 触发下一个
+- 不涉及 method 和 path 的判断
+
+![洋葱圈模型]()
+
+### 代码实现
+
+```js
+const http = require('http')
+
+// 组合中间件
+function compose(middlewareList) {
+  return (ctx) => {
+    // 中间件调用
+    function dispatch(i) {
+      const fn = middlewareList[i]
+      try {
+        return Promise.resolve(
+          fn(ctx, dispatch.bind(null, i + 1))
+        )
+      } catch (error) {
+        return Promise.reject(error)
+      }
+    }
+    return dispatch(0)
+  }
+}
+
+class LikeKoa2 {
+  constructor() {
+    this.middlewareList = []
+  }
+
+  use(fn) {
+    this.middlewareList.push(fn)
+    return this // 支持链式调用
+  }
+
+  createContext(req, res) {
+    const ctx = {
+      req,
+      res
+    }
+    ctx.query = req.query
+    return ctx
+  }
+
+  callback() {
+    const fn = compose(this.middlewareList)
+
+    return (req, res) => {
+      const ctx = this.createContext(req, res)
+      
+      return fn(ctx)
+    }
+  }
+  
+  listen(...args) {
+    const server = http.createServer(this.callback())
+    server.listen(...args)
+  }
+}
+
+module.exports = () => {
+  return new LikeKoa2()
+}
+```
+
