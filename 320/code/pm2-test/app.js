@@ -1,10 +1,15 @@
 const http = require('http')
+const path = require('path')
 
 const server = http.createServer((req, res) => {
+  debugger
   // 模拟日志
   console.log('cur time', Date.now())
   // 模拟错误
   console.error('假装出错', Date.now())
+
+  console.log(path.join('logs', 'out.log'))
+  console.log(path.resolve('logs', 'out.log'))
 
   // 模拟一个错误
   if (req.url === '/err') {

@@ -1414,7 +1414,7 @@ Redis 是 Web Server 最常用的缓存数据库，数据存放在内存中。
 
 - 下载 [.msi](https://github.com/microsoftarchive/redis/releases)
 - 执行安装，勾选 `Add the Redis installation folder to the PATH environment variable.`
-- 安装完成后，已启动 redis-server
+- 安装完成后，已启动 Redis
 
 #### Redis 命令
 
@@ -1639,9 +1639,9 @@ Redis 是 Web Server 最常用的缓存数据库，数据存放在内存中。
 #### 开发前端页面
 
 1. 创建并进入 blog-html 文件夹，放入 6 个 HTML 页面
-2. 全局安装 http-server ，执行 `npm i -g http-server --registry=https://registry.npm.taobao.org`
+2. 全局安装 http-server ，执行 `npm i http-server -g --registry=https://registry.npm.taobao.org`
 3. 启动 http-server 服务，执行 `http-server -p 8001`
-4. 通过浏览器访问 http://127.0.0.1:8001/
+4. 通过浏览器访问 http://localhost:8001/
 
 
 
@@ -1721,7 +1721,7 @@ http://nginx.org/en/download.html
 
 2. 依次启动以下服务
 
-   1. MySQL ，不需要主动启动
+   1. MySQL ，不需要手动启动
    2. Redis ，`redis-server`
    3. http-server ，`http-server -p 8001`
    4. Node ，`npm run dev`
