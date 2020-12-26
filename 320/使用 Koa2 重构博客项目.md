@@ -320,7 +320,7 @@ router.post('/del', loginCheck, async (ctx, next) => {
 
 3. 修改 package.json 文件
 
-   ```js
+   ```json
    {
      "scripts": {
        "prd": "cross-env NODE_ENV=production ./node_modules/.bin/nodemon bin/www",
@@ -367,7 +367,7 @@ router.post('/del', loginCheck, async (ctx, next) => {
 - 实现 next 机制，即上一个通过 next 触发下一个
 - 不涉及 method 和 path 的判断
 
-![洋葱圈模型]()
+![洋葱圈模型](https://raw.githubusercontent.com/negrochn/study-imooc/master/320/img/%E6%B4%8B%E8%91%B1%E5%9C%88%E6%A8%A1%E5%9E%8B.jpg)
 
 ### 代码实现
 

@@ -363,9 +363,7 @@ router.post('/del', loginCheck, (req, res, next) => {
 
 2. 修改 package.json 文件
 
-   ```js
-   // package.json
-   
+   ```json
    {
      "scripts": {
        "prd": "cross-env NODE_ENV=production nodemon ./bin/www"

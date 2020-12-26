@@ -265,7 +265,7 @@ server.listen(8000)
 
 3. 安装 nodemon 和 cross-env ，执行 `npm i nodemon cross-env -D --registry=https://registry.npm.taobao.org`
 
-4. 修改 package.json
+4. 修改 package.json 文件
 
    ```json
    {
@@ -2171,4 +2171,167 @@ server.listen(8000)
 ### 下一步
 
 - [使用 Express 重构博客项目](https://github.com/negrochn/study-imooc/blob/master/320/%E4%BD%BF%E7%94%A8%20Express%20%E9%87%8D%E6%9E%84%E5%8D%9A%E5%AE%A2%E9%A1%B9%E7%9B%AE.md)
-- 使用 Koa2 重构博客项目
+- [使用 Koa2 重构博客项目](https://github.com/negrochn/study-imooc/blob/master/320/%E4%BD%BF%E7%94%A8%20Koa2%20%E9%87%8D%E6%9E%84%E5%8D%9A%E5%AE%A2%E9%A1%B9%E7%9B%AE.md)
+
+
+
+## 上线与配置
+
+### 线上环境
+
+- 服务器稳定性
+
+- 充分利用服务器硬件资源，以便提升性能
+
+- 线上日志记录
+
+
+
+### PM2
+
+#### 介绍
+
+- 进程守护，系统崩溃自动重启
+- 启动多进程，充分利用 CPU 和内存
+- 自带日志记录功能
+
+#### 安装
+
+- 全局安装 pm2 ，执行 `npm i pm2 -g --registry=https://registry.npm.taobao.org`
+- 查看 pm2 版本，执行 `pm2 --version`
+
+#### PM2 命令
+
+- `pm2 start <（配置）文件>`，启动服务
+- `pm2 list` ，查看服务列表
+- `pm2 restart <App name>/<id>` ，重启服务
+- `pm2 stop <App name>/<id>` ，停止服务
+- `pm2 delete <App name>/<id>` ，删除服务
+- `pm2 info <App name>/<id>` ，查看当前服务信息
+- `pm2 log <App name>/<id>` ，查看日志
+- `pm2 monit <App name>/<id>` ，监控 CPU 和内存信息
+
+
+
+### 搭建 PM2 测试环境
+
+1. 创建并进入 pm2-test 文件夹，
+
+2. 创建 app.js 文件
+
+   ```js
+   // app.js
+   
+   const http = require('http')
+   
+   const server = http.createServer((req, res) => {
+     res.setHeader('Content-Type', 'application/json')
+     res.end(JSON.stringify({
+       errno: 0,
+       msg: 'pm2 test server 1'
+     }))
+   })
+   
+   server.listen(8000)
+   console.log('server is listening on port 8000 ...')
+   ```
+
+3. 初始化项目，执行 `npm init -y`
+
+4. 安装 cross-env 和 nodemon ，执行 `npm i nodemon cross-env -D --registry=https://registry.npm.taobao.org`
+
+5. 修改 package.json 文件
+
+   ```json
+   {
+       "scripts": {
+       "dev": "cross-env NODE_ENV=dev nodemon app.js",
+       "prd": "cross-env NODE_ENV=production pm2 start app.js"
+     },
+   }
+   ```
+
+6. 启动 Node 服务，执行 `npm run prd`
+
+7. 测试服务是否正常，通过浏览器访问 http://localhost:8000/
+
+
+
+### 进程守护
+
+- node app.js 和 nodemon app.js ，进程崩溃则不能访问
+- pm2 遇到进程崩溃，会自动重启
+
+
+
+### 配置
+
+1. 创建 pm2.conf.json 文件
+
+   ```json
+   // pm2.conf.json
+   
+   {
+     "apps": {
+       "name": "pm2-test-server",
+       "script": "app.js",
+       "watch": true,
+       "ignore_watch": [
+         "node_modules",
+         "logs"
+       ],
+       "error_file": "logs/err.log",
+       "out_file": "logs/out.log",
+       "log_date_format": "YYYY-MM-DD HH:mm:ss"
+     }
+   }
+   ```
+
+2. 创建 logs 文件夹
+
+3. 修改 package.json 文件
+
+   ```json
+   {
+       "scripts": {
+       "prd": "cross-env NODE_ENV=production pm2 start pm2.conf.json"
+     },
+   }
+   ```
+
+4. 启动 Node ，执行 `npm run prd`
+
+
+
+### 多进程
+
+#### 为何使用多进程？
+
+1. 操作系统会限制一个进程的内存
+2. 无法充分利用机器全部内存
+3. 无法充分利用多核 CPU 的优势
+
+
+
+#### 多进程和 Redis
+
+- 多进程之间，内存无法共享
+
+- 多进程访问一个 Redis ，实现数据共享
+
+
+
+#### 配置多进程
+
+1. 修改 pm2.conf.json 文件
+
+   ```json
+   {
+     "apps": {
+       "instances": 6
+     }
+   }
+   ```
+
+2. 启动 Node ，执行 `npm run prd`
+
