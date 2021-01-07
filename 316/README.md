@@ -387,17 +387,17 @@ html-webpack-plugin 会在打包结束后，自动生成一个 HTML 文件，并
 
 2. eval 将 webpack 中每个模块包裹，然后在模块末尾添加 //# sourceURL ，依靠 sourceURL 找到原始代码的位置
 
-   ![eval]()
+   ![eval](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/eval.png)
 
 3. 包含 source-map 关键字的配置项都会产生一个 .map 文件，该文件保存有原始代码与运行代码的映射关系，浏览器可以通过它找到原始代码的位置
 
 4. 包含 inline 关键字的配置项也会产生 .map 文件，但是该文件是经过 base64 编码作为 DataURI 嵌入
 
-   ![inline-source-map]()
+   ![inline-source-map](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/inline-source-map.png)
 
 5. eval-source-map 是 eval 和 source-map 的组合，使用 eval 语句包裹模块，也产生了 .map 文件，该文件作为 DataURI 替换 eval 模式中末尾的 //# sourceURL
 
-   ![eval-source-map]()
+   ![eval-source-map](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/eval-source-map.png)
 
 
 
@@ -405,11 +405,11 @@ html-webpack-plugin 会在打包结束后，自动生成一个 HTML 文件，并
 
 1. 包含 cheap 关键字，则产生的 .map 文件不包含列信息，即光标只定位到行数，不定位到具体字符位置
 
-   ![cheap-source-map 光标]()
+   ![cheap-source-map 光标](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/cheap-source-map%20%E5%85%89%E6%A0%87.png)
 
 2. 不包含 cheap 关键字，将定位到字符位置
 
-   ![eval 光标]()
+   ![eval 光标](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/eval%20%E5%85%89%E6%A0%87.png)
 
 
 
