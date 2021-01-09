@@ -1,6 +1,6 @@
 # 从基础到实战 手把手带你掌握新版 webpack5
 
-## webpack
+## webpack 初探
 
 webpack 是一个用于现代 JS 应用程序的静态模块打包工具（module bundler）。
 
@@ -13,7 +13,7 @@ webpack 是一个用于现代 JS 应用程序的静态模块打包工具（modul
 
 
 
-### 安装
+### webpack 的正确安装方式
 
 #### 搭建环境
 
@@ -26,8 +26,6 @@ webpack 是一个用于现代 JS 应用程序的静态模块打包工具（modul
 4. 创建并进入 src 文件夹，创建 index.js
 
    ```js
-   // src/index.js
-   
    function component() {
      const elem = document.createElement('div')
      elem.innerHTML = ['Hello', 'webpack'].join(' ')
@@ -40,8 +38,6 @@ webpack 是一个用于现代 JS 应用程序的静态模块打包工具（modul
 5. 创建 index.html 文件
 
    ```html
-   <!-- index.html -->
-   
    <!DOCTYPE html>
    <html lang="en">
    <head>
@@ -64,7 +60,7 @@ webpack 是一个用于现代 JS 应用程序的静态模块打包工具（modul
    }
    ```
 
-7. 执行 `npx webpack` ，生成 dist/main.js 文件
+7. 执行 `npx webpack` ，看到生成 dist/main.js 文件
 
 8. 复制 index.html 到 dist 文件夹，并修改 dist/index.html 文件
 
@@ -73,17 +69,15 @@ webpack 是一个用于现代 JS 应用程序的静态模块打包工具（modul
    + <script src="./bundle.js"></script>
    ```
 
-9. 在浏览器中打开 dist/index.html ，看到 `Hello webpack`
+9. 打开浏览器访问 dist/index.html ，看到 Hello webpack
 
 
 
-#### 配置文件
+### 使用 webpack 的配置文件
 
 1. 创建 webpack.config.js 文件
 
    ```js
-   // webpack.config.js
-   
    const path = require('path')
    
    module.exports = {
@@ -106,13 +100,61 @@ webpack 是一个用于现代 JS 应用程序的静态模块打包工具（modul
    }
    ```
 
-3. 执行 `npm run build` ，生成 dist/bundle.js 文件
+3. 执行 `npm run build` ，看到生成 dist/bundle.js 文件
 
 
 
-## loader
+## webpack 的核心概念
 
-### 样式篇
+### 使用 Loader 打包静态资源（图片篇）
+
+url-loader 功能类似于 file-loader ，但是在文件大小（单位 byte）低于指定的限制时，可以返回一个 DataURL 。
+
+1. 安装 url-loader ，执行 `npm i url-loader -D`
+
+2. 修改 webpack.config.js 文件
+
+   ```js
+   module.exports = {
+     module: {
+       rules: [
+         {
+           test: /\.(png|svg|jpg|gif)$/,
+           use: {
+             loader: 'url-loader',
+             options: {
+               name: '[name]_[hash].[ext]',
+               outputPath: 'images/',
+               limit: 20480 // 小于 20kb 以 base64 形式打包到 js 文件中，否则打包到 images 文件夹下
+             }
+           }
+         }
+       ]
+     }
+   }
+   ```
+
+3. 修改 src/index.js 文件
+
+   ```diff
+   function component() {
+     const elem = document.createElement('div')
+     elem.innerHTML = ['Hello', 'webpack'].join(' ')
+     elem.classList.add(style.hello)
+   
+   + const myIcon = new Image()
+   + myIcon.src = Icon
+   + elem.appendChild(myIcon)
+   
+     return elem
+   }
+   ```
+
+4. 运行 `npm run build` ，打开浏览器访问 dist/index.html ，看到图片正常显示
+
+
+
+### 使用 Loader 打包静态资源（样式篇）
 
 1. 安装 style-loader 、css-loader 、postcss-loader ，执行 `npm i style-loader css-loader postcss-loader -D`
 
@@ -123,8 +165,6 @@ webpack 是一个用于现代 JS 应用程序的静态模块打包工具（modul
 4. 修改 webpack.config.js 文件
 
    ```js
-   // webpack.config.js
-   
    const path = require('path')
    
    module.exports = {
@@ -160,8 +200,6 @@ webpack 是一个用于现代 JS 应用程序的静态模块打包工具（modul
 5. 修改 postcss.config.js 文件
 
    ```js
-   // postcss.config.js
-   
    module.exports = {
      plugins: [
        require('autoprefixer')
@@ -171,7 +209,7 @@ webpack 是一个用于现代 JS 应用程序的静态模块打包工具（modul
 
 6. 修改 package.json 文件
 
-   ```json
+   ```js
    {
      "browserslist": [
        "last 1 version",
@@ -184,8 +222,6 @@ webpack 是一个用于现代 JS 应用程序的静态模块打包工具（modul
 7. 进入 src 文件夹，创建 style.scss 文件
 
    ```scss
-   /* src/style.scss */
-   
    $body-color: red;
    
    .hello {
@@ -197,8 +233,6 @@ webpack 是一个用于现代 JS 应用程序的静态模块打包工具（modul
 8. 修改 src/index.js 文件
 
    ```diff
-   // src/index.js
-   
    -import './style.scss'
    +import style from './style.scss'
    
@@ -213,88 +247,25 @@ webpack 是一个用于现代 JS 应用程序的静态模块打包工具（modul
    document.body.appendChild(component())
    ```
 
-9. 执行 `npm run build`
+9. 运行 `npm run build` ，打开浏览器访问 dist/index.html ，看到红色字体的 Hello webpack
 
-10. 在浏览器中打开 dist/index.html ，看到红色字体的 `Hello webpack`
-
-11. 查看页面的 \<head\> 标签，包含 style 块元素，且包含厂商前缀
+10. 查看页面的 \<head> 标签，包含 style 块元素，且包含厂商前缀
 
 
 
-### 图片篇
-
-url-loader 功能类似于 file-loader ，但是在文件大小（单位 byte）低于指定的限制时，可以返回一个 DataURL 。
-
-
-
-1. 安装 url-loader ，执行 `npm i url-loader -D`
-
-2. 修改 webpack.config.js 文件
-
-   ```js
-   // webpack.config.js
-   
-   module.exports = {
-     module: {
-       rules: [
-         {
-           test: /\.(png|svg|jpg|gif)$/,
-           use: {
-             loader: 'url-loader',
-             options: {
-               name: '[name]_[hash].[ext]',
-               outputPath: 'images/',
-               limit: 20480 // 小于 20kb 以 base64 形式打包到 js 文件中，否则打包到 images 文件夹下
-             }
-           }
-         }
-       ]
-     }
-   }
-   ```
-
-3. 修改 src/index.js 文件
-
-   ```diff
-   // src/index.js
-   
-   function component() {
-     const elem = document.createElement('div')
-     elem.innerHTML = ['Hello', 'webpack'].join(' ')
-     elem.classList.add(style.hello)
-   
-   + const myIcon = new Image()
-   + myIcon.src = Icon
-   + elem.appendChild(myIcon)
-   
-     return elem
-   }
-   ```
-
-4. 执行 `npm run build`
-
-5. 在浏览器中打开 dist/index.html ，看到能够显示图片
-
-
-
-## plugin
+### 使用 Plugins 让打包更便捷
 
 plugin 可以在 webpack 运行到某个时刻时，帮我们做一些事情。
 
-
-
-### html-webpack-plugin
+#### 设置 HtmlWebpackPlugin
 
 html-webpack-plugin 会在打包结束后，自动生成一个 HTML 文件，并把打包生成的 JS 自动引入到这个 HTML 文件中。
-
-
 
 1. 安装 html-webpack-plugin ，执行 `npm i html-webpack-plugin -D`
 
 2. 修改 webpack.config.js 文件
 
    ```js
-   // webpack.config.js
    const HtmlWebpackPlugin = require('html-webpack-plugin')
    
    module.exports = {
@@ -306,19 +277,17 @@ html-webpack-plugin 会在打包结束后，自动生成一个 HTML 文件，并
    }
    ```
 
-3. 删除 dist 文件夹，执行 `npm run build` ，查看到 dist 文件夹下自动生成了 index.html 文件
+3. 运行 `npm run build` ，会看到 dist 文件夹下自动创建了一个新的 index.html 文件，所有的 bundle 会自动添加到该文件中
 
 
 
-### clean-webpack-plugin
+### 清理 dist 文件夹
 
 1. 安装 clean-webpack-plugin ，执行 `npm i clean-webpack-plugin -D`
 
 2. 修改 webpack.config.js 文件
 
    ```js
-   // webpack.config.js
-   
    const { CleanWebpackPlugin } = require('clean-webpack-plugin')
    
    module.exports = {
@@ -328,92 +297,263 @@ html-webpack-plugin 会在打包结束后，自动生成一个 HTML 文件，并
    }
    ```
 
-3. 执行 `npm run build` ，会自动删除 dist 文件夹下的文件
+3. 运行 `npm run build` ，检查 dist 文件夹
 
 
 
-## entry & output
+### Entry 与 Output 的基础配置
 
-1. 修改 webpack.config.js 文件
+```js
+// wepback.config.js
 
-   ```js
-   // webpack.config.js
-   
-   module.exports = {
-     entry: {
-       main: './src/index.js'
-     },
-     output: {
-       // publicPath: 'https://www.negro.chn/', // 如果项目中的静态资源上传到 CDN ，可以通过配置 publicPath 添加前缀
-       filename: '[name].js',
-       path: path.resolve(__dirname, 'dist')
-     },
-   }
-   ```
-
-2. 执行 `npm run build` ，发现 dist 文件夹下生成 main.js 文件，与 entry 中的 main 对应
+module.exports = {
+  entry: {
+    main: './src/index.js' // 可以使用对象形式配置多个文件
+  },
+  output: {
+    // publicPath: 'https://www.negro.chn/', // 如果项目中的静态资源上传到 CDN ，可以通过配置 publicPath 添加前缀
+    filename: '[name].js',
+    path: path.resolve(__dirname, 'dist')
+  },
+}
+```
 
 
 
-## SourceMap
+### SourceMap 的配置
 
-### 五个关键字
+| 关键字     | 说明                                            |
+| ---------- | ----------------------------------------------- |
+| inline     | 将 .map 作为 DataURI 嵌入，不单独生成 .map 文件 |
+| eval       | 使用 eval 包裹模块代码                          |
+| cheap      | 不包含列信息，也不包含 loader 的 SourceMap      |
+| module     | 包含 loader 的 SourceMap                        |
+| source-map | 生成 .map 文件                                  |
 
-- **inline**
-
-  将 .map 作为 DataURI 嵌入，不单独生成 .map 文件
-
-- **eval**
-
-  使用 eval 包裹模块代码
-
-- **cheap**
-
-  不包含列信息，也不包含 loader 的 SourceMap
-
-- **module**
-
-  包含 loader 的SourceMap
-
-- **source-map**
-
-  产生 .map 文件
+在 Chrome （版本 87.0.4280.141），只有 eval 模式包含列信息。
 
 
 
-### eval 和 source-map 的关系
+#### eval 和 source-map 的关系
 
 1. eval 和 source-map 都是 devtool 的配置项
-
 2. eval 将 webpack 中每个模块包裹，然后在模块末尾添加 //# sourceURL ，依靠 sourceURL 找到原始代码的位置
-
    ![eval](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/eval.png)
-
-3. 包含 source-map 关键字的配置项都会产生一个 .map 文件，该文件保存有原始代码与运行代码的映射关系，浏览器可以通过它找到原始代码的位置
-
+3. 包含 source-map 关键字的配置项都会产生一个 .map 文件，该文件保存有原始代码与运行代码的映射关系
 4. 包含 inline 关键字的配置项也会产生 .map 文件，但是该文件是经过 base64 编码作为 DataURI 嵌入
-
    ![inline-source-map](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/inline-source-map.png)
-
 5. eval-source-map 是 eval 和 source-map 的组合，使用 eval 语句包裹模块，也产生了 .map 文件，该文件作为 DataURI 替换 eval 模式中末尾的 //# sourceURL
-
    ![eval-source-map](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/eval-source-map.png)
 
 
 
-### cheap 关键字的含义
+#### cheap 不包含列信息是什么意思？
 
 1. 包含 cheap 关键字，则产生的 .map 文件不包含列信息，即光标只定位到行数，不定位到具体字符位置
-
    ![cheap-source-map 光标](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/cheap-source-map%20%E5%85%89%E6%A0%87.png)
-
 2. 不包含 cheap 关键字，将定位到字符位置
-
    ![eval 光标](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/eval%20%E5%85%89%E6%A0%87.png)
 
 
 
-### devtool 最佳实践
+#### devtool 最佳实践
 
-1. development 模式，`devtool: eval-cheap-module-source-map`
-2. production 模式，省略 devtool 或者`devtool: cheap-module-source-map`
+| mode        | devtool                          |
+| ----------- | -------------------------------- |
+| development | eval-cheap-module-source-map     |
+| production  | 省略或者 cheap-module-source-map |
+
+
+
+### 使用 WebpackDevServer 提升开发效率
+
+在每次编译代码时，手动运行 `npm run build` 会显得很麻烦。
+
+webpack 提供以下方式，帮助在代码发生变化后自动编译：
+
+1. webpack 的 watch mode
+2. **webpack-dev-server**
+3. webpack-dev-middleware
+
+
+
+#### 使用 watch mode
+
+可以监听文件变化自动编译，但不会自动刷新页面。
+
+1. 修改 package.json 文件
+
+   ```diff
+   {
+     "script": {
+   +   "watch": "webpack --watch"
+     }
+   }
+   ```
+
+2. 修改 webpack.config.js 文件
+
+   ```diff
+   module.exports = {
+     plugins: [
+   -   new CleanWebpackPlugin()
+   +   new CleanWebpackPlugin({
+   +     cleanStaleWebpackAssets: false // 防止 watch 触发增量构建后删除 index.html 文件
+   +   })
+     ]
+   }
+   ```
+
+3. 运行 `npm run watch` ，会看到 webpack 如何编译代码，且没有退出命令行
+
+4. 任意修改 index.js 文件，看到 webpack 自动重新编译
+
+
+
+#### 使用 webpack-dev-server
+
+1. 安装 webpack-dev-server ，运行 `npm i webpack-dev-server -D`
+
+2. 修改 webpack.config.js 文件
+
+   ```diff
+   module.exports = {
+   + devServer: {
+   +   contentBase: './dist', // 告诉服务器内容的来源
+   +   open: true // 在服务器启动后打开浏览器
+   + },
+   + target: process.env.NODE_ENV === 'production' ? 'browserslist' : 'web'
+   }
+   ```
+
+3. 修改 package.json 文件
+
+   ```diff
+   {
+     "scripts": {
+   +   "start": "webpack serve"
+     }
+   }
+   ```
+
+4. 运行 `npm run start` ，会看到浏览器自动加载页面，任意修改 index.js 文件，web server 将在编译代码后自动重新加载
+
+> webpack 5 需要设置 `target: 'web'` 才能开启页面自动刷新。
+
+
+
+#### 使用 webpack-dev-middleware
+
+用 webpack-dev-middleware 配合 express 简单模拟 webpack-dev-server 。
+
+可以监听文件变化自动编译，但不会自动刷新页面。
+
+1. 安装 webpack-dev-middleware 和 express ，运行 `npm i webpack-dev-middleware express -D`
+
+2. 新建 server.js 文件
+
+   ```js
+   const express = require('express')
+   const webpack = require('webpack')
+   const webpackDevMiddleware = require('webpack-dev-middleware')
+   
+   const app = express()
+   const config = require('./webpack.config.js')
+   const compiler = webpack(config)
+   
+   app.use(webpackDevMiddleware(compiler, {}))
+   
+   app.listen(3000, () => {
+     console.log('server listening on port 3000!\n')
+   })
+   ```
+
+3. 修改 package.json 文件
+
+   ```diff
+   {
+     "scripts": {
+   +   "server": "node server.js"
+     }
+   }
+   ```
+
+4. 运行 `npm run server` ，打开浏览器访问 http://localhost:3000
+
+
+
+### Hot Module Replacement 热模块更新
+
+HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 不适用于生产环境。
+
+
+
+#### HMR 加载样式
+
+1. 修改 webpack.config.js 文件
+
+   ```diff
+   +const webpack = require('webpack')
+   
+   module.exports = {
+     devServer: {
+       contentBase: './dist', // 告诉服务器内容的来源
+       open: true, // 在服务器启动后打开浏览器
+   +   hot: true, // 开启热模块更新
+   +   hotOnly: true // 即使热模块更新失败，也不让浏览器自动刷新
+     },
+     plugins: [
+   +   new webpack.HotModuleReplacementPlugin()
+     ]
+   }
+   ```
+
+2. 运行 `npm run start` ，会看到浏览器自动加载页面
+
+3. 修改 src/style.scss 文件，会看到 Hello webpack 字体自动从红色变为绿色
+
+   ```diff
+   -$body-color: red;
+   +$body-color: green;
+   ```
+
+
+
+#### 启用 HMR
+
+1. 进入 src 文件夹，新建 print.js 文件
+
+   ```js
+   export default function printMe() {
+     console.log('I get called from print.js!')
+   }
+   ```
+
+2. 修改 src/index.js 文件
+
+   ```diff
+   +import printMe from './print.js'
+   
+   +if (module.hot) {
+   + module.hot.accept('./print.js', () => {
+   +   console.log('Accepting the updated printMe module!')
+   +   printMe()
+   + })
+   +}
+   ```
+
+3. 运行 `npm run start` ，修改 src/print.js 文件
+
+   ```diff
+   export default function printMe() {
+   - console.log('I get called from print.js!')
+   + console.log('Updating print.js...')
+   }
+   ```
+
+4. 看到浏览器控制面板打印 `Updating print.js...`
+
+
+
+对于 JS ，额外使用 `module.hot.accept` 监控变动的文件，并在回调中处理变化后需要做的事；对于 CSS ，style-loader 内置了 `module.hot.accpet` ，不需要额外处理。
+

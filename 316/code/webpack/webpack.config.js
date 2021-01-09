@@ -1,6 +1,7 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const webpack = require('webpack')
 
 module.exports = {
   mode: 'development',
@@ -8,6 +9,12 @@ module.exports = {
     main: './src/index.js'
   },
   devtool: 'cheap-source-map',
+  devServer: {
+    contentBase: path.join(__dirname, 'dist'), // 告诉服务器内容的来源
+    open: true, // 在服务器启动后打开浏览器
+    hot: true, // 开启热模块更新
+    hotOnly: true // 即使热模块更新失败，也不让浏览器自动刷新
+  },
   output: {
     // publicPath: 'https://www.negro.chn/', // 如果项目中的静态资源上传到 CDN ，可以通过配置 publicPath 添加前缀
     filename: '[name].js',
@@ -54,6 +61,10 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: 'index.html'
     }),
-    new CleanWebpackPlugin()
-  ]
+    new CleanWebpackPlugin({
+      cleanStaleWebpackAssets: false // 防止 watch 触发增量构建后删除 index.html 文件
+    }),
+    new webpack.HotModuleReplacementPlugin()
+  ],
+  target: process.env.NODE_ENV === 'production' ? 'browserslist' : 'web'
 }

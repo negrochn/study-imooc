@@ -1,5 +1,6 @@
 import style from './style.scss'
 import Icon from './Lynk&Co.jpg'
+import printMe from './print.js'
 
 function component() {
   const elem = document.createElement('div')
@@ -8,9 +9,16 @@ function component() {
 
   const myIcon = new Image()
   myIcon.src = Icon
-  elem.appendChil(myIcon)
+  elem.appendChild(myIcon)
 
   return elem
 }
 
 document.body.appendChild(component())
+
+if (module.hot) {
+  module.hot.accept('./print.js', () => {
+    console.log('Accepting the updated printMe module!')
+    printMe()
+  })
+}
