@@ -22,3 +22,6 @@ if (module.hot) {
     printMe()
   })
 }
+
+['babel-loader', '@babel/core', '@babel/preset-env'].map(item => `npm i ${item} -D`)
+Promise.resolve('@babel/polyfill').then(data => data)

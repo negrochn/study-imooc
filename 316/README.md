@@ -108,7 +108,7 @@ webpack 是一个用于现代 JS 应用程序的静态模块打包工具（modul
 
 ### 使用 Loader 打包静态资源（图片篇）
 
-url-loader 功能类似于 file-loader ，但是在文件大小（单位 byte）低于指定的限制时，可以返回一个 DataURL 。
+url-loader 功能类似于 file-loader ，但是在文件大小（单位 byte）低于指定的限制时，可以返回一个 DataURI 。
 
 1. 安装 url-loader ，执行 `npm i url-loader -D`
 
@@ -137,6 +137,8 @@ url-loader 功能类似于 file-loader ，但是在文件大小（单位 byte）
 3. 修改 src/index.js 文件
 
    ```diff
+   +import Icon from './Lynk&Co.jpg'
+   
    function component() {
      const elem = document.createElement('div')
      elem.innerHTML = ['Hello', 'webpack'].join(' ')
@@ -165,8 +167,6 @@ url-loader 功能类似于 file-loader ，但是在文件大小（单位 byte）
 4. 修改 webpack.config.js 文件
 
    ```js
-   const path = require('path')
-   
    module.exports = {
      module: {
        rules: [
@@ -196,7 +196,7 @@ url-loader 功能类似于 file-loader ，但是在文件大小（单位 byte）
      }
    }
    ```
-
+   
 5. 修改 postcss.config.js 文件
 
    ```js
@@ -281,7 +281,7 @@ html-webpack-plugin 会在打包结束后，自动生成一个 HTML 文件，并
 
 
 
-### 清理 dist 文件夹
+#### 清理 dist 文件夹
 
 1. 安装 clean-webpack-plugin ，执行 `npm i clean-webpack-plugin -D`
 
@@ -297,7 +297,7 @@ html-webpack-plugin 会在打包结束后，自动生成一个 HTML 文件，并
    }
    ```
 
-3. 运行 `npm run build` ，检查 dist 文件夹
+3. 运行 `npm run build` ，检查 dist 文件夹是否被清理过
 
 
 
@@ -337,12 +337,19 @@ module.exports = {
 #### eval 和 source-map 的关系
 
 1. eval 和 source-map 都是 devtool 的配置项
+
 2. eval 将 webpack 中每个模块包裹，然后在模块末尾添加 //# sourceURL ，依靠 sourceURL 找到原始代码的位置
+
    ![eval](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/eval.png)
+
 3. 包含 source-map 关键字的配置项都会产生一个 .map 文件，该文件保存有原始代码与运行代码的映射关系
+
 4. 包含 inline 关键字的配置项也会产生 .map 文件，但是该文件是经过 base64 编码作为 DataURI 嵌入
+
    ![inline-source-map](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/inline-source-map.png)
+
 5. eval-source-map 是 eval 和 source-map 的组合，使用 eval 语句包裹模块，也产生了 .map 文件，该文件作为 DataURI 替换 eval 模式中末尾的 //# sourceURL
+
    ![eval-source-map](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/eval-source-map.png)
 
 
@@ -350,8 +357,11 @@ module.exports = {
 #### cheap 不包含列信息是什么意思？
 
 1. 包含 cheap 关键字，则产生的 .map 文件不包含列信息，即光标只定位到行数，不定位到具体字符位置
+   
    ![cheap-source-map 光标](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/cheap-source-map%20%E5%85%89%E6%A0%87.png)
+   
 2. 不包含 cheap 关键字，将定位到字符位置
+
    ![eval 光标](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/eval%20%E5%85%89%E6%A0%87.png)
 
 
@@ -519,7 +529,7 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
 
 
 
-#### 启用 HMR
+#### HMR 加载 JS
 
 1. 进入 src 文件夹，新建 print.js 文件
 
@@ -556,4 +566,143 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
 
 
 对于 JS ，额外使用 `module.hot.accept` 监控变动的文件，并在回调中处理变化后需要做的事；对于 CSS ，style-loader 内置了 `module.hot.accpet` ，不需要额外处理。
+
+
+
+### 使用 Babel 处理 ES6 语法
+
+1. 安装 babel-loader 和 @babel/core ，运行 `npm i babel-loader @babel/core -D`
+
+2. 修改 webpack.config.js 文件
+
+   ```js
+   module.exports = {
+     module: {
+       rules: [
+         {
+           test: /\.js$/,
+           exclude: /node_modules/,
+           use: ['babel-loader']
+         }
+       ]
+   }
+   ```
+
+3. 安装 @babel/preset-env ，运行 `npm i @babel/preset-env -D`
+
+4. 新建 .babelrc 文件
+
+   ```json
+   {
+     "presets": ["@babel/preset-env"]
+   }
+   ```
+
+5. 运行 `npm run build` ，看到 dist/main.js 文件中箭头函数、let/const 等 ES6 语法已转换为 ES5 语法
+
+
+
+#### babel-polyfill（按需加载）
+
+- Babel 7.4 之后弃用 babel-polyfill
+- 推荐直接使用 core-js 和 regenerator
+
+1. 安装 @babel/polyfill ，运行 `npm i @babel/polyfill -D`
+
+2. 修改 src/index.js 文件
+
+   ```diff
+   +['babel-loader', '@babel/core', '@babel/preset-env'].map(item => `npm i ${item} -D`)
+   +Promise.resolve('@babel/polyfill').then(data => data)
+   ```
+
+3. 安装 core-js@3 ，运行 `npm i core-js@3 --save`
+
+4. 修改 .babelrc 文件
+
+   ```json
+   {
+     "presets": [
+       [
+         "@babel/preset-env",
+         {
+           "useBuiltIns": "usage",
+           "corejs": "3"
+         }
+       ]
+     ]
+   }
+   ```
+
+5. 安装 cross-env ，运行 `npm i cross-env -D`
+
+6. 修改 package.json 文件
+
+   ```diff
+   {
+     "scripts": {
+   -   "build": "webpack",
+   +   "build": "cross-env NODE_ENV=production webpack",
+   -   "start": "webpack serve",
+   +   "start": "cross-env NODE_ENV=development webpack serve",
+     }
+   }
+   ```
+
+7. 运行 `npm run build` ，打开 IE11 浏览器访问 dist/index.html 文件，看到控制面板没有报错
+
+
+
+**target 属性**
+
+| 选项        | 描述                                                    |
+| ----------- | ------------------------------------------------------- |
+| web         | 1. webpack-dev-server 开启页面自动刷新<br />2. 开启 HMR |
+| browserlist | 兼容 IE                                                 |
+
+
+
+**babel-polyfill 的问题**
+
+- 会污染全局环境
+- 如果做一个独立的 web 系统，则没问题
+- 如果做一个第三方的库，则会有问题
+
+
+
+#### babel-runtime
+
+1. 安装 @babel/runtime 和 @babel/plugin-transform-runtime ，运行 `npm i @babel/runtime @babel/plugin-transform-runtime -D`
+
+2. 修改 .babelrc 文件
+
+   ```diff
+   {
+     "presets": [
+       [
+         "@babel/preset-env",
+         {
+           "useBuiltIns": "usage",
+           "corejs": "3"
+         }
+       ]
+     ],
+   + "plugins": [
+   +   [
+   +     "@babel/plugin-transform-runtime",
+   +     {
+   +       "absoluteRuntime": false,
+   +       "corejs": 3,
+   +       "helpers": true,
+   +       "regenerator": true,
+   +       "useESModules": false
+   +     }
+   +   ]
+   + ]
+   }
+   ```
+
+3. 安装 @babel/runtime-corejs3 ，运行 `npm i @babel/runtime-corejs3 -D`
+
+4. 运行 `npm run build`
 
