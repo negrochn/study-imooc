@@ -725,7 +725,19 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
          }
        ],
    +   "@babel/preset-react"
-     ]
+     ],
+   - "plugins": [
+   -   [
+   -     "@babel/plugin-transform-runtime",
+   -     {
+   -       "absoluteRuntime": false,
+   -       "corejs": 3,
+   -       "helpers": true,
+   -       "regenerator": true,
+   -       "useESModules": false
+   -     }
+   -   ]
+   - ]
    }
    ```
 
@@ -765,4 +777,223 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
    ```
 
 6. 运行 `npm run start` ，会看到浏览器自动加载页面，成功显示 Hello World
+
+
+
+## webpack 的高级概念
+
+### Tree Shaking 概念详解
+
+1. 进入 src 文件夹，新建 math.js 文件
+
+   ```js
+   export const add = (a, b) => {
+     return a + b
+   }
+   
+   export const minus = (a, b) => {
+     return a - b
+   }
+   ```
+
+2. 修改 src/index.js 文件
+
+   ```js
+   import { add } from './math'
+   
+   console.log(add(1, 2))
+   ```
+
+3. 运行 `npm run build` ，查看 dist/main.js 文件，发现没有使用的 minus 函数也打包到 dist/main.js 文件中
+
+   ![未使用 Tree Shaking 打包]()
+
+
+
+#### Tree Shaking
+
+- 移除未引用的代码
+- 只支持 ES Module 的引入
+
+
+
+**development** 环境
+
+1. 修改 webpack.config.js 文件
+
+   ```diff
+   module.exports = {
+   + optimization: {
+   +   usedExports: true
+   + },
+   }
+   ```
+
+2. 修改 package.json 文件
+
+   ```diff
+   {
+   + "sideEffects": false, // 设置 sideEffects ，如 ["*.css"] ，表示不需要被 Tree Shaking
+   }
+   ```
+
+3. 运行 `npm run build` ，查看 dist/index.html 文件，发现虽然仍然有 minus 函数，但 `/* unused harmony export minus */`
+
+   ![使用 Tree Shaking 打包]()
+
+
+
+**production 环境**
+
+production 环境默认开启 Tree Shaking 。
+
+1. 修改 webpack.config.js 文件
+
+   ```diff
+   module.exports = {
+   - mode: 'development',
+   + mode: 'production',
+   - devtool: 'eval-cheap-module-source-map',
+   + devtoll: 'eval-cheap-source-map',
+   - optimization: {
+   -   usedExports: true
+   - },
+   }
+   ```
+
+2. 运行 `npm run build` ，查看 dist/index.html 文件，期望结果是没有 minus 函数，但实际发现仍存在 minus 函数
+
+   ![使用 production 默认开启 Tree Shaking]()
+
+
+
+### development 和 production 模式的区分打包
+
+1. 安装 webpack-merge ，运行 `npm i webpack-merge -D`
+
+2. 新建 build 文件夹，将 webpack.config.js 文件移动到 build 文件夹，并改名为 webpack.common.js
+
+3. 修改 build/webpack.common.js 文件
+
+   ```js
+   const path = require('path')
+   const HtmlWebpackPlugin = require('html-webpack-plugin')
+   const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+   
+   module.exports = {
+     entry: {
+       main: './src/index.js'
+     },
+     output: {
+       // publicPath: 'https://www.negro.chn/', // 如果项目中的静态资源上传到 CDN ，可以通过配置 publicPath 添加前缀
+       filename: '[name].js',
+       path: path.resolve(__dirname, '../dist')
+     },
+     module: {
+       rules: [
+         {
+           test: /\.js$/,
+           exclude: /node_modules/,
+           use: ['babel-loader']
+         },
+         {
+           test: /\.css$/,
+           use: ['style-loader', 'css-loader', 'postcss-loader'] // 逆序执行
+         },
+         {
+           test: /\.s[ac]ss$/,
+           use: [
+             'style-loader',
+             {
+               loader: 'css-loader',
+               options: {
+                 importLoaders: 2, // 经过测试，importLoaders 没有效果
+                 // 0 => no loaders (default)
+                 // 1 => postcss-loader
+                 // 2 => postcss-loader, sass-loader
+                 modules: true // 开启 CSS Modules
+               }
+             },
+             'postcss-loader',
+             'sass-loader'
+           ]
+         },
+         {
+           test: /\.(png|svg|jpg|gif)$/,
+           use: {
+             loader: 'url-loader',
+             options: {
+               name: '[name]_[hash].[ext]',
+               outputPath: 'images/',
+               limit: 20480 // 小于 20kb 以 base64 形式打包到 js 文件中，否则打包到 images 文件夹下
+             }
+           }
+         }
+       ]
+     },
+     plugins: [
+       new HtmlWebpackPlugin({
+         template: 'index.html'
+       }),
+       new CleanWebpackPlugin({
+         cleanStaleWebpackAssets: false // 防止 watch 触发增量构建后删除 index.html 文件
+       })
+     ]
+   }
+   ```
+
+4. 进入 build 文件夹，新建 webpack.dev.js 文件
+
+   ```js
+   const path = require('path')
+   const webpack = require('webpack')
+   const { merge } = require('webpack-merge')
+   const commonConfig = require('./webpack.common.js')
+   
+   module.exports = merge(commonConfig, {
+     mode: 'development',
+     devtool: 'eval-cheap-module-source-map',
+     devServer: {
+       contentBase: path.join(__dirname, 'dist'), // 告诉服务器内容的来源
+       open: true, // 在服务器启动后打开浏览器
+       hot: true, // 开启热模块更新
+       hotOnly: true // 即使热模块更新失败，也不让浏览器自动刷新
+     },
+     plugins: [
+       new webpack.HotModuleReplacementPlugin()
+     ],
+     optimization: {
+       usedExports: true
+     },
+     target: 'web'
+   })
+   ```
+
+5. 进入 build 文件夹，新建 webpack.prod.js 文件
+
+   ```js
+   const { merge } = require('webpack-merge')
+   const commonConfig = require('./webpack.common.js')
+   
+   module.exports = merge(commonConfig, {
+     mode: 'production',
+     devtool: 'eval-cheap-source-map',
+     target: 'browserslist'
+   })
+   ```
+
+6. 修改 package.json 文件
+
+   ```js
+   {
+     "scripts": {
+       "dev": "webpack serve --config ./build/webpack.dev.js",
+       "build": "webpack --config ./build/webpack.prod.js"
+     },
+   }
+   ```
+
+7. 运行 `npm run dev` ，会看到浏览器自动加载页面，控制面板没有报错
+
+8. 运行 `npm run build` ，打开浏览器访问 dist/index.html 文件，控制面板没有报错
 
