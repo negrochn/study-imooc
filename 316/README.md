@@ -806,7 +806,7 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
 
 3. 运行 `npm run build` ，查看 dist/main.js 文件，发现没有使用的 minus 函数也打包到 dist/main.js 文件中
 
-   ![未使用 Tree Shaking 打包]()
+   ![未使用 Tree Shaking 打包](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E6%9C%AA%E4%BD%BF%E7%94%A8%20Tree%20Shaking%20%E6%89%93%E5%8C%85.png)
 
 
 
@@ -839,7 +839,7 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
 
 3. 运行 `npm run build` ，查看 dist/index.html 文件，发现虽然仍然有 minus 函数，但 `/* unused harmony export minus */`
 
-   ![使用 Tree Shaking 打包]()
+   ![使用 Tree Shaking 打包](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E4%BD%BF%E7%94%A8%20Tree%20Shaking%20%E6%89%93%E5%8C%85.png)
 
 
 
@@ -863,7 +863,7 @@ production 环境默认开启 Tree Shaking 。
 
 2. 运行 `npm run build` ，查看 dist/index.html 文件，期望结果是没有 minus 函数，但实际发现仍存在 minus 函数
 
-   ![使用 production 默认开启 Tree Shaking]()
+   ![使用 production 默认开启 Tree Shaking](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E4%BD%BF%E7%94%A8%20production%20%E9%BB%98%E8%AE%A4%E5%BC%80%E5%90%AF%20Tree%20Shaking.png)
 
 
 
