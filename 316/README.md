@@ -706,3 +706,63 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
 
 4. 运行 `npm run build`
 
+
+
+### webpack 实现对 React 框架代码的打包
+
+1. 安装 @babel/preset-react ，运行 `npm i @babel/preset-react -D`
+
+2. 修改 .babelrc 文件
+
+   ```diff
+   {
+     "presets": [
+       [
+         "@babel/preset-env",
+         {
+           "useBuiltIns": "usage",
+           "corejs": "3"
+         }
+       ],
+   +   "@babel/preset-react"
+     ]
+   }
+   ```
+
+3. 安装 react 和 react-dom ，运行 `npm i react react-dom --save`
+
+4. 修改 src/index.js 文件
+
+   ```js
+   import React, { Component } from 'react'
+   import ReactDOM from 'react-dom'
+   
+   class App extends Component {
+     render() {
+       return (
+         <div>Hello World</div>
+       )
+     }
+   }
+   
+   ReactDOM.render(<App />, document.getElementById('root'))
+   ```
+
+5. 修改 index.html 文件
+
+   ```diff
+   <!DOCTYPE html>
+   <html lang="en">
+   <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>webpack</title>
+   </head>
+   <body>
+   + <div id="root"></div>
+   </body>
+   </html>
+   ```
+
+6. 运行 `npm run start` ，会看到浏览器自动加载页面，成功显示 Hello World
+

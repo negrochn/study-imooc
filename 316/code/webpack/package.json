@@ -18,6 +18,7 @@
     "@babel/plugin-transform-runtime": "^7.12.10",
     "@babel/polyfill": "^7.12.1",
     "@babel/preset-env": "^7.12.11",
+    "@babel/preset-react": "^7.12.10",
     "@babel/runtime": "^7.12.5",
     "@babel/runtime-corejs3": "^7.12.5",
     "autoprefixer": "^10.1.0",
@@ -44,6 +45,8 @@
     "IE 10"
   ],
   "dependencies": {
-    "core-js": "^3.8.2"
+    "core-js": "^3.8.2",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
   }
 }
