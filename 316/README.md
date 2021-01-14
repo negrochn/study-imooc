@@ -997,3 +997,81 @@ production 环境默认开启 Tree Shaking 。
 
 8. 运行 `npm run build` ，打开浏览器访问 dist/index.html 文件，控制面板没有报错
 
+
+
+### Code Splitting
+
+解决打包文件大，加载时间长的问题，分出第三方库文件。
+
+**同步引入模块代码**
+
+1. 修改 package.json 文件
+
+   ```diff
+   {
+     "scripts": {
+   +   "build:dev": "webpack --config ./build/webpack.dev.js"
+     }
+   }
+   ```
+
+2. 修改 src/index.js 文件
+
+   ```js
+   import _ from 'lodash'
+   
+   console.log(_.join(['webpack', 'Code Splitting'], ' '))
+   ```
+
+3. 安装 lodash ，运行 `npm i lodash -D`
+
+4. 修改 build/webpack.common.js 文件
+
+   ```diff
+   module.exports = {
+   + optimization: {
+   +   splitChunks: {
+   +     chunks: 'all'
+   +   }
+   + }
+   }
+   ```
+
+5. 运行 `npm run build:dev` ，查看到 dist 文件夹下存在 vendors 前缀的文件
+
+   ![Code Splitting 打包]()
+
+**异步引入模块代码**
+
+1. 修改 src/index.js 文件
+
+   ```js
+   function component() {
+     return import('lodash').then(({ default: _ }) => {
+       const elem = document.createElement('div')
+       elem.innerHTML = _.join(['lodash', 'join'], ',')
+       return elem
+     })
+   }
+   
+   component().then(elem => {
+     document.body.appendChild(elem)
+   })
+   ```
+
+2. 修改 build/webpack.common.js 文件
+
+   ```diff
+   module.exports = {
+   - optimization: {
+   -   splitChunks: {
+   -     chunks: 'all'
+   -   }
+   - }
+   }
+   ```
+
+3. 运行 `npm run build:dev` ，查看到 ist 文件夹下存在 vendors 前缀的文件
+
+   ![Code Splitting 打包动态导入]()
+

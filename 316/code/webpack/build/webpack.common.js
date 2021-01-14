@@ -60,5 +60,10 @@ module.exports = {
     new CleanWebpackPlugin({
       cleanStaleWebpackAssets: false // 防止 watch 触发增量构建后删除 index.html 文件
     })
-  ]
+  ],
+  // optimization: {
+  //   splitChunks: {
+  //     chunks: 'all'
+  //   }
+  // }
 }

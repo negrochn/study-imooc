@@ -6,7 +6,8 @@
   "sideEffects": false,
   "scripts": {
     "dev": "webpack serve --config ./build/webpack.dev.js",
-    "build": "webpack --config ./build/webpack.prod.js"
+    "build": "webpack --config ./build/webpack.prod.js",
+    "build:dev": "webpack --config ./build/webpack.dev.js"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +28,7 @@
     "express": "^4.17.1",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^4.5.1",
+    "lodash": "^4.17.20",
     "node-sass": "^5.0.0",
     "postcss-loader": "^4.1.0",
     "sass-loader": "^10.1.0",
