@@ -1039,7 +1039,7 @@ production 环境默认开启 Tree Shaking 。
 
 5. 运行 `npm run build:dev` ，查看到 dist 文件夹下存在 vendors 前缀的文件
 
-   ![Code Splitting 打包]()
+   ![Code Splitting 打包](https://github.com/negrochn/study-imooc/blob/master/316/img/Code%20Splitting%20%E6%89%93%E5%8C%85.png)
 
 **异步引入模块代码**
 
@@ -1071,7 +1071,67 @@ production 环境默认开启 Tree Shaking 。
    }
    ```
 
-3. 运行 `npm run build:dev` ，查看到 ist 文件夹下存在 vendors 前缀的文件
+3. 运行 `npm run build:dev` ，查看到 dist 文件夹下存在 vendors 前缀的文件
 
-   ![Code Splitting 打包动态导入]()
+   ![Code Splitting 打包动态导入](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Code%20Splitting%20%E6%89%93%E5%8C%85%E5%8A%A8%E6%80%81%E5%AF%BC%E5%85%A5.png)
+   
+4. 魔法注释，修改 src/index.js 文件
+
+   ```diff
+   function component() {
+   - return import('lodash').then(({ default: _ }) => {
+   + return import(/* webpackChunkName: 'lodash' */'lodash').then(({ default: _ }) => {
+       const elem = document.createElement('div')
+       elem.innerHTML = _.join(['lodash', 'join'], ',')
+       return elem
+     })
+   }
+   ```
+
+5. 运行 `npm run build:dev` ，查看到 dist 文件夹下存在 lodash.js 文件
+
+   ![Code Splitting 打包魔法注释动态导入]()
+
+
+
+### SplitChunksPlugin 配置
+
+1. 修改 webpack.config.js 文件
+
+   ```js
+   module.exports = {
+     optimization: {
+       splitChunks: {
+         // all ：全部 chunk
+         // async ：异步 chunk ，只处理异步导入的文件
+         // initial ：入口 chunk ，不处理异步导入的文件
+         chunks: 'all',
+         // 缓存分组
+         cacheGroups: {
+           // 第三方模块
+           vendor: {
+             name: 'vendor',
+             priority: 1, // 权限更高，有限抽离，重要！！！
+             test: /[\\/]node_modules[\\/]/,
+             minSize: 0, // 大小限制
+             minChunks: 1, // 最少复用几次
+             reuseExistingChunk: true // 如果模块被打包过，就使用之前打包过的模块
+           },
+           // 公共的模块
+           common: {
+             name: 'common',
+             priority: 0,
+             minSize: 0,
+             minChunks: 1, // 公共模块最少复用几次
+             reuseExistingChunk: true
+           }
+         }
+       }
+     }
+   }
+   ```
+
+2. 运行 `npm run build:dev` ，查看到 dist 文件夹下存在 vendor.js 和 common.js 文件
+
+   ![Code Splitting 配置 splitChunks]()
 

@@ -61,9 +61,32 @@ module.exports = {
       cleanStaleWebpackAssets: false // 防止 watch 触发增量构建后删除 index.html 文件
     })
   ],
-  // optimization: {
-  //   splitChunks: {
-  //     chunks: 'all'
-  //   }
-  // }
+  optimization: {
+    splitChunks: {
+      // all ：全部 chunk
+      // async ：异步 chunk ，只处理异步导入的文件
+      // initial ：入口 chunk ，不处理异步导入的文件
+      chunks: 'all',
+      // 缓存分组
+      cacheGroups: {
+        // 第三方模块
+        vendor: {
+          name: 'vendor',
+          priority: 1, // 权限更高，有限抽离，重要！！！
+          test: /[\\/]node_modules[\\/]/,
+          minSize: 0, // 大小限制
+          minChunks: 1, // 最少复用几次
+          reuseExistingChunk: true // 如果模块被打包过，就使用之前打包过的模块
+        },
+        // 公共的模块
+        common: {
+          name: 'common',
+          priority: 0,
+          minSize: 0,
+          minChunks: 1, // 公共模块最少复用几次
+          reuseExistingChunk: true
+        }
+      }
+    }
+  }
 }
