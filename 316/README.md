@@ -1090,7 +1090,7 @@ production 环境默认开启 Tree Shaking 。
 
 5. 运行 `npm run build:dev` ，查看到 dist 文件夹下存在 lodash.js 文件
 
-   ![Code Splitting 打包魔法注释动态导入]()
+   ![Code Splitting 打包魔法注释动态导入](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Code%20Splitting%20%E6%89%93%E5%8C%85%E9%AD%94%E6%B3%95%E6%B3%A8%E9%87%8A%E5%8A%A8%E6%80%81%E5%AF%BC%E5%85%A5.png)
 
 
 
@@ -1133,5 +1133,5 @@ production 环境默认开启 Tree Shaking 。
 
 2. 运行 `npm run build:dev` ，查看到 dist 文件夹下存在 vendor.js 和 common.js 文件
 
-   ![Code Splitting 配置 splitChunks]()
+   ![Code Splitting 配置 splitChunks](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Code%20Splitting%20%E9%85%8D%E7%BD%AE%20splitChunks.png)
 
