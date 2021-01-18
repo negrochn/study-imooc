@@ -10,6 +10,8 @@ function component() {
   })
 }
 
-component().then(elem => {
-  document.body.appendChild(elem)
+document.addEventListener('click', () => {
+  component().then(elem => {
+    document.body.appendChild(elem)
+  })
 })

@@ -67,24 +67,27 @@ module.exports = {
       // async ：异步 chunk ，只处理异步导入的文件
       // initial ：入口 chunk ，不处理异步导入的文件
       chunks: 'all',
+      minSize: 0,
+      minRemainingSize: 0,
+      minChunks: 1, // 当一个模块被引用至少一次才进行代码分割
+      maxAsyncRequests: 30, // 同时加载的模块数最多是 30
+      maxInitialRequests: 30, // 入口文件引入的库最多分割出 30 个
+      enforceSizeThreshold: 50000,
       // 缓存分组
       cacheGroups: {
-        // 第三方模块
-        vendor: {
-          name: 'vendor',
-          priority: 1, // 权限更高，有限抽离，重要！！！
+        defaultVendors: {
           test: /[\\/]node_modules[\\/]/,
-          minSize: 0, // 大小限制
-          minChunks: 1, // 最少复用几次
-          reuseExistingChunk: true // 如果模块被打包过，就使用之前打包过的模块
+          priority: -10,
+          reuseExistingChunk: true, // 如果一个模块已经被打包了，再打包会忽略这个模块
+          chunks: 'async',
+          filename: 'vendors.js'
         },
-        // 公共的模块
-        common: {
-          name: 'common',
-          priority: 0,
-          minSize: 0,
-          minChunks: 1, // 公共模块最少复用几次
-          reuseExistingChunk: true
+        default: {
+          minChunks: 1,
+          priority: -20,
+          reuseExistingChunk: true,
+          chunks: 'initial',
+          filename: 'common.js'
         }
       }
     }
