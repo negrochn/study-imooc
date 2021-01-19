@@ -1136,7 +1136,7 @@ production 环境默认开启 Tree Shaking 。
    }
    ```
 
-2. 运行 `npm run build:dev` ，查看到 dist 文件夹下存在 vendor.js 和 common.js 文件
+2. 运行 `npm run build:dev` ，查看到 dist 文件夹下存在 vendors.js 和 common.js 文件
 
    ![Code Splitting 配置 splitChunks](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Code%20Splitting%20%E9%85%8D%E7%BD%AE%20splitChunks.png)
 
@@ -1147,3 +1147,59 @@ production 环境默认开启 Tree Shaking 。
 Lazy Loading ，是用 import() 来异步按需加载模块，这样能让页面加载更快。
 
 chunk ，指的是项目打包完成后 dist 文件夹下有几个 JS 文件，每个 JS 文件都是 chunk 。
+
+
+
+### 打包分析，preload，prefetch
+
+#### 官方分析工具
+
+https://github.com/webpack/analyse
+
+1. 修改 package.json 文件
+
+   ```diff
+   {
+     "scripts": {
+   -   "build:dev": "webpack --config ./build/webpack.dev.js"
+   +   "build:dev": "webpack --config ./build/webpack.dev.js --profile --json > stats.json"
+     }
+   }
+   ```
+
+2. 运行 `npm run build:dev` ，会看到根目录下生成 stats.json 文件
+
+可以将文件上传到 http://webpack.github.io/analyse/ 或 https://alexkuz.github.io/webpack-chart/ ，进行 bundle 分析。
+
+
+
+#### 推荐使用 webpack-bundle-analyzer
+
+https://github.com/webpack-contrib/webpack-bundle-analyzer
+
+1. 安装 webpack-bundle-analyzer ，运行 `npm i webpack-bundle-analyzer -D`
+
+2. 修改 build/webpack.dev.js 文件
+
+   ```diff
+   + const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+   
+   module.exports = merge(commonConfig, {
+     plugins: [
+   +   new BundleAnalyzerPlugin()
+     ]
+   })
+   ```
+
+3. 运行 `npm run build:dev` ，会看到自动打开浏览器访问 http://127.0.0.1:8888/
+
+
+
+#### prefech & preload
+
+- preload 会在父 chunk 加载时，以并行方式开始加载；prefetch 会在父 chunk 加载结束后开始加载
+- preload 具有中等优先级，并立即下载；prefetch 在浏览器闲置时下载
+- preload 会在父 chunk 中立即请求，用于当下时刻；prefetch 会用于未来的某个时刻
+
+
+

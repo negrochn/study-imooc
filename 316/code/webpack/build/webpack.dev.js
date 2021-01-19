@@ -1,6 +1,7 @@
 const path = require('path')
 const webpack = require('webpack')
 const { merge } = require('webpack-merge')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const commonConfig = require('./webpack.common.js')
 
 module.exports = merge(commonConfig, {
@@ -13,7 +14,8 @@ module.exports = merge(commonConfig, {
     hotOnly: true // 即使热模块更新失败，也不让浏览器自动刷新
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new BundleAnalyzerPlugin()
   ],
   optimization: {
     usedExports: true
