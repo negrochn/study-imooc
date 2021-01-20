@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack --config build-base-conf/webpack.config.js",
     "watch": "webpack --watch --config build-base-conf/webpack.config.js",
-    "start": "webpack serve --config build-base-conf/webpack.config.js",
+    "start": "webpack serve --config build-hmr-conf/webpack.config.js",
     "server": "node server.js"
   },
   "keywords": [],

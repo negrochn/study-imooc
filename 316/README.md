@@ -751,3 +751,159 @@ webpack 提供以下方式，帮助在代码发生变化后自动编译：
 
    ![使用 webpack-dev-middleware](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E4%BD%BF%E7%94%A8%20webpack-dev-middleware.png)
 
+
+
+### Hot Module Replacement 热模块更新
+
+HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 不适用于生产环境。
+
+1. 新建 build-hmr-conf 文件夹，将 build-base-conf/webpack.config.js 文件复制到 build-hmr-conf 文件夹下
+
+   ```diff
+   └─webpack5
+       │  index.html
+       │  package-lock.json
+       │  package.json
+       │  postcss.config.js
+       │  server.js
+       ├─build-base-conf
+       │      webpack.config.js
+   +   ├─build-hmr-conf
+   +   │      webpack.config.js
+       ├─dist
+       └─src
+              index.js
+              Lynk&Co.jpg
+              style.scss
+   ```
+
+2. 修改 build-hmr-conf/webpack.config.js 文件
+
+   ```diff
+   +const webpack = require('webpack')
+   
+   module.exports = {
+     devServer: {
+       contentBase: './dist', // 告诉服务器内容的来源
+       open: true, // 在服务器启动后打开浏览器
+   +   hot: true, // 开启热模块更新
+   +   hotOnly: true // 即使热模块更新失败，也不让浏览器自动刷新
+     },
+     plugins: [
+       new HtmlWebpackPlugin({
+         template: 'index.html'
+       }),
+       new CleanWebpackPlugin({
+         cleanStaleWebpackAssets: false // 防止 watch 触发增量构建后删除 index.html 文件
+       }),
+   +   new webpack.HotModuleReplacementPlugin()
+     ]
+   }
+   ```
+
+3. 修改 package.json 文件
+
+   ```diff
+   {
+     "scripts": {
+   -   "start": "webpack serve --config build-base-conf/webpack.config.js",
+   +   "start": "webpack serve --config build-hmr-conf/webpack.config.js",
+     }
+   }
+   ```
+
+4. 运行 `npm run start` ，会看到浏览器自动访问 http://localhost:8080/
+
+5. 修改 str/style.scss 文件，会看到 Hello webpack 字体从红色变为绿色
+
+   ```diff
+   -$body-color: red;
+   +$body-color: green;
+   
+   .hello {
+     color: $body-color;
+     transform: translate(100px, 100px);
+   }
+   ```
+
+   ![Hot Module Replacement CSS]()
+
+
+
+#### HMR 加载 JS
+
+1. 进入 src 文件夹，新建 print.js 文件
+
+   ```js
+   export default function printMe() {
+     console.log('I get called from print.js!')
+   }
+   ```
+
+   ```diff
+   └─webpack5
+       │  index.html
+       │  package-lock.json
+       │  package.json
+       │  postcss.config.js
+       │  server.js
+       │  
+       ├─build-base-conf
+       │      webpack.config.js
+       │      
+       ├─build-hmr-conf
+       │      webpack.config.js
+       ├─dist
+       └─src
+              index.js
+              Lynk&Co.jpg
+   +          print.js
+              style.scss
+   ```
+
+2. 修改 src/index.js 文件
+
+   ```diff
+   import Icon from './Lynk&Co.jpg'
+   import style from './style.scss'
+   +import printMe from './print.js'
+   
+   function component() {
+     const elem = document.createElement('div')
+     elem.innerHTML = ['Hello', 'webpack'].join(' ')
+     elem.classList.add(style.hello)
+   
+     const myIcon = new Image()
+     myIcon.src = Icon
+     elem.appendChild(myIcon)
+   
+     return elem
+   }
+   
+   document.body.appendChild(component())
+   
+   +if (module.hot) {
+   + module.hot.accept('./print.js', () => {
+   +   console.log('Accepting the updated printMe module!')
+   +   printMe()
+   + })
+   }
+   ```
+
+3. 运行 `npm run start` ，会看到浏览器自动访问 http://localhost:8080/
+
+4. 修改 src/print.js 文件，会看到控制台打印 `Updating print.js...`
+
+   ```diff
+   export default function printMe() {
+   - console.log('I get called from print.js!')
+   + console.log('Updating print.js...')
+   }
+   ```
+
+   ![Hot Module Replacement JS]()
+
+对于 JS ，额外使用 `module.hot.accept` 监控变动的文件，并在回调中处理变化后需要做的事；对于 CSS ，style-loader 内置了 `module.hot.accpet` ，不需要额外处理。
+
+
+
