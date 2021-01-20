@@ -210,7 +210,7 @@ url-loader 功能类似于 file-loader ，但是在文件大小（单位 byte）
 
 5. 运行 `npm run build` ，打开浏览器访问 dist/index.html
 
-   ![使用 Loader 打包静态资源（图片篇）]()
+   ![使用 Loader 打包静态资源（图片篇）](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E4%BD%BF%E7%94%A8%20Loader%20%E6%89%93%E5%8C%85%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90%EF%BC%88%E5%9B%BE%E7%89%87%E7%AF%87%EF%BC%89.png)
 
 
 
@@ -328,7 +328,7 @@ url-loader 功能类似于 file-loader ，但是在文件大小（单位 byte）
 
 9. 运行 `npm run build` ，打开浏览器访问 dist/index.html
 
-   ![使用 Loader 打包静态资源（样式篇）]()
+   ![使用 Loader 打包静态资源（样式篇）](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E4%BD%BF%E7%94%A8%20Loader%20%E6%89%93%E5%8C%85%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90%EF%BC%88%E6%A0%B7%E5%BC%8F%E7%AF%87%EF%BC%89.png)
 
 
 
@@ -388,7 +388,7 @@ url-loader 功能类似于 file-loader ，但是在文件大小（单位 byte）
 
 3. 运行 `npm run build` ，打开浏览器访问 dist/index.html
 
-   ![使用 Loader 打包静态资源（样式篇）]()
+   ![使用 Loader 打包静态资源（样式篇）](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E4%BD%BF%E7%94%A8%20Loader%20%E6%89%93%E5%8C%85%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90%EF%BC%88%E6%A0%B7%E5%BC%8F%E7%AF%87%EF%BC%89.png)
 
 
 
@@ -632,7 +632,7 @@ webpack 提供以下方式，帮助在代码发生变化后自动编译：
 
 3. 运行 `npm run watch` ，会看到 webpack 如何编译代码，且没有退出命令行
 
-   ![npm run watch 没有退出命令行]()
+   ![npm run watch 没有退出命令行](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/npm%20run%20watch%20%E6%B2%A1%E6%9C%89%E9%80%80%E5%87%BA%E5%91%BD%E4%BB%A4%E8%A1%8C.png)
 
 4. 任意修改 src/index.js 文件，会看到 webpack 自动编译，但不会自动刷新页面
 
@@ -749,5 +749,5 @@ webpack 提供以下方式，帮助在代码发生变化后自动编译：
 
 4. 运行 `npm run serve` ，打开浏览器访问 http://localhost:3000/
 
-   ![使用 webpack-dev-middleware]()
+   ![使用 webpack-dev-middleware](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E4%BD%BF%E7%94%A8%20webpack-dev-middleware.png)
 
