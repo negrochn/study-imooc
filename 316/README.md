@@ -17,7 +17,7 @@ webpack 是一个用于现代 JS 应用程序的静态模块打包工具（modul
 
 #### 搭建环境
 
-1. 创建并进入 webpack 文件夹
+1. 创建并进入 webpack5 文件夹
 
 2. 初始化项目，执行 `npm init -y`
 
@@ -43,7 +43,7 @@ webpack 是一个用于现代 JS 应用程序的静态模块打包工具（modul
    <head>
      <meta charset="UTF-8">
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <title>webpack</title>
+     <title>webpack5</title>
    </head>
    <body>
      <script src="./src/index.js"></script>
@@ -60,47 +60,84 @@ webpack 是一个用于现代 JS 应用程序的静态模块打包工具（modul
    }
    ```
 
-7. 执行 `npx webpack` ，看到生成 dist/main.js 文件
+7. 运行 `npx webpack` ，会看到生成 dist/main.js 文件
 
 8. 复制 index.html 到 dist 文件夹，并修改 dist/index.html 文件
 
    ```diff
    - <script src="./src/index.js"></script>
-   + <script src="./bundle.js"></script>
+   + <script src="./main.js"></script>
    ```
 
 9. 打开浏览器访问 dist/index.html ，看到 Hello webpack
 
+   ```diff
+   └─webpack5
+       │  index.html
+       │  package-lock.json
+       │  package.json
+       ├─dist
+       │      index.html
+       │      main.js
+       └─src
+              index.js
+   ```
 
+   
 
 ### 使用 webpack 的配置文件
 
-1. 创建 webpack.config.js 文件
+1. 创建并进入 build-base-conf 文件夹，创建 webpack.config.js 文件
 
    ```js
    const path = require('path')
    
    module.exports = {
      mode: 'development',
-     entry: './src/index.js',
+     entry: './src/index.js', // 此处相对于 package.json 的文件路径
      output: {
        filename: 'bundle.js',
-       path: path.resolve(__dirname, 'dist')
+       path: path.resolve(__dirname, '../dist') // 此处相对于 build-base-conf/webpack.config.js 的文件路径
      }
    }
    ```
 
 2. 修改 package.json 文件
 
-   ```json
+   ```diff
    {
      "scripts": {
-       "build": "webpack"
+   -   "test": "echo \"Error: no test specified\" && exit 1"
+   +   "build": "webpack --config build-base-conf/webpack.config.js"
      }
    }
    ```
 
-3. 执行 `npm run build` ，看到生成 dist/bundle.js 文件
+3. 运行 `npm run build` ，看到生成 dist/bundle.js 文件
+
+   ```diff
+   └─webpack5
+       │  index.html
+       │  package-lock.json
+       │  package.json
+   +   ├─build-base-conf
+   +   │      webpack.config.js
+       ├─dist
+   +   │      bundle.js
+       │      index.html
+       │      main.js
+       └─src
+              index.js
+   ```
+
+4. 修改 dist/index.html 文件
+
+   ```diff
+   - <script src="./main.js"></script>
+   + <script src="./bundle.js"></script>
+   ```
+
+5. 打开浏览器访问 dist/index.html ，看到 Hello webpack
 
 
 
@@ -112,29 +149,47 @@ url-loader 功能类似于 file-loader ，但是在文件大小（单位 byte）
 
 1. 安装 url-loader ，执行 `npm i url-loader -D`
 
-2. 修改 webpack.config.js 文件
+2. 修改 build-base-conf/webpack.config.js 文件
 
-   ```js
+   ```diff
    module.exports = {
-     module: {
-       rules: [
-         {
-           test: /\.(png|svg|jpg|gif)$/,
-           use: {
-             loader: 'url-loader',
-             options: {
-               name: '[name]_[hash].[ext]',
-               outputPath: 'images/',
-               limit: 20480 // 小于 20kb 以 base64 形式打包到 js 文件中，否则打包到 images 文件夹下
-             }
-           }
-         }
-       ]
-     }
+   + module: {
+   +   rules: [
+   +     {
+   +       test: /\.(png|svg|jpg|gif)$/,
+   +       use: {
+   +         loader: 'url-loader',
+   +         options: {
+   +           name: '[name]_[hash].[ext]',
+   +           outputPath: 'images/',
+   +           limit: 20480 // 小于 20kb 以 base64 形式打包到 JS 文件中，否则打包到 images 文件夹下
+   +         }
+   +       }
+   +     }
+   +   ]
+   + }
    }
    ```
 
-3. 修改 src/index.js 文件
+3. 进入 src 文件夹，放入一张 Lynk&Co.jpg 图片
+
+   ```diff
+   └─webpack5
+       │  index.html
+       │  package-lock.json
+       │  package.json
+       ├─build-base-conf
+       │      webpack.config.js
+       ├─dist
+       │      bundle.js
+       │      index.html
+       │      main.js
+       └─src
+              index.js
+   +          Lynk&Co.jpg
+   ```
+
+4. 修改 src/index.js 文件
 
    ```diff
    +import Icon from './Lynk&Co.jpg'
@@ -142,7 +197,6 @@ url-loader 功能类似于 file-loader ，但是在文件大小（单位 byte）
    function component() {
      const elem = document.createElement('div')
      elem.innerHTML = ['Hello', 'webpack'].join(' ')
-     elem.classList.add(style.hello)
    
    + const myIcon = new Image()
    + myIcon.src = Icon
@@ -150,9 +204,13 @@ url-loader 功能类似于 file-loader ，但是在文件大小（单位 byte）
    
      return elem
    }
+   
+   document.body.appendChild(component())
    ```
 
-4. 运行 `npm run build` ，打开浏览器访问 dist/index.html ，看到图片正常显示
+5. 运行 `npm run build` ，打开浏览器访问 dist/index.html
+
+   ![使用 Loader 打包静态资源（图片篇）]()
 
 
 
@@ -162,42 +220,7 @@ url-loader 功能类似于 file-loader ，但是在文件大小（单位 byte）
 
 2. 安装 autoprefixer ，执行 `npm i autoprefixer -D`
 
-3. 安装 sass-loader 和 node-sass ，执行 `npm i sass-loader node-sass -D`
-
-4. 修改 webpack.config.js 文件
-
-   ```js
-   module.exports = {
-     module: {
-       rules: [
-         {
-           test: /\.css$/,
-           use: ['style-loader', 'css-loader', 'postcss-loader'] // 逆序执行
-         },
-         {
-           test: /\.s[ac]ss$/,
-           use: [
-             'style-loader',
-             {
-               loader: 'css-loader',
-               options: {
-                 importLoaders: 2, // 经过测试，importLoaders 没有效果
-                 // 0 => no loaders (default)
-                 // 1 => postcss-loader
-                 // 2 => postcss-loader, sass-loader
-                 modules: true // 开启 CSS Modules
-               }
-             },
-             'postcss-loader',
-             'sass-loader'
-           ]
-         }
-       ]
-     }
-   }
-   ```
-   
-5. 修改 postcss.config.js 文件
+3. 创建 postcss.config.js 文件
 
    ```js
    module.exports = {
@@ -207,15 +230,49 @@ url-loader 功能类似于 file-loader ，但是在文件大小（单位 byte）
    }
    ```
 
+4. 安装 sass-loader 和 node-sass ，执行 `npm i sass-loader node-sass -D`
+
+5. 修改 build-base-conf/webpack.config.js 文件
+
+   ```diff
+   module.exports = {
+     module: {
+       rules: [
+   +     {
+   +       test: /\.css$/,
+   +       use: ['style-loader', 'css-loader', 'postcss-loader'] // 逆序执行
+   +     },
+   +     {
+   +       test: /\.s[ac]ss$/,
+   +       use: [
+   +         'style-loader',
+   +         {
+   +           loader: 'css-loader',
+   +           options: {
+   +             importLoaders: 2, // 经过测试，importLoaders 没有效果
+   +             // 0 => no loaders (default)
+   +             // 1 => postcss-loader
+   +             // 2 => postcss-loader, sass-loader
+   +           }
+   +         },
+   +         'postcss-loader',
+   +         'sass-loader'
+   +       ]
+   +     }
+       ]
+     }
+   }
+   ```
+
 6. 修改 package.json 文件
 
-   ```js
+   ```diff
    {
-     "browserslist": [
-       "last 1 version",
-       "> 1%",
-       "IE 10"
-     ]
+   + "browserslist": [
+   +   "last 1 version",
+   +   "> 1%",
+   +   "IE 10"
+   + ]
    }
    ```
 
@@ -230,9 +287,86 @@ url-loader 功能类似于 file-loader ，但是在文件大小（单位 byte）
    }
    ```
 
+   ```diff
+   └─webpack5
+       │  index.html
+       │  package-lock.json
+       │  package.json
+   +   │  postcss.config.js
+       ├─build-base-conf
+       │      webpack.config.js
+       ├─dist
+       │      bundle.js
+       │      index.html
+       │      main.js
+       └─src
+              index.js
+              Lynk&Co.jpg
+   +          style.scss
+   ```
+
 8. 修改 src/index.js 文件
 
    ```diff
+   import Icon from './Lynk&Co.jpg'
+   +import './style.scss'
+   
+   function component() {
+     const elem = document.createElement('div')
+     elem.innerHTML = ['Hello', 'webpack'].join(' ')
+   + elem.classList.add('hello')
+   
+     const myIcon = new Image()
+     myIcon.src = Icon
+     elem.appendChild(myIcon)
+   
+     return elem
+   }
+   
+   document.body.appendChild(component())
+   ```
+
+9. 运行 `npm run build` ，打开浏览器访问 dist/index.html
+
+   ![使用 Loader 打包静态资源（样式篇）]()
+
+
+
+**开启 CSS Modules**
+
+1. 修改 build-base-conf/webpack.config.js 文件
+
+   ```diff
+   module.exports = {
+     module: {
+       rules: [
+         {
+           test: /\.s[ac]ss$/,
+           use: [
+             'style-loader',
+             {
+               loader: 'css-loader',
+               options: {
+                 importLoaders: 2, // 经过测试，importLoaders 没有效果
+                 // 0 => no loaders (default)
+                 // 1 => postcss-loader
+                 // 2 => postcss-loader, sass-loader
+   +             modules: true // 开启 CSS Modules
+               }
+             },
+             'postcss-loader',
+             'sass-loader'
+           ]
+         }
+       ]
+     }
+   }
+   ```
+
+2. 修改 src/index.js 文件
+
+   ```diff
+   import Icon from './Lynk&Co.jpg'
    -import './style.scss'
    +import style from './style.scss'
    
@@ -241,15 +375,20 @@ url-loader 功能类似于 file-loader ，但是在文件大小（单位 byte）
      elem.innerHTML = ['Hello', 'webpack'].join(' ')
    - elem.classList.add('hello')
    + elem.classList.add(style.hello)
+   
+     const myIcon = new Image()
+     myIcon.src = Icon
+     elem.appendChild(myIcon)
+   
      return elem
    }
    
    document.body.appendChild(component())
    ```
 
-9. 运行 `npm run build` ，打开浏览器访问 dist/index.html ，看到红色字体的 Hello webpack
+3. 运行 `npm run build` ，打开浏览器访问 dist/index.html
 
-10. 查看页面的 \<head> 标签，包含 style 块元素，且包含厂商前缀
+   ![使用 Loader 打包静态资源（样式篇）]()
 
 
 
@@ -257,27 +396,58 @@ url-loader 功能类似于 file-loader ，但是在文件大小（单位 byte）
 
 plugin 可以在 webpack 运行到某个时刻时，帮我们做一些事情。
 
+
+
 #### 设置 HtmlWebpackPlugin
 
 html-webpack-plugin 会在打包结束后，自动生成一个 HTML 文件，并把打包生成的 JS 自动引入到这个 HTML 文件中。
 
 1. 安装 html-webpack-plugin ，执行 `npm i html-webpack-plugin -D`
 
-2. 修改 webpack.config.js 文件
+2. 修改 build-base-conf/webpack.config.js 文件
 
-   ```js
-   const HtmlWebpackPlugin = require('html-webpack-plugin')
+   ```diff
+   +const HtmlWebpackPlugin = require('html-webpack-plugin')
    
    module.exports = {
-     plugins: [
-       new HtmlWebpackPlugin({
-         template: 'index.html'
-       })
-     ]
+   + plugins: [
+   +   new HtmlWebpackPlugin({
+   +     template: 'index.html'
+   +   })
+   + ]
    }
    ```
 
-3. 运行 `npm run build` ，会看到 dist 文件夹下自动创建了一个新的 index.html 文件，所有的 bundle 会自动添加到该文件中
+3. 修改 index.html 文件
+
+   ```diff
+   <!DOCTYPE html>
+   <html lang="en">
+   <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>webpack5</title>
+   </head>
+   <body>
+   - <script src="./src/index.js"></script>
+   </body>
+   </html>
+   ```
+
+4. 运行 `npm run build` ，会看到 dist 文件夹下自动创建了一个新的 index.html 文件，所有的 bundle 会自动添加到该文件中
+
+   ```html
+   <!DOCTYPE html>
+   <html lang="en">
+   <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>webpack5</title>
+   </head>
+   <body>
+   <script src="bundle.js"></script></body>
+   </html>
+   ```
 
 
 
@@ -285,40 +455,82 @@ html-webpack-plugin 会在打包结束后，自动生成一个 HTML 文件，并
 
 1. 安装 clean-webpack-plugin ，执行 `npm i clean-webpack-plugin -D`
 
-2. 修改 webpack.config.js 文件
+2. 修改 build-base-conf/webpack.config.js 文件
 
-   ```js
-   const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+   ```diff
+   const HtmlWebpackPlugin = require('html-webpack-plugin')
+   +const { CleanWebpackPlugin } = require('clean-webpack-plugin')
    
    module.exports = {
      plugins: [
-       new CleanWebpackPlugin()
+       new HtmlWebpackPlugin({
+         template: 'index.html'
+       }),
+   +   new CleanWebpackPlugin()
      ]
    }
    ```
 
-3. 运行 `npm run build` ，检查 dist 文件夹是否被清理过
+3. 运行 `npm run build` ，会看到 dist/main.js 文件被删除，即 dist 文件夹被清理过
+
+   ```diff
+   └─webpack5
+       │  index.html
+       │  package-lock.json
+       │  package.json
+       │  postcss.config.js
+       ├─build-base-conf
+       │      webpack.config.js
+       ├─dist
+       │      bundle.js
+       │      index.html
+   -   │      main.js
+       └─src
+              index.js
+              Lynk&Co.jpg
+              style.scss
+   ```
 
 
 
 ### Entry 与 Output 的基础配置
 
-```js
-// wepback.config.js
+1. 修改 build-base-conf/webpack.config.js 文件
 
-module.exports = {
-  entry: {
-    main: './src/index.js' // 可以使用对象形式配置多个文件
-  },
-  output: {
-    // publicPath: 'https://www.negro.chn/', // 如果项目中的静态资源上传到 CDN ，可以通过配置 publicPath 添加前缀
-    filename: '[name].js',
-    path: path.resolve(__dirname, 'dist')
-  },
-}
-```
+   ```diff
+   module.exports = {
+   - entry: './src/index.js' // 此处相对于 package.json 的文件路径
+   + entry: {
+   +   main: './src/index.js' // 可以使用对象形式配置多个文件
+   + },
+     output: {
+   +   // publicPath: 'https://www.negro.chn/', // 如果项目中的静态资源上传到 CDN ，可以通过配置 publicPath 添加前缀
+   -   filename: 'bundle.js',
+   +   filename: '[name].js',
+       path: path.resolve(__dirname, '../dist') // 此处相对于 build-base-conf/webpack.config.js 的文件路径
+     },
+   }
+   ```
 
+2. 运行 `npm run build` ，会看到生成 dist/main.js 文件
 
+   ```diff
+   └─webpack5
+       │  index.html
+       │  package-lock.json
+       │  package.json
+       │  postcss.config.js
+       ├─build-base-conf
+       │      webpack.config.js
+       ├─dist
+       │      index.html
+   -   │      bundle.js
+   +   │      main.js
+       └─src
+              index.js
+              Lynk&Co.jpg
+              style.scss
+   ```
 
 ### SourceMap 的配置
 
@@ -357,9 +569,9 @@ module.exports = {
 #### cheap 不包含列信息是什么意思？
 
 1. 包含 cheap 关键字，则产生的 .map 文件不包含列信息，即光标只定位到行数，不定位到具体字符位置
-   
+
    ![cheap-source-map 光标](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/cheap-source-map%20%E5%85%89%E6%A0%87.png)
-   
+
 2. 不包含 cheap 关键字，将定位到字符位置
 
    ![eval 光标](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/eval%20%E5%85%89%E6%A0%87.png)
@@ -391,21 +603,14 @@ webpack 提供以下方式，帮助在代码发生变化后自动编译：
 
 可以监听文件变化自动编译，但不会自动刷新页面。
 
-1. 修改 package.json 文件
-
-   ```diff
-   {
-     "script": {
-   +   "watch": "webpack --watch"
-     }
-   }
-   ```
-
-2. 修改 webpack.config.js 文件
+1. 修改 build-base-conf/package.json 文件
 
    ```diff
    module.exports = {
      plugins: [
+       new HtmlWebpackPlugin({
+         template: 'index.html'
+       }),
    -   new CleanWebpackPlugin()
    +   new CleanWebpackPlugin({
    +     cleanStaleWebpackAssets: false // 防止 watch 触发增量构建后删除 index.html 文件
@@ -414,9 +619,41 @@ webpack 提供以下方式，帮助在代码发生变化后自动编译：
    }
    ```
 
+2. 修改 package.json 文件
+
+   ```diff
+   {
+     "script": {
+       "build": "webpack --config build-base-conf/webpack.config.js",
+   +   "watch": "webpack --watch"
+     }
+   }
+   ```
+
 3. 运行 `npm run watch` ，会看到 webpack 如何编译代码，且没有退出命令行
 
-4. 任意修改 index.js 文件，看到 webpack 自动重新编译
+   ![npm run watch 没有退出命令行]()
+
+4. 任意修改 src/index.js 文件，会看到 webpack 自动编译，但不会自动刷新页面
+
+   ```diff
+   import Icon from './Lynk&Co.jpg'
+   import style from './style.scss'
+   
+   function component() {
+     const elem = document.createElement('div')
+     elem.innerHTML = ['Hello', 'webpack'].join(' ')
+   - elem.classList.add(style.hello)
+   
+     const myIcon = new Image()
+     myIcon.src = Icon
+     elem.appendChild(myIcon)
+   
+     return elem
+   }
+   
+   document.body.appendChild(component())
+   ```
 
 
 
@@ -424,7 +661,7 @@ webpack 提供以下方式，帮助在代码发生变化后自动编译：
 
 1. 安装 webpack-dev-server ，运行 `npm i webpack-dev-server -D`
 
-2. 修改 webpack.config.js 文件
+2. 修改 build-base-conf/webpack.config.js 文件
 
    ```diff
    module.exports = {
@@ -432,7 +669,7 @@ webpack 提供以下方式，帮助在代码发生变化后自动编译：
    +   contentBase: './dist', // 告诉服务器内容的来源
    +   open: true // 在服务器启动后打开浏览器
    + },
-   + target: process.env.NODE_ENV === 'production' ? 'browserslist' : 'web'
+   + target: 'web', // 浏览器自动刷新需要开启 target: 'web'
    }
    ```
 
@@ -441,14 +678,33 @@ webpack 提供以下方式，帮助在代码发生变化后自动编译：
    ```diff
    {
      "scripts": {
-   +   "start": "webpack serve"
+       "build": "webpack --config build-base-conf/webpack.config.js",
+       "watch": "webpack --watch --config build-base-conf/webpack.config.js",
+   +   "start": "webpack serve --config build-base-conf/webpack.config.js"
      }
    }
    ```
 
-4. 运行 `npm run start` ，会看到浏览器自动加载页面，任意修改 index.js 文件，web server 将在编译代码后自动重新加载
+4. 运行 `npm run start` ，会看到浏览器自动访问 http://localhost:8080/ ，任意修改 src/index.js 文件，web server 自动编译且自动刷新页面
 
-> webpack 5 需要设置 `target: 'web'` 才能开启页面自动刷新。
+   ```diff
+   import Icon from './Lynk&Co.jpg'
+   import style from './style.scss'
+   
+   function component() {
+     const elem = document.createElement('div')
+     elem.innerHTML = ['Hello', 'webpack'].join(' ')
+   + elem.classList.add(style.hello)
+   
+     const myIcon = new Image()
+     myIcon.src = Icon
+     elem.appendChild(myIcon)
+   
+     return elem
+   }
+   
+   document.body.appendChild(component())
+   ```
 
 
 
@@ -468,7 +724,7 @@ webpack 提供以下方式，帮助在代码发生变化后自动编译：
    const webpackDevMiddleware = require('webpack-dev-middleware')
    
    const app = express()
-   const config = require('./webpack.config.js')
+   const config = require('./build-base-conf/webpack.config')
    const compiler = webpack(config)
    
    app.use(webpackDevMiddleware(compiler, {}))
@@ -483,723 +739,15 @@ webpack 提供以下方式，帮助在代码发生变化后自动编译：
    ```diff
    {
      "scripts": {
+       "build": "webpack --config build-base-conf/webpack.config.js",
+       "watch": "webpack --watch --config build-base-conf/webpack.config.js",
+       "start": "webpack serve --config build-base-conf/webpack.config.js",
    +   "server": "node server.js"
-     }
-   }
-   ```
-
-4. 运行 `npm run server` ，打开浏览器访问 http://localhost:3000
-
-
-
-### Hot Module Replacement 热模块更新
-
-HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 不适用于生产环境。
-
-
-
-#### HMR 加载样式
-
-1. 修改 webpack.config.js 文件
-
-   ```diff
-   +const webpack = require('webpack')
-   
-   module.exports = {
-     devServer: {
-       contentBase: './dist', // 告诉服务器内容的来源
-       open: true, // 在服务器启动后打开浏览器
-   +   hot: true, // 开启热模块更新
-   +   hotOnly: true // 即使热模块更新失败，也不让浏览器自动刷新
-     },
-     plugins: [
-   +   new webpack.HotModuleReplacementPlugin()
-     ]
-   }
-   ```
-
-2. 运行 `npm run start` ，会看到浏览器自动加载页面
-
-3. 修改 src/style.scss 文件，会看到 Hello webpack 字体自动从红色变为绿色
-
-   ```diff
-   -$body-color: red;
-   +$body-color: green;
-   ```
-
-
-
-#### HMR 加载 JS
-
-1. 进入 src 文件夹，新建 print.js 文件
-
-   ```js
-   export default function printMe() {
-     console.log('I get called from print.js!')
-   }
-   ```
-
-2. 修改 src/index.js 文件
-
-   ```diff
-   +import printMe from './print.js'
-   
-   +if (module.hot) {
-   + module.hot.accept('./print.js', () => {
-   +   console.log('Accepting the updated printMe module!')
-   +   printMe()
-   + })
-   +}
-   ```
-
-3. 运行 `npm run start` ，修改 src/print.js 文件
-
-   ```diff
-   export default function printMe() {
-   - console.log('I get called from print.js!')
-   + console.log('Updating print.js...')
-   }
-   ```
-
-4. 看到浏览器控制面板打印 `Updating print.js...`
-
-
-
-对于 JS ，额外使用 `module.hot.accept` 监控变动的文件，并在回调中处理变化后需要做的事；对于 CSS ，style-loader 内置了 `module.hot.accpet` ，不需要额外处理。
-
-
-
-### 使用 Babel 处理 ES6 语法
-
-1. 安装 babel-loader 和 @babel/core ，运行 `npm i babel-loader @babel/core -D`
-
-2. 修改 webpack.config.js 文件
-
-   ```js
-   module.exports = {
-     module: {
-       rules: [
-         {
-           test: /\.js$/,
-           exclude: /node_modules/,
-           use: ['babel-loader']
-         }
-       ]
-   }
-   ```
-
-3. 安装 @babel/preset-env ，运行 `npm i @babel/preset-env -D`
-
-4. 新建 .babelrc 文件
-
-   ```json
-   {
-     "presets": ["@babel/preset-env"]
-   }
-   ```
-
-5. 运行 `npm run build` ，看到 dist/main.js 文件中箭头函数、let/const 等 ES6 语法已转换为 ES5 语法
-
-
-
-#### babel-polyfill（按需加载）
-
-- Babel 7.4 之后弃用 babel-polyfill
-- 推荐直接使用 core-js 和 regenerator
-
-1. 安装 @babel/polyfill ，运行 `npm i @babel/polyfill -D`
-
-2. 修改 src/index.js 文件
-
-   ```diff
-   +['babel-loader', '@babel/core', '@babel/preset-env'].map(item => `npm i ${item} -D`)
-   +Promise.resolve('@babel/polyfill').then(data => data)
-   ```
-
-3. 安装 core-js@3 ，运行 `npm i core-js@3 --save`
-
-4. 修改 .babelrc 文件
-
-   ```json
-   {
-     "presets": [
-       [
-         "@babel/preset-env",
-         {
-           "useBuiltIns": "usage",
-           "corejs": "3"
-         }
-       ]
-     ]
-   }
-   ```
-
-5. 安装 cross-env ，运行 `npm i cross-env -D`
-
-6. 修改 package.json 文件
-
-   ```diff
-   {
-     "scripts": {
-   -   "build": "webpack",
-   +   "build": "cross-env NODE_ENV=production webpack",
-   -   "start": "webpack serve",
-   +   "start": "cross-env NODE_ENV=development webpack serve",
-     }
-   }
-   ```
-
-7. 运行 `npm run build` ，打开 IE11 浏览器访问 dist/index.html 文件，看到控制面板没有报错
-
-
-
-**target 属性**
-
-| 选项        | 描述                                                    |
-| ----------- | ------------------------------------------------------- |
-| web         | 1. webpack-dev-server 开启页面自动刷新<br />2. 开启 HMR |
-| browserlist | 兼容 IE                                                 |
-
-
-
-**babel-polyfill 的问题**
-
-- 会污染全局环境
-- 如果做一个独立的 web 系统，则没问题
-- 如果做一个第三方的库，则会有问题
-
-
-
-#### babel-runtime
-
-1. 安装 @babel/runtime 和 @babel/plugin-transform-runtime ，运行 `npm i @babel/runtime @babel/plugin-transform-runtime -D`
-
-2. 修改 .babelrc 文件
-
-   ```diff
-   {
-     "presets": [
-       [
-         "@babel/preset-env",
-         {
-           "useBuiltIns": "usage",
-           "corejs": "3"
-         }
-       ]
-     ],
-   + "plugins": [
-   +   [
-   +     "@babel/plugin-transform-runtime",
-   +     {
-   +       "absoluteRuntime": false,
-   +       "corejs": 3,
-   +       "helpers": true,
-   +       "regenerator": true,
-   +       "useESModules": false
-   +     }
-   +   ]
-   + ]
-   }
-   ```
-
-3. 安装 @babel/runtime-corejs3 ，运行 `npm i @babel/runtime-corejs3 -D`
-
-4. 运行 `npm run build`
-
-
-
-### webpack 实现对 React 框架代码的打包
-
-1. 安装 @babel/preset-react ，运行 `npm i @babel/preset-react -D`
-
-2. 修改 .babelrc 文件
-
-   ```diff
-   {
-     "presets": [
-       [
-         "@babel/preset-env",
-         {
-           "useBuiltIns": "usage",
-           "corejs": "3"
-         }
-       ],
-   +   "@babel/preset-react"
-     ],
-   - "plugins": [
-   -   [
-   -     "@babel/plugin-transform-runtime",
-   -     {
-   -       "absoluteRuntime": false,
-   -       "corejs": 3,
-   -       "helpers": true,
-   -       "regenerator": true,
-   -       "useESModules": false
-   -     }
-   -   ]
-   - ]
-   }
-   ```
-
-3. 安装 react 和 react-dom ，运行 `npm i react react-dom --save`
-
-4. 修改 src/index.js 文件
-
-   ```js
-   import React, { Component } from 'react'
-   import ReactDOM from 'react-dom'
-   
-   class App extends Component {
-     render() {
-       return (
-         <div>Hello World</div>
-       )
-     }
-   }
-   
-   ReactDOM.render(<App />, document.getElementById('root'))
-   ```
-
-5. 修改 index.html 文件
-
-   ```diff
-   <!DOCTYPE html>
-   <html lang="en">
-   <head>
-     <meta charset="UTF-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <title>webpack</title>
-   </head>
-   <body>
-   + <div id="root"></div>
-   </body>
-   </html>
-   ```
-
-6. 运行 `npm run start` ，会看到浏览器自动加载页面，成功显示 Hello World
-
-
-
-## webpack 的高级概念
-
-### Tree Shaking 概念详解
-
-1. 进入 src 文件夹，新建 math.js 文件
-
-   ```js
-   export const add = (a, b) => {
-     return a + b
-   }
-   
-   export const minus = (a, b) => {
-     return a - b
-   }
-   ```
-
-2. 修改 src/index.js 文件
-
-   ```js
-   import { add } from './math'
-   
-   console.log(add(1, 2))
-   ```
-
-3. 运行 `npm run build` ，查看 dist/main.js 文件，发现没有使用的 minus 函数也打包到 dist/main.js 文件中
-
-   ![未使用 Tree Shaking 打包](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E6%9C%AA%E4%BD%BF%E7%94%A8%20Tree%20Shaking%20%E6%89%93%E5%8C%85.png)
-
-
-
-#### Tree Shaking
-
-- 移除未引用的代码
-- 只支持 ES Module 的引入
-
-
-
-**development** 环境
-
-1. 修改 webpack.config.js 文件
-
-   ```diff
-   module.exports = {
-   + optimization: {
-   +   usedExports: true
-   + },
-   }
-   ```
-
-2. 修改 package.json 文件
-
-   ```diff
-   {
-   + "sideEffects": false, // 设置 sideEffects ，如 ["*.css"] ，表示不需要被 Tree Shaking
-   }
-   ```
-
-3. 运行 `npm run build` ，查看 dist/index.html 文件，发现虽然仍然有 minus 函数，但 `/* unused harmony export minus */`
-
-   ![使用 Tree Shaking 打包](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E4%BD%BF%E7%94%A8%20Tree%20Shaking%20%E6%89%93%E5%8C%85.png)
-
-
-
-**production 环境**
-
-production 环境默认开启 Tree Shaking 。
-
-1. 修改 webpack.config.js 文件
-
-   ```diff
-   module.exports = {
-   - mode: 'development',
-   + mode: 'production',
-   - devtool: 'eval-cheap-module-source-map',
-   + devtoll: 'eval-cheap-source-map',
-   - optimization: {
-   -   usedExports: true
-   - },
-   }
-   ```
-
-2. 运行 `npm run build` ，查看 dist/index.html 文件，期望结果是没有 minus 函数，但实际发现仍存在 minus 函数
-
-   ![使用 production 默认开启 Tree Shaking](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E4%BD%BF%E7%94%A8%20production%20%E9%BB%98%E8%AE%A4%E5%BC%80%E5%90%AF%20Tree%20Shaking.png)
-
-
-
-### development 和 production 模式的区分打包
-
-1. 安装 webpack-merge ，运行 `npm i webpack-merge -D`
-
-2. 新建 build 文件夹，将 webpack.config.js 文件移动到 build 文件夹，并改名为 webpack.common.js
-
-3. 修改 build/webpack.common.js 文件
-
-   ```js
-   const path = require('path')
-   const HtmlWebpackPlugin = require('html-webpack-plugin')
-   const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-   
-   module.exports = {
-     entry: {
-       main: './src/index.js'
-     },
-     output: {
-       // publicPath: 'https://www.negro.chn/', // 如果项目中的静态资源上传到 CDN ，可以通过配置 publicPath 添加前缀
-       filename: '[name].js',
-       path: path.resolve(__dirname, '../dist')
-     },
-     module: {
-       rules: [
-         {
-           test: /\.js$/,
-           exclude: /node_modules/,
-           use: ['babel-loader']
-         },
-         {
-           test: /\.css$/,
-           use: ['style-loader', 'css-loader', 'postcss-loader'] // 逆序执行
-         },
-         {
-           test: /\.s[ac]ss$/,
-           use: [
-             'style-loader',
-             {
-               loader: 'css-loader',
-               options: {
-                 importLoaders: 2, // 经过测试，importLoaders 没有效果
-                 // 0 => no loaders (default)
-                 // 1 => postcss-loader
-                 // 2 => postcss-loader, sass-loader
-                 modules: true // 开启 CSS Modules
-               }
-             },
-             'postcss-loader',
-             'sass-loader'
-           ]
-         },
-         {
-           test: /\.(png|svg|jpg|gif)$/,
-           use: {
-             loader: 'url-loader',
-             options: {
-               name: '[name]_[hash].[ext]',
-               outputPath: 'images/',
-               limit: 20480 // 小于 20kb 以 base64 形式打包到 js 文件中，否则打包到 images 文件夹下
-             }
-           }
-         }
-       ]
-     },
-     plugins: [
-       new HtmlWebpackPlugin({
-         template: 'index.html'
-       }),
-       new CleanWebpackPlugin({
-         cleanStaleWebpackAssets: false // 防止 watch 触发增量构建后删除 index.html 文件
-       })
-     ]
-   }
-   ```
-
-4. 进入 build 文件夹，新建 webpack.dev.js 文件
-
-   ```js
-   const path = require('path')
-   const webpack = require('webpack')
-   const { merge } = require('webpack-merge')
-   const commonConfig = require('./webpack.common.js')
-   
-   module.exports = merge(commonConfig, {
-     mode: 'development',
-     devtool: 'eval-cheap-module-source-map',
-     devServer: {
-       contentBase: path.join(__dirname, 'dist'), // 告诉服务器内容的来源
-       open: true, // 在服务器启动后打开浏览器
-       hot: true, // 开启热模块更新
-       hotOnly: true // 即使热模块更新失败，也不让浏览器自动刷新
-     },
-     plugins: [
-       new webpack.HotModuleReplacementPlugin()
-     ],
-     optimization: {
-       usedExports: true
-     },
-     target: 'web'
-   })
-   ```
-
-5. 进入 build 文件夹，新建 webpack.prod.js 文件
-
-   ```js
-   const { merge } = require('webpack-merge')
-   const commonConfig = require('./webpack.common.js')
-   
-   module.exports = merge(commonConfig, {
-     mode: 'production',
-     devtool: 'eval-cheap-source-map',
-     target: 'browserslist'
-   })
-   ```
-
-6. 修改 package.json 文件
-
-   ```js
-   {
-     "scripts": {
-       "dev": "webpack serve --config ./build/webpack.dev.js",
-       "build": "webpack --config ./build/webpack.prod.js"
      },
    }
    ```
 
-7. 运行 `npm run dev` ，会看到浏览器自动加载页面，控制面板没有报错
+4. 运行 `npm run serve` ，打开浏览器访问 http://localhost:3000/
 
-8. 运行 `npm run build` ，打开浏览器访问 dist/index.html 文件，控制面板没有报错
-
-
-
-### Code Splitting
-
-解决打包文件大，加载时间长的问题，分出第三方库文件。
-
-**同步引入模块代码**
-
-1. 修改 package.json 文件
-
-   ```diff
-   {
-     "scripts": {
-   +   "build:dev": "webpack --config ./build/webpack.dev.js"
-     }
-   }
-   ```
-
-2. 修改 src/index.js 文件
-
-   ```js
-   import _ from 'lodash'
-   
-   console.log(_.join(['webpack', 'Code Splitting'], ' '))
-   ```
-
-3. 安装 lodash ，运行 `npm i lodash -D`
-
-4. 修改 build/webpack.common.js 文件
-
-   ```diff
-   module.exports = {
-   + optimization: {
-   +   splitChunks: {
-   +     chunks: 'all'
-   +   }
-   + }
-   }
-   ```
-
-5. 运行 `npm run build:dev` ，查看到 dist 文件夹下存在 vendors 前缀的文件
-
-   ![Code Splitting 打包](https://github.com/negrochn/study-imooc/blob/master/316/img/Code%20Splitting%20%E6%89%93%E5%8C%85.png)
-
-**异步引入模块代码**
-
-1. 修改 src/index.js 文件
-
-   ```js
-   function component() {
-     return import('lodash').then(({ default: _ }) => {
-       const elem = document.createElement('div')
-       elem.innerHTML = _.join(['lodash', 'join'], ',')
-       return elem
-     })
-   }
-   
-   document.addEventListener('click', () => {
-     component().then(elem => {
-       document.body.appendChild(elem)
-     })
-   })
-   ```
-
-2. 修改 build/webpack.common.js 文件
-
-   ```diff
-   module.exports = {
-   - optimization: {
-   -   splitChunks: {
-   -     chunks: 'all'
-   -   }
-   - }
-   }
-   ```
-
-3. 运行 `npm run build:dev` ，查看到 dist 文件夹下存在 vendors 前缀的文件
-
-   ![Code Splitting 打包动态导入](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Code%20Splitting%20%E6%89%93%E5%8C%85%E5%8A%A8%E6%80%81%E5%AF%BC%E5%85%A5.png)
-   
-4. 魔法注释，修改 src/index.js 文件
-
-   ```diff
-   function component() {
-   - return import('lodash').then(({ default: _ }) => {
-   + return import(/* webpackChunkName: 'lodash' */'lodash').then(({ default: _ }) => {
-       const elem = document.createElement('div')
-       elem.innerHTML = _.join(['lodash', 'join'], ',')
-       return elem
-     })
-   }
-   ```
-
-5. 运行 `npm run build:dev` ，查看到 dist 文件夹下存在 lodash.js 文件
-
-   ![Code Splitting 打包魔法注释动态导入](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Code%20Splitting%20%E6%89%93%E5%8C%85%E9%AD%94%E6%B3%95%E6%B3%A8%E9%87%8A%E5%8A%A8%E6%80%81%E5%AF%BC%E5%85%A5.png)
-
-
-
-### SplitChunksPlugin 配置
-
-1. 修改 webpack.config.js 文件
-
-   ```js
-   module.exports = {
-     optimization: {
-       splitChunks: {
-         // all ：全部 chunk
-         // async ：异步 chunk ，只处理异步导入的文件
-         // initial ：入口 chunk ，不处理异步导入的文件
-         chunks: 'all',
-         minSize: 0,
-         minRemainingSize: 0,
-         minChunks: 1, // 当一个模块被引用至少一次才进行代码分割
-         maxAsyncRequests: 30, // 同时加载的模块数最多是 30
-         maxInitialRequests: 30, // 入口文件引入的库最多分割出 30 个
-         enforceSizeThreshold: 50000,
-         // 缓存分组
-         cacheGroups: {
-           defaultVendors: {
-             test: /[\\/]node_modules[\\/]/,
-             priority: -10,
-             reuseExistingChunk: true, // 如果一个模块已经被打包了，再打包会忽略这个模块
-             chunks: 'async',
-             filename: 'vendors.js'
-           },
-           default: {
-             minChunks: 1,
-             priority: -20,
-             reuseExistingChunk: true,
-             chunks: 'initial',
-             filename: 'common.js'
-           }
-         }
-       }
-     }
-   }
-   ```
-
-2. 运行 `npm run build:dev` ，查看到 dist 文件夹下存在 vendors.js 和 common.js 文件
-
-   ![Code Splitting 配置 splitChunks](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Code%20Splitting%20%E9%85%8D%E7%BD%AE%20splitChunks.png)
-
-
-
-### Lazy Loading 懒加载，Chunk 是什么？
-
-Lazy Loading ，是用 import() 来异步按需加载模块，这样能让页面加载更快。
-
-chunk ，指的是项目打包完成后 dist 文件夹下有几个 JS 文件，每个 JS 文件都是 chunk 。
-
-
-
-### 打包分析，preload，prefetch
-
-#### 官方分析工具
-
-https://github.com/webpack/analyse
-
-1. 修改 package.json 文件
-
-   ```diff
-   {
-     "scripts": {
-   -   "build:dev": "webpack --config ./build/webpack.dev.js"
-   +   "build:dev": "webpack --config ./build/webpack.dev.js --profile --json > stats.json"
-     }
-   }
-   ```
-
-2. 运行 `npm run build:dev` ，会看到根目录下生成 stats.json 文件
-
-可以将文件上传到 http://webpack.github.io/analyse/ 或 https://alexkuz.github.io/webpack-chart/ ，进行 bundle 分析。
-
-
-
-#### 推荐使用 webpack-bundle-analyzer
-
-https://github.com/webpack-contrib/webpack-bundle-analyzer
-
-1. 安装 webpack-bundle-analyzer ，运行 `npm i webpack-bundle-analyzer -D`
-
-2. 修改 build/webpack.dev.js 文件
-
-   ```diff
-   + const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
-   
-   module.exports = merge(commonConfig, {
-     plugins: [
-   +   new BundleAnalyzerPlugin()
-     ]
-   })
-   ```
-
-3. 运行 `npm run build:dev` ，会看到自动打开浏览器访问 http://127.0.0.1:8888/
-
-
-
-#### prefech & preload
-
-- preload 会在父 chunk 加载时，以并行方式开始加载；prefetch 会在父 chunk 加载结束后开始加载
-- preload 具有中等优先级，并立即下载；prefetch 在浏览器闲置时下载
-- preload 会在父 chunk 中立即请求，用于当下时刻；prefetch 会用于未来的某个时刻
-
-
+   ![使用 webpack-dev-middleware]()
 
