@@ -4,7 +4,7 @@
   "description": "",
   "private": true,
   "scripts": {
-    "build": "webpack --config build-base-conf/webpack.config.js",
+    "build": "webpack --config build-babel-conf/webpack.config.js",
     "watch": "webpack --watch --config build-base-conf/webpack.config.js",
     "start": "webpack serve --config build-hmr-conf/webpack.config.js",
     "server": "node server.js"
@@ -13,7 +13,14 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/plugin-transform-runtime": "^7.12.10",
+    "@babel/polyfill": "^7.12.1",
+    "@babel/preset-env": "^7.12.11",
+    "@babel/runtime": "^7.12.5",
+    "@babel/runtime-corejs3": "^7.12.5",
     "autoprefixer": "^10.2.3",
+    "babel-loader": "^8.2.2",
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^5.0.1",
     "express": "^4.17.1",
@@ -32,5 +39,8 @@
     "last 1 version",
     "> 1%",
     "IE 10"
-  ]
+  ],
+  "dependencies": {
+    "core-js": "^3.8.3"
+  }
 }

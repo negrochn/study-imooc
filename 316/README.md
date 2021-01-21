@@ -826,7 +826,7 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
    }
    ```
 
-   ![Hot Module Replacement CSS]()
+   ![Hot Module Replacement CSS](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Hot%20Module%20Replacement%20CSS.gif)
 
 
 
@@ -901,9 +901,196 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
    }
    ```
 
-   ![Hot Module Replacement JS]()
+   ![Hot Module Replacement JS](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Hot%20Module%20Replacement%20JS.gif)
 
 对于 JS ，额外使用 `module.hot.accept` 监控变动的文件，并在回调中处理变化后需要做的事；对于 CSS ，style-loader 内置了 `module.hot.accpet` ，不需要额外处理。
 
 
+
+### 使用 Babel 处理 ES6 语法
+
+1. 新建 build-babel-conf 文件夹，将 build-hmr-conf/webpack.config.js 文件复制到 build-babel-conf 文件夹下
+
+2. 安装 babel-loader 和 @babel/core ，运行 `npm i babel-loader @babel/core -D`
+
+3. 修改 build-babel-conf/webpack.config.js 文件
+
+   ```diff
+   module.exports = {
+     module: {
+       rules: [
+   +     {
+   +       test: /\.js$/,
+   +       exclude: /node_modules/,
+   +       use: ['babel-loader']
+   +     }
+       ]
+     },
+   }
+   ```
+
+4. 安装 @babel/preset-env ，运行 `npm i @babel/preset-env -D`
+
+5. 新建 .babelrc 文件
+
+   ```json
+   {
+     "presets": ["@babel/preset-env"]
+   }
+   ```
+
+   ```diff
+   └─webpack5
+   +   │  .babelrc
+       │  index.html
+       │  package-lock.json
+       │  package.json
+       │  postcss.config.js
+       │  server.js
+   +   ├─build-babel-conf
+   +   │      webpack.config.js
+       ├─build-base-conf
+       │      webpack.config.js
+       ├─build-hmr-conf
+       │      webpack.config.js
+       ├─dist
+       └─src
+              index.js
+              Lynk&Co.jpg
+              print.js
+              style.scss
+   ```
+
+6. 修改 package.json 文件
+
+   ```diff
+   {
+     "scripts": {
+   -   "build": "webpack --config build-base-conf/webpack.config.js",
+   +   "build": "webpack --config build-babel-conf/webpack.config.js",
+     }
+   }
+   ```
+
+7. 运行 `npm run build` ，会看到 dist/main.js 文件中 let/const 、箭头函数等 ES6 语法已转换为 ES5 语法
+
+   ![使用 Babel 处理 ES6 语法]()
+
+
+
+#### babel-polyfill（按需加载）
+
+- Babel 7.4 之后弃用 babel-polyfill
+- 推荐直接使用 core-js 和 regenerator
+
+1. 安装 @babel/polyfill ，运行 `npm i @babel/polyfill -D`
+
+2. 安装 core-js@3 ，运行 `npm install --save core-js@3`
+
+3. 修改 .babelrc 文件
+
+   ```diff
+   {
+   - "presets": ["@babel/preset-env"]
+   + "presets": [
+   +   [
+   +     "@babel/preset-env",
+   +     {
+   +       "useBuiltIns": "usage",
+   +       "corejs": "3"
+   +     }
+   +   ]
+   + ]
+   }
+   ```
+
+4. 修改 src/index.js 文件
+
+   ```diff
+   +['babel-loader', '@babel/core', '@babel/preset-env'].map(item => `npm i ${item} -D`)
+   +Promise.resolve('@babel/polyfill').then(data => data)
+   ```
+
+5. 运行 `npm run build` ，打开 IE11 访问 dist/index.html 文件
+
+   ![使用 babel-polyfill IE11 报错]()
+
+6. 修改 build-babel-conf/webpack.config.js 文件
+
+   ```diff
+   module.exports = {
+   - target: 'web',
+   + target: 'browserslist',
+   }
+   ```
+
+7. 运行 `npm run build` ，打开 IE11 访问 dist/index.html 文件
+
+   ![使用 babel-polyfill IE11 不报错]()
+
+
+
+**target 属性**
+
+| 选项        | 描述                                                    |
+| ----------- | ------------------------------------------------------- |
+| web         | 1. webpack-dev-server 开启页面自动刷新<br />2. 开启 HMR |
+| browserlist | 兼容 IE                                                 |
+
+
+
+**babel-polyfill 的问题**
+
+- 会污染全局环境
+- 如果做一个独立的 web 系统，则没问题
+- 如果做一个第三方的库，则会有问题
+
+
+
+#### babel-runtime
+
+1. 取消 babel-polyfill 的配置
+
+   ```diff
+   {
+   + "presets": ["@babel/preset-env"]
+   - "presets": [
+   -   [
+   -     "@babel/preset-env",
+   -     {
+   -       "useBuiltIns": "usage",
+   -       "corejs": "3"
+   -     }
+   -   ]
+   - ]
+   }
+   ```
+
+   ![使用 babel-runtime 前 IE11 报错]()
+
+2. 安装 @babel/runtime 和 @babel/plugin-transform-runtime ，运行 `npm i @babel/runtime @babel/plugin-transform-runtime -D`
+
+3. 修改 .babelrc 文件
+
+   ```diff
+   {
+     "presets": ["@babel/preset-env"],
+   + "plugins": [
+   +   [
+   +     "@babel/plugin-transform-runtime",
+   +     {
+   +       "absoluteRuntime": false,
+   +       "corejs": 3,
+   +       "helpers": true,
+   +       "regenerator": true,
+   +       "useESModules": false
+   +     }
+   +   ]
+   + ]
+   }
+   ```
+
+4. 运行 `npm run build` ，打开 IE11 访问 dist/index.html 文件
+
+   ![使用 babel-runtime IE11 不报错]()
 
