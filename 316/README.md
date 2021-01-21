@@ -974,7 +974,7 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
 
 7. 运行 `npm run build` ，会看到 dist/main.js 文件中 let/const 、箭头函数等 ES6 语法已转换为 ES5 语法
 
-   ![使用 Babel 处理 ES6 语法]()
+   ![使用 Babel 处理 ES6 语法](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E4%BD%BF%E7%94%A8%20Babel%20%E5%A4%84%E7%90%86%20ES6%20%E8%AF%AD%E6%B3%95.png)
 
 
 
@@ -1013,7 +1013,7 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
 
 5. 运行 `npm run build` ，打开 IE11 访问 dist/index.html 文件
 
-   ![使用 babel-polyfill IE11 报错]()
+   ![使用 babel-polyfill IE11 报错](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E4%BD%BF%E7%94%A8%20babel-polyfill%20IE11%20%E6%8A%A5%E9%94%99.png)
 
 6. 修改 build-babel-conf/webpack.config.js 文件
 
@@ -1026,7 +1026,7 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
 
 7. 运行 `npm run build` ，打开 IE11 访问 dist/index.html 文件
 
-   ![使用 babel-polyfill IE11 不报错]()
+   ![使用 babel-polyfill IE11 不报错](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E4%BD%BF%E7%94%A8%20babel-polyfill%20IE11%20%E4%B8%8D%E6%8A%A5%E9%94%99.png)
 
 
 
@@ -1066,7 +1066,7 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
    }
    ```
 
-   ![使用 babel-runtime 前 IE11 报错]()
+   ![使用 babel-runtime 前 IE11 报错](https://github.com/negrochn/study-imooc/blob/master/316/img/%E4%BD%BF%E7%94%A8%20babel-runtime%20%E5%89%8D%20IE11%20%E6%8A%A5%E9%94%99.png?raw=true)
 
 2. 安装 @babel/runtime 和 @babel/plugin-transform-runtime ，运行 `npm i @babel/runtime @babel/plugin-transform-runtime -D`
 
@@ -1092,5 +1092,5 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
 
 4. 运行 `npm run build` ，打开 IE11 访问 dist/index.html 文件
 
-   ![使用 babel-runtime IE11 不报错]()
+   ![使用 babel-runtime IE11 不报错](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E4%BD%BF%E7%94%A8%20babel-runtime%20IE11%20%E4%B8%8D%E6%8A%A5%E9%94%99.png)
 
