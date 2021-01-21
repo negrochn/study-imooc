@@ -4,7 +4,7 @@
   "description": "",
   "private": true,
   "scripts": {
-    "build": "webpack --config build-babel-conf/webpack.config.js",
+    "build": "webpack --config build-react-conf/webpack.config.js",
     "watch": "webpack --watch --config build-base-conf/webpack.config.js",
     "start": "webpack serve --config build-hmr-conf/webpack.config.js",
     "server": "node server.js"
@@ -17,6 +17,7 @@
     "@babel/plugin-transform-runtime": "^7.12.10",
     "@babel/polyfill": "^7.12.1",
     "@babel/preset-env": "^7.12.11",
+    "@babel/preset-react": "^7.12.10",
     "@babel/runtime": "^7.12.5",
     "@babel/runtime-corejs3": "^7.12.5",
     "autoprefixer": "^10.2.3",
@@ -41,6 +42,8 @@
     "IE 10"
   ],
   "dependencies": {
-    "core-js": "^3.8.3"
+    "core-js": "^3.8.3",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
   }
 }

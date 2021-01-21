@@ -1094,3 +1094,129 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
 
    ![使用 babel-runtime IE11 不报错](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E4%BD%BF%E7%94%A8%20babel-runtime%20IE11%20%E4%B8%8D%E6%8A%A5%E9%94%99.png)
 
+
+
+### webpack 实现对 React 框架代码的打包
+
+1. 新建 build-react-conf 文件夹，将 build-babel-conf/webpack.config.js 文件复制到 build-react-conf 文件夹下
+
+2. 安装 @babel/preset-react ，运行 `npm i @babel/preset-react -D`
+
+3. 修改 .babelrc 文件
+
+   ```diff
+   {
+   - "presets": ["@babel/preset-env"],
+   + "presets": ["@babel/preset-env", "@babel/preset-react"],
+   }
+   ```
+
+4. 安装 react 和 react-dom ，运行 `npm i react react-dom --save`
+
+5. 进入 src 文件夹，新增 react.jsx 文件
+
+   ```jsx
+   import React, { Component } from 'react'
+   import ReactDOM from 'react-dom'
+   
+   class App extends Component {
+     render() {
+       return (
+         <div>Hello World</div>
+       )
+     }
+   }
+   
+   ReactDOM.render(<App />, document.getElementById('root'))
+   ```
+
+6. 新增 react.html 文件
+
+   ```html
+   <!DOCTYPE html>
+   <html lang="en">
+   <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>webpack5</title>
+   </head>
+   <body>
+     <div id="root"></div>
+   </body>
+   </html>
+   ```
+
+7. 修改 build-react-conf/webpack.config.js 文件
+
+   ```diff
+   module.exports = {
+     entry: {
+   -   main: './src/index.js'
+   +   main: './src/react.jsx'
+     },
+     module: {
+       rules: [
+        {
+   -       test: /\.js$/,
+   +       test: /\.jsx?$/,
+           exclude: /node_modules/,
+           use: ['babel-loader']
+         }
+       ]
+     },
+     plugins: [
+       new HtmlWebpackPlugin({
+   -     template: 'index.html'
+   +     template: 'react.html'
+       }),
+       new CleanWebpackPlugin({
+         cleanStaleWebpackAssets: false // 防止 watch 触发增量构建后删除 index.html 文件
+       }),
+       new webpack.HotModuleReplacementPlugin()
+     ]
+   }
+   ```
+
+   ```diff
+   └─webpack5
+       │  .babelrc
+       │  index.html
+       │  package-lock.json
+       │  package.json
+       │  postcss.config.js
+   +   │  react.html
+       │  server.js
+       ├─build-babel-conf
+       │      webpack.config.js
+       ├─build-base-conf
+       │      webpack.config.js
+       ├─build-hmr-conf
+       │      webpack.config.js
+   +   ├─build-react-conf
+   +   │      webpack.config.js
+       ├─dist
+       │      index.html
+       │      main.js
+       └─src
+               index.js
+               Lynk&Co.jpg
+               print.js
+   +           react.jsx
+               style.scss
+   ```
+
+8. 修改 package.json 文件
+
+   ```diff
+   {
+     "scripts": {
+   -   "build": "webpack --config build-babel-conf/webpack.config.js",
+   +   "build": "webpack --config build-react-conf/webpack.config.js",
+     }
+   }
+   ```
+
+9. 运行 `npm run build` ，打开浏览器访问 dist/index.html 文件
+
+   ![webpack 实现对 React 框架代码的打包]()
+
