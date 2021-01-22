@@ -532,59 +532,6 @@ html-webpack-plugin 会在打包结束后，自动生成一个 HTML 文件，并
               style.scss
    ```
 
-### SourceMap 的配置
-
-| 关键字     | 说明                                            |
-| ---------- | ----------------------------------------------- |
-| inline     | 将 .map 作为 DataURI 嵌入，不单独生成 .map 文件 |
-| eval       | 使用 eval 包裹模块代码                          |
-| cheap      | 不包含列信息，也不包含 loader 的 SourceMap      |
-| module     | 包含 loader 的 SourceMap                        |
-| source-map | 生成 .map 文件                                  |
-
-在 Chrome （版本 87.0.4280.141），只有 eval 模式包含列信息。
-
-
-
-#### eval 和 source-map 的关系
-
-1. eval 和 source-map 都是 devtool 的配置项
-
-2. eval 将 webpack 中每个模块包裹，然后在模块末尾添加 //# sourceURL ，依靠 sourceURL 找到原始代码的位置
-
-   ![eval](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/eval.png)
-
-3. 包含 source-map 关键字的配置项都会产生一个 .map 文件，该文件保存有原始代码与运行代码的映射关系
-
-4. 包含 inline 关键字的配置项也会产生 .map 文件，但是该文件是经过 base64 编码作为 DataURI 嵌入
-
-   ![inline-source-map](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/inline-source-map.png)
-
-5. eval-source-map 是 eval 和 source-map 的组合，使用 eval 语句包裹模块，也产生了 .map 文件，该文件作为 DataURI 替换 eval 模式中末尾的 //# sourceURL
-
-   ![eval-source-map](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/eval-source-map.png)
-
-
-
-#### cheap 不包含列信息是什么意思？
-
-1. 包含 cheap 关键字，则产生的 .map 文件不包含列信息，即光标只定位到行数，不定位到具体字符位置
-
-   ![cheap-source-map 光标](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/cheap-source-map%20%E5%85%89%E6%A0%87.png)
-
-2. 不包含 cheap 关键字，将定位到字符位置
-
-   ![eval 光标](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/eval%20%E5%85%89%E6%A0%87.png)
-
-
-
-#### devtool 最佳实践
-
-| mode        | devtool                          |
-| ----------- | -------------------------------- |
-| development | eval-cheap-module-source-map     |
-| production  | 省略或者 cheap-module-source-map |
-
 
 
 ### 使用 WebpackDevServer 提升开发效率
@@ -603,7 +550,7 @@ webpack 提供以下方式，帮助在代码发生变化后自动编译：
 
 可以监听文件变化自动编译，但不会自动刷新页面。
 
-1. 修改 build-base-conf/package.json 文件
+1. 修改 build-base-conf/webpack.config.js 文件
 
    ```diff
    module.exports = {
@@ -625,7 +572,7 @@ webpack 提供以下方式，帮助在代码发生变化后自动编译：
    {
      "script": {
        "build": "webpack --config build-base-conf/webpack.config.js",
-   +   "watch": "webpack --watch"
+   +   "watch": "webpack --watch --config build-base-conf/webpack.config.js"
      }
    }
    ```
@@ -814,7 +761,7 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
 
 4. 运行 `npm run start` ，会看到浏览器自动访问 http://localhost:8080/
 
-5. 修改 str/style.scss 文件，会看到 Hello webpack 字体从红色变为绿色
+5. 修改 src/style.scss 文件，会看到 Hello webpack 字体从红色变为绿色
 
    ```diff
    -$body-color: red;
@@ -1218,5 +1165,238 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
 
 9. 运行 `npm run build` ，打开浏览器访问 dist/index.html 文件
 
-   ![webpack 实现对 React 框架代码的打包]()
+   ![webpack 实现对 React 框架代码的打包](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/webpack%20%E5%AE%9E%E7%8E%B0%E5%AF%B9%20React%20%E6%A1%86%E6%9E%B6%E4%BB%A3%E7%A0%81%E7%9A%84%E6%89%93%E5%8C%85.png)
+
+
+
+## webpack 的高级概念
+
+### development 和 production 模式的区分打包
+
+1. 安装 webpack-merge ，运行 `npm i webpack-merge -D`
+
+2. 新建 build-tree-shaking-conf 文件夹
+
+3. 进入 build-tree-shaking-conf 文件夹，新建 webpack.common.js 文件
+
+   ```js
+   const path = require('path')
+   const HtmlWebpackPlugin = require('html-webpack-plugin')
+   const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+   
+   module.exports = {
+     entry: {
+       main: './src/index.js'
+     },
+     output: {
+       // publicPath: 'https://www.negro.chn/', // 如果项目中的静态资源上传到 CDN ，可以通过配置 publicPath 添加前缀
+       filename: '[name].js',
+       path: path.resolve(__dirname, '../dist') // 此处相对于 build-base-conf/webpack.config.js 的文件路径
+     },
+     module: {
+       rules: [
+         {
+           test: /\.(png|svg|jpg|gif)$/,
+           use: {
+             loader: 'url-loader',
+             options: {
+               name: '[name]_[hash].[ext]',
+               outputPath: 'images/',
+               limit: 20480 // 小于 20kb 以 base64 形式打包到 JS 文件中，否则打包到 images 文件夹下
+             }
+           }
+         },
+         {
+           test: /\.css$/,
+           use: ['style-loader', 'css-loader', 'postcss-loader'] // 逆序执行
+         },
+         {
+           test: /\.s[ac]ss$/,
+           use: [
+             'style-loader',
+             {
+               loader: 'css-loader',
+               options: {
+                 importLoaders: 2, // 经过测试，importLoaders 没有效果
+                 // 0 => no loaders (default)
+                 // 1 => postcss-loader
+                 // 2 => postcss-loader, sass-loader
+                 modules: true
+               }
+             },
+             'postcss-loader',
+             'sass-loader'
+           ]
+         },
+         {
+           test: /\.js$/,
+           exclude: /node_modules/,
+           use: ['babel-loader']
+         }
+       ]
+     },
+     plugins: [
+       new HtmlWebpackPlugin({
+         template: 'index.html'
+       }),
+       new CleanWebpackPlugin({
+         cleanStaleWebpackAssets: false // 防止 watch 触发增量构建后删除 index.html 文件
+       })
+     ]
+   }
+   ```
+
+4. 进入 build-tree-shaking-conf 文件夹，新建 webpack.dev.js 文件
+
+   ```js
+   const webpack = require('webpack')
+   const { merge } = require('webpack-merge')
+   const commonConfig = require('./webpack.common.js')
+   
+   module.exports = merge(commonConfig, {
+     mode: 'development',
+     devServer: {
+       contentBase: './dist', // 告诉服务器内容的来源
+       open: true, // 在服务器启动后打开浏览器
+       hot: true, // 开启热模块更新
+       hotOnly: true // 即使热模块更新失败，也不让浏览器自动刷新
+     },
+     target: 'web', // 浏览器自动刷新需要开启 target: 'web'
+     plugins: [
+       new webpack.HotModuleReplacementPlugin()
+     ]
+   })
+   ```
+
+5. 进入 build-tree-shaking-conf 文件夹，新建 webpack.prod.js 文件
+
+   ```js
+   const { merge } = require('webpack-merge')
+   const commonConfig = require('./webpack.common.js')
+   
+   module.exports = merge(commonConfig, {
+     mode: 'production',
+     target: 'browserslist'
+   })
+   ```
+
+   ```diff
+   └─webpack5
+       │  .babelrc
+       │  index.html
+       │  package-lock.json
+       │  package.json
+       │  postcss.config.js
+       │  react.html
+       │  server.js
+       ├─build-babel-conf
+       │      webpack.config.js
+       ├─build-base-conf
+       │      webpack.config.js
+       ├─build-hmr-conf
+       │      webpack.config.js
+       ├─build-react-conf
+       │      webpack.config.js
+   +   ├─build-tree-shaking-conf
+   +   │      webpack.common.js
+   +   │      webpack.dev.js
+   +   │      webpack.prod.js
+       ├─dist
+       └─src
+              index.js
+              Lynk&Co.jpg
+              print.js
+              react.jsx
+              style.scss
+   ```
+
+6. 修改 package.json 文件
+
+   ```diff
+   {
+     "scripts": {
+   -   "build": "webpack --config build-react-conf/webpack.config.js",
+   +   "build": "webpack --config build-tree-shaking-conf/webpack.prod.js",
+   -   "start": "webpack serve --config build-hmr-conf/webpack.config.js",
+   +   "start": "webpack serve --config build-tree-shaking-conf/webpack.dev.js",
+     }
+   }
+   ```
+
+7. 运行 `npm run start` ，会看到浏览器自动访问 http://localhost:8080/ 
+
+8. 运行 `npm run build` ，打开浏览器访问 dist/index.html
+
+
+
+### SourceMap 的配置
+
+| 关键字     | 说明                                            |
+| ---------- | ----------------------------------------------- |
+| inline     | 将 .map 作为 DataURI 嵌入，不单独生成 .map 文件 |
+| eval       | 使用 eval 包裹模块代码                          |
+| cheap      | 不包含列信息，也不包含 loader 的SourceMap       |
+| module     | 包含 loader 的SourceMap                         |
+| source-map | 生成 .map 文件                                  |
+
+
+
+#### eval 和 source-map 是什么关系？
+
+1. eval 和 source-map 都是 devtool 的配置项
+
+2. eval 将 webpack 中每个模块包裹，然后会模块末尾添加 `//# sourceURL` ，依靠 sourceURL 找到原始代码的位置
+
+   ![eval 打包 sourceURL]()
+
+3. 包含 source-map 关键字的配置项都会产生一个 .map 文件，该文件保存有原始代码与运行代码的映射关系
+
+   ![source-map 打包 .map]()
+
+4. 包含 inline 关键字的配置项也会产生 .map 文件，但是该文件是经过 base64 编码作为 DataURI 嵌入
+
+   ![inline-source-map 打包 sourceMappingURL]()
+
+5. eval-source-map 是 eval 和 source-map 的组合，使用 eval 语句包裹模块，也产生了 .map 文件，该文件作为 DataURI 替换 eval 模式中末尾的 //# sourceURL
+
+   ![eval-source-map 打包]()
+
+
+
+#### cheap 不包含列信息是什么意思？
+
+1. 包含 cheap 关键字，则产生的 .map 文件不包含列信息，即光标指定为到行数，不定位到具体字符位置
+
+   ![cheap 打包不包含列信息]()
+
+2. 不包含 cheap 关键字，将定位到字符位置
+
+   ![非 cheap 打包包含列信息]()
+
+
+
+#### devtool 最佳实践
+
+| mode        | devtool                          |
+| ----------- | -------------------------------- |
+| development | eval-cheap-module-source-map     |
+| production  | 省略或者 cheap-module-source-map |
+
+1. 修改 build-tree-shaking-conf/webpack.dev.js 文件
+
+   ```diff
+   module.exports = merge(commonConfig, {
+   + devtool: 'eval-cheap-module-source-map',
+   })
+   ```
+
+2. 修改 build-tree-shaking-conf/webpack.prod.js 文件
+
+   ```diff
+   module.exports = merge(commonConfig, {
+   + devtool: 'cheap-module-source-map',
+   })
+   ```
+
+
 

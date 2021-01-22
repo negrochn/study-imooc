@@ -4,9 +4,9 @@
   "description": "",
   "private": true,
   "scripts": {
-    "build": "webpack --config build-react-conf/webpack.config.js",
+    "build": "webpack --config build-tree-shaking-conf/webpack.prod.js",
     "watch": "webpack --watch --config build-base-conf/webpack.config.js",
-    "start": "webpack serve --config build-hmr-conf/webpack.config.js",
+    "start": "webpack serve --config build-tree-shaking-conf/webpack.dev.js",
     "server": "node server.js"
   },
   "keywords": [],
@@ -34,7 +34,8 @@
     "webpack": "^5.16.0",
     "webpack-cli": "^4.4.0",
     "webpack-dev-middleware": "^4.1.0",
-    "webpack-dev-server": "^3.11.2"
+    "webpack-dev-server": "^3.11.2",
+    "webpack-merge": "^5.7.3"
   },
   "browserslist": [
     "last 1 version",
