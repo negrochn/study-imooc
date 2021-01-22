@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "private": true,
+  "sideEffects": false,
   "scripts": {
     "build": "webpack --config build-tree-shaking-conf/webpack.prod.js",
     "watch": "webpack --watch --config build-base-conf/webpack.config.js",

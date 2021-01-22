@@ -14,5 +14,8 @@ module.exports = merge(commonConfig, {
   target: 'web', // 浏览器自动刷新需要开启 target: 'web'
   plugins: [
     new webpack.HotModuleReplacementPlugin()
-  ]
+  ],
+  optimization: {
+    usedExports: true
+  }
 })

@@ -1,6 +1,7 @@
 import Icon from './Lynk&Co.jpg'
 import style from './style.scss'
 import printMe from './print.js'
+import { add } from './math.js'
 
 function component() {
   const elem = document.createElement('div')
@@ -25,3 +26,5 @@ if (module.hot) {
 
 ['babel-loader', '@babel/core', '@babel/preset-env'].map(item => `npm i ${item} -D`)
 Promise.resolve('@babel/polyfill').then(data => data)
+
+console.log(add(1, 2))

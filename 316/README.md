@@ -1347,19 +1347,19 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
 
 2. eval 将 webpack 中每个模块包裹，然后会模块末尾添加 `//# sourceURL` ，依靠 sourceURL 找到原始代码的位置
 
-   ![eval 打包 sourceURL]()
+   ![eval 打包 sourceURL](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/eval%20%E6%89%93%E5%8C%85%20sourceURL.png)
 
 3. 包含 source-map 关键字的配置项都会产生一个 .map 文件，该文件保存有原始代码与运行代码的映射关系
 
-   ![source-map 打包 .map]()
+   ![source-map 打包 .map](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/source-map%20%E6%89%93%E5%8C%85%20.map.png)
 
 4. 包含 inline 关键字的配置项也会产生 .map 文件，但是该文件是经过 base64 编码作为 DataURI 嵌入
 
-   ![inline-source-map 打包 sourceMappingURL]()
+   ![inline-source-map 打包 sourceMappingURL](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/inline-source-map%20%E6%89%93%E5%8C%85%20sourceMappingURL.png)
 
 5. eval-source-map 是 eval 和 source-map 的组合，使用 eval 语句包裹模块，也产生了 .map 文件，该文件作为 DataURI 替换 eval 模式中末尾的 //# sourceURL
 
-   ![eval-source-map 打包]()
+   ![eval-source-map 打包](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/eval-source-map%20%E6%89%93%E5%8C%85.png)
 
 
 
@@ -1367,11 +1367,11 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
 
 1. 包含 cheap 关键字，则产生的 .map 文件不包含列信息，即光标指定为到行数，不定位到具体字符位置
 
-   ![cheap 打包不包含列信息]()
+   ![cheap 打包不包含列信息](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/cheap%20%E6%89%93%E5%8C%85%E4%B8%8D%E5%8C%85%E5%90%AB%E5%88%97%E4%BF%A1%E6%81%AF.png)
 
 2. 不包含 cheap 关键字，将定位到字符位置
 
-   ![非 cheap 打包包含列信息]()
+   ![非 cheap 打包包含列信息](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E9%9D%9E%20cheap%20%E6%89%93%E5%8C%85%E5%8C%85%E5%90%AB%E5%88%97%E4%BF%A1%E6%81%AF.png)
 
 
 
@@ -1399,4 +1399,105 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
    ```
 
 
+
+### Tree Shaking 概念详解
+
+1. 进入 src 文件夹，新建 math.js 文件
+
+   ```js
+   export const add = (a, b) => {
+     return a + b
+   }
+   
+   export const minus = (a, b) => {
+     return a - b
+   }
+   ```
+
+   ```diff
+   └─webpack5
+       │  .babelrc
+       │  index.html
+       │  package-lock.json
+       │  package.json
+       │  postcss.config.js
+       │  react.html
+       │  server.js
+       ├─build-babel-conf
+       │      webpack.config.js
+       ├─build-base-conf
+       │      webpack.config.js
+       ├─build-hmr-conf
+       │      webpack.config.js
+       ├─build-react-conf
+       │      webpack.config.js
+       ├─build-tree-shaking-conf
+       │      webpack.common.js
+       │      webpack.dev.js
+       │      webpack.prod.js
+       ├─dist
+       │      index.html
+       │      main.js
+       │      main.js.map
+       └─src
+              index.js
+              Lynk&Co.jpg
+   +          math.js
+              print.js
+              react.jsx
+              style.scss
+   ```
+
+2. 修改 src/index.js 文件
+
+   ```diff
+   +import { add } from './math.js'
+   
+   +console.log(add(1, 2))
+   ```
+
+3. 运行 `npx webpack --config build-tree-shaking-conf/webpack.dev.js` ，查看 dist/main.js 文件，发现没有使用的 minus 函数也打包到 dist/main.js 文件中
+
+   ![未使用 Tree Shaking 打包]()
+
+
+
+#### Tree Shaking
+
+- 移除未引用的代码
+- 只支持 ES Module 的引入
+
+
+
+**development 环境**
+
+1. 修改 build-tree-shaking-conf/webpack.dev.js 文件
+
+   ```diff
+   module.exports = merge(commonConfig, {
+   + optimization: {
+   +   usedExports: true
+   + }
+   })
+   ```
+
+2. 修改 package.json 文件
+
+   ```diff
+   {
+   + "sideEffects": false, // 设置 sideEffects ，如 ["*.css"] ，表示不需要被 Tree Shaking
+   }
+   ```
+
+3. 运行 `npx webpack --config build-tree-shaking-conf/webpack.dev.js` ，查看 dist/main.js 文件，发现虽然仍然有 minus 函数，但 `/* unused harmony export minus */`
+
+   ![使用 Tree Shaking 打包]()
+
+
+
+**production 环境**
+
+默认开启 Tree Shaking 。
+
+运行 `npm run build` ，查看 dist/main.js 文件，发现没有 minus 函数。
 
