@@ -1335,8 +1335,8 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
 | ---------- | ----------------------------------------------- |
 | inline     | 将 .map 作为 DataURI 嵌入，不单独生成 .map 文件 |
 | eval       | 使用 eval 包裹模块代码                          |
-| cheap      | 不包含列信息，也不包含 loader 的SourceMap       |
-| module     | 包含 loader 的SourceMap                         |
+| cheap      | 不包含列信息，也不包含 loader 的 SourceMap      |
+| module     | 包含 loader 的 SourceMap                        |
 | source-map | 生成 .map 文件                                  |
 
 
@@ -1357,7 +1357,7 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
 
    ![inline-source-map 打包 sourceMappingURL](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/inline-source-map%20%E6%89%93%E5%8C%85%20sourceMappingURL.png)
 
-5. eval-source-map 是 eval 和 source-map 的组合，使用 eval 语句包裹模块，也产生了 .map 文件，该文件作为 DataURI 替换 eval 模式中末尾的 //# sourceURL
+5. eval-source-map 是 eval 和 source-map 的组合，使用 eval 语句包裹模块，也产生了 .map 文件，该文件作为 DataURI 替换 eval 模式中末尾的 `//# sourceURL`
 
    ![eval-source-map 打包](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/eval-source-map%20%E6%89%93%E5%8C%85.png)
 
@@ -1365,7 +1365,7 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
 
 #### cheap 不包含列信息是什么意思？
 
-1. 包含 cheap 关键字，则产生的 .map 文件不包含列信息，即光标指定为到行数，不定位到具体字符位置
+1. 包含 cheap 关键字，则产生的 .map 文件不包含列信息，即光标指定位到行数，不定位到具体字符位置
 
    ![cheap 打包不包含列信息](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/cheap%20%E6%89%93%E5%8C%85%E4%B8%8D%E5%8C%85%E5%90%AB%E5%88%97%E4%BF%A1%E6%81%AF.png)
 
@@ -1458,7 +1458,7 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
 
 3. 运行 `npx webpack --config build-tree-shaking-conf/webpack.dev.js` ，查看 dist/main.js 文件，发现没有使用的 minus 函数也打包到 dist/main.js 文件中
 
-   ![未使用 Tree Shaking 打包]()
+   ![未使用 Tree Shaking 打包](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E6%9C%AA%E4%BD%BF%E7%94%A8%20Tree%20Shaking%20%E6%89%93%E5%8C%85.png)
 
 
 
@@ -1491,7 +1491,7 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
 
 3. 运行 `npx webpack --config build-tree-shaking-conf/webpack.dev.js` ，查看 dist/main.js 文件，发现虽然仍然有 minus 函数，但 `/* unused harmony export minus */`
 
-   ![使用 Tree Shaking 打包]()
+   ![使用 Tree Shaking 打包](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E4%BD%BF%E7%94%A8%20Tree%20Shaking%20%E6%89%93%E5%8C%85.png)
 
 
 
@@ -1500,4 +1500,351 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
 默认开启 Tree Shaking 。
 
 运行 `npm run build` ，查看 dist/main.js 文件，发现没有 minus 函数。
+
+
+
+### Code Splitting
+
+解决打包文件大，加载时间长的问题，分出第三方库文件。
+
+1. 新建 build-code-splitting-conf 文件夹
+
+2. 将 build-tree-shaking 文件夹下的所有文件拷贝至 build-code-splitting-conf 文件夹
+
+   ```diff
+   └─webpack5
+       │  .babelrc
+       │  index.html
+       │  package-lock.json
+       │  package.json
+       │  postcss.config.js
+       │  react.html
+       │  server.js
+       ├─build-babel-conf
+       │      webpack.config.js
+       ├─build-base-conf
+       │      webpack.config.js
+   +   ├─build-code-splitting-conf
+   +   │      webpack.common.js
+   +   │      webpack.dev.js
+   +   │      webpack.prod.js
+       ├─build-hmr-conf
+       │      webpack.config.js
+       ├─build-react-conf
+       │      webpack.config.js
+       ├─build-tree-shaking-conf
+       │      webpack.common.js
+       │      webpack.dev.js
+       │      webpack.prod.js
+       ├─dist
+       │      index.html
+       │      main.js
+       │      main.js.map
+       └─src
+              index.js
+              Lynk&Co.jpg
+              math.js
+              print.js
+              react.jsx
+              style.scss
+   ```
+
+**同步引入模块代码**
+
+1. 修改 build-code-splitting-conf/webpack.common.js 文件
+
+   ```diff
+   module.exports = {
+   + optimization: {
+   +   splitChunks: {
+   +     chunks: 'all'
+   +   }
+   + }
+   }
+   ```
+
+2. 修改 package.json 文件
+
+   ```diff
+   {
+     "scripts": {
+       "build": "webpack --config build-tree-shaking-conf/webpack.prod.js",
+   +   "build:dev": "webpack --config build-code-splitting-conf/webpack.dev.js",
+       "watch": "webpack --watch --config build-base-conf/webpack.config.js",
+       "start": "webpack serve --config build-tree-shaking-conf/webpack.dev.js",
+       "server": "node server.js"
+     },
+   }
+   ```
+
+3. 安装 lodash ，运行 `npm i lodash -D`
+
+4. 修改 src/index.js 文件
+
+   ```js
+   // import Icon from './Lynk&Co.jpg'
+   // import style from './style.scss'
+   // import printMe from './print.js'
+   // import { add } from './math.js'
+   import _ from 'lodash'
+   
+   // function component() {
+   //   const elem = document.createElement('div')
+   //   elem.innerHTML = ['Hello', 'webpack'].join(' ')
+   //   elem.classList.add(style.hello)
+   
+   //   const myIcon = new Image()
+   //   myIcon.src = Icon
+   //   elem.appendChild(myIcon)
+   
+   //   return elem
+   // }
+   
+   // document.body.appendChild(component())
+   
+   // if (module.hot) {
+   //   module.hot.accept('./print.js', () => {
+   //     console.log('Accepting the updated printMe module!')
+   //     printMe()
+   //   })
+   // }
+   
+   // ['babel-loader', '@babel/core', '@babel/preset-env'].map(item => `npm i ${item} -D`)
+   // Promise.resolve('@babel/polyfill').then(data => data)
+   
+   // console.log(add(1, 2))
+   
+   console.log(_.join(['Code', 'Splitting'], ' '))
+   ```
+
+5. 运行 `npm run build:dev` ，会看到 dist 文件夹下生成了 venders 前缀的文件（vendors-node_modules_lodash_lodash_js.js）
+
+   ![Code Splitting 打包同步代码]()
+
+6. 打开浏览器访问 dist/index.html
+
+   ![Code Splitting 打包同步代码]()
+
+
+
+**异步引入模块代码**
+
+1. 修改 build-code-splitting-conf/webpack.common.js 文件
+
+   ```diff
+   module.exports = {
+   - optimization: {
+   -   splitChunks: {
+   -     chunks: 'all'
+   -   }
+   - }
+   }
+   ```
+
+2. 修改 src/index.js 文件
+
+   ```diff
+   -import _ from 'lodash'
+   
+   -console.log(_.join(['Code', 'Splitting'], ' '))
+   
+   +function component() {
+   + return import('lodash').then(({ default: _ }) => {
+   +   const elem = document.createElement('div')
+   +   elem.innerHTML = _.join(['lodash', 'join'], ',')
+   +   return elem
+   + })
+   +}
+   
+   +document.addEventListener('click', () => {
+   + component().then(elem => {
+   +   document.body.appendChild(elem)
+   + })
+   +})
+   ```
+
+3. 运行 `npm run build:dev` ，会看到 dist 文件夹下生成了 venders 前缀的文件（vendors-node_modules_lodash_lodash_js.js）
+
+4. 打开浏览器访问 dist/index.html
+
+   ![Code Splitting 打包异步代码]()
+
+5. 魔法注释，修改 src/index.js 文件
+
+   ```diff
+   function component() {
+   - return import('lodash').then(({ default: _ }) => {
+   + return import(/* webpackChunkName: 'lodash' */'lodash').then(({ default: _ }) => {
+       const elem = document.createElement('div')
+       elem.innerHTML = _.join(['lodash', 'join'], ',')
+       return elem
+     })
+   }
+   ```
+
+6. 运行 `npm run build:dev` ，会看到 dist 文件夹下生成 lodash.js 文件
+
+   ![Code Splitting 打包魔法注释]()
+
+7. 打开浏览器访问 dist/index.html
+
+   ![Code Splitting 打包魔法注释]()
+
+
+
+### SplitChunksPlugin 配置
+
+1. 修改 build-code-splitting-conf/webpack.common.js 文件
+
+   ```diff
+   module.exports = {
+   + optimization: {
+   +   splitChunks: {
+   +     // all ：全部 chunk
+   +     // async ：异步 chunk ，只处理异步导入的文件
+   +     // initial ：入口 chunk ，不处理异步导入的文件
+   +     chunks: 'all',
+   +     minSize: 0,
+   +     minRemainingSize: 0,
+   +     minChunks: 1, // 当一个模块被引用至少一次才进行代码分割
+   +     maxAsyncRequests: 30, // 同时加载的模块数最多是 30
+   +     maxInitialRequests: 30, // 入口文件引入的库最多分割出 30 个
+   +     enforceSizeThreshold: 50000,
+   +     // 缓存分组
+   +     cacheGroups: {
+   +       defaultVendors: {
+   +         test: /[\\/]node_modules[\\/]/,
+   +         priority: -10,
+   +         reuseExistingChunk: true, // 如果一个模块已经被打包了，再打包会忽略这个模块
+   +         chunks: 'async',
+   +         filename: 'vendors.js'
+   +       },
+   +       default: {
+   +         priority: -20,
+   +         reuseExistingChunk: true,
+   +         chunks: 'initial',
+   +         filename: 'common.js'
+   +       }
+   +     }
+   +   }
+   + }
+   }
+   ```
+
+2. 运行 `npm run build:dev` ，会看到 dist 文件夹下生成 common.js 和 venders.js 文件
+
+   ![Code Splitting 配置 splitChunks]()
+
+3. 打开浏览器访问 dist/index.html
+
+   ![Code Splitting 配置 splitChunks]()
+
+
+
+### Lazy Loading 懒加载，Chunk 是什么？
+
+Lazy Loading ，是用 import() 来异步按需加载模块，这样能让页面加载更快。
+
+chunk ，指的是项目打包完成后 dist 文件夹下有几个 JS 文件，每个 JS 文件都是 chunk 。
+
+
+
+### 打包分析，preload，prefetch
+
+#### 官方分析工具
+
+https://github.com/webpack/analyse
+
+1. 修改 package.json 文件
+
+   ``` diff
+   {
+     "scripts": {
+   +   "analyze": "webpack --config build-code-splitting-conf/webpack.dev.js --profile --json > stats.json"
+     }
+   }
+   ```
+
+2. 运行 `npm run analyze` ，会看到根目录下生成了 stats.json 文件
+
+   ```diff
+   └─webpack5
+       │  .babelrc
+       │  index.html
+       │  package-lock.json
+       │  package.json
+       │  postcss.config.js
+       │  react.html
+       │  server.js
+   +   │  stats.json
+       ├─build-babel-conf
+       │      webpack.config.js
+       ├─build-base-conf
+       │      webpack.config.js
+       ├─build-code-splitting-conf
+       │      webpack.common.js
+       │      webpack.dev.js
+       │      webpack.prod.js
+       ├─build-hmr-conf
+       │      webpack.config.js
+       ├─build-react-conf
+       │      webpack.config.js
+       ├─build-tree-shaking-conf
+       │      webpack.common.js
+       │      webpack.dev.js
+       │      webpack.prod.js
+       ├─dist
+       │      common.js
+       │      index.html
+       │      vendors.js
+       └─src
+               index.js
+               Lynk&Co.jpg
+               math.js
+               print.js
+               react.jsx
+               style.scss
+   ```
+
+3. 可以将 stats.json 文件上传到 http://webpack.github.io/analyse/ 或 https://alexkuz.github.io/webpack-chart/ ，进行 bundle 分析
+
+
+
+#### 推荐使用 webpack-bundle-analyzer
+
+https://github.com/webpack-contrib/webpack-bundle-analyzer
+
+1. 安装 webpack-bundle-analyzer ，运行 `npm i webpack-bundle-analyzer -D`
+
+2. 修改 build-code-splitting-conf/webpack.prod.js 文件
+
+   ```diff
+   const { merge } = require('webpack-merge')
+   const commonConfig = require('./webpack.common.js')
+   +const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+   
+   module.exports = merge(commonConfig, {
+     mode: 'production',
+     devtool: 'cheap-module-source-map',
+     target: 'browserslist',
+   + plugins: [
+   +   new BundleAnalyzerPlugin()
+   + ]
+   })
+   ```
+
+3. 修改 package.json 文件
+
+   ```diff
+   {
+     "scripts": {
+   -   "analyze": "webpack --config build-code-splitting-conf/webpack.dev.js --profile --json > stats.json"
+   +   "analyze": "webpack --config build-code-splitting-conf/webpack.prod.js"
+     }
+   }
+   ```
+
+4. 运行 `npm run analyze` ，会看到自动打开浏览器访问 http://127.0.0.1:8888/
+
+   ![webpack-bundle-analyzer 分析 bundle]()
 

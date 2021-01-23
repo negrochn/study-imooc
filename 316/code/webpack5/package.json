@@ -6,9 +6,11 @@
   "sideEffects": false,
   "scripts": {
     "build": "webpack --config build-tree-shaking-conf/webpack.prod.js",
+    "build:dev": "webpack --config build-code-splitting-conf/webpack.dev.js",
     "watch": "webpack --watch --config build-base-conf/webpack.config.js",
     "start": "webpack serve --config build-tree-shaking-conf/webpack.dev.js",
-    "server": "node server.js"
+    "server": "node server.js",
+    "analyze": "webpack --config build-code-splitting-conf/webpack.prod.js"
   },
   "keywords": [],
   "author": "",
@@ -27,12 +29,14 @@
     "css-loader": "^5.0.1",
     "express": "^4.17.1",
     "html-webpack-plugin": "^4.5.1",
+    "lodash": "^4.17.20",
     "node-sass": "^5.0.0",
     "postcss-loader": "^4.1.0",
     "sass-loader": "^10.1.1",
     "style-loader": "^2.0.0",
     "url-loader": "^4.1.1",
     "webpack": "^5.16.0",
+    "webpack-bundle-analyzer": "^4.4.0",
     "webpack-cli": "^4.4.0",
     "webpack-dev-middleware": "^4.1.0",
     "webpack-dev-server": "^3.11.2",
