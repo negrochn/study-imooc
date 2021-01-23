@@ -1619,11 +1619,11 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
 
 5. 运行 `npm run build:dev` ，会看到 dist 文件夹下生成了 venders 前缀的文件（vendors-node_modules_lodash_lodash_js.js）
 
-   ![Code Splitting 打包同步代码]()
+   ![Code Splitting 打包同步代码](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Code%20Splitting%20%E6%89%93%E5%8C%85%E5%90%8C%E6%AD%A5%E4%BB%A3%E7%A0%81.png)
 
 6. 打开浏览器访问 dist/index.html
 
-   ![Code Splitting 打包同步代码]()
+   ![Code Splitting 打包同步代码](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Code%20Splitting%20%E6%89%93%E5%8C%85%E5%90%8C%E6%AD%A5%E4%BB%A3%E7%A0%81.gif)
 
 
 
@@ -1667,7 +1667,7 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
 
 4. 打开浏览器访问 dist/index.html
 
-   ![Code Splitting 打包异步代码]()
+   ![Code Splitting 打包异步代码](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Code%20Splitting%20%E6%89%93%E5%8C%85%E5%BC%82%E6%AD%A5%E4%BB%A3%E7%A0%81.gif)
 
 5. 魔法注释，修改 src/index.js 文件
 
@@ -1684,11 +1684,11 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
 
 6. 运行 `npm run build:dev` ，会看到 dist 文件夹下生成 lodash.js 文件
 
-   ![Code Splitting 打包魔法注释]()
+   ![Code Splitting 打包魔法注释](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Code%20Splitting%20%E6%89%93%E5%8C%85%E9%AD%94%E6%B3%95%E6%B3%A8%E9%87%8A.png)
 
 7. 打开浏览器访问 dist/index.html
 
-   ![Code Splitting 打包魔法注释]()
+   ![Code Splitting 打包魔法注释](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Code%20Splitting%20%E6%89%93%E5%8C%85%E9%AD%94%E6%B3%95%E6%B3%A8%E9%87%8A.gif)
 
 
 
@@ -1733,11 +1733,11 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
 
 2. 运行 `npm run build:dev` ，会看到 dist 文件夹下生成 common.js 和 venders.js 文件
 
-   ![Code Splitting 配置 splitChunks]()
+   ![Code Splitting 配置 splitChunks](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Code%20Splitting%20%E9%85%8D%E7%BD%AE%20splitChunks.png)
 
 3. 打开浏览器访问 dist/index.html
 
-   ![Code Splitting 配置 splitChunks]()
+   ![Code Splitting 配置 splitChunks](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Code%20Splitting%20%E9%85%8D%E7%BD%AE%20splitChunks.gif)
 
 
 
@@ -1846,5 +1846,5 @@ https://github.com/webpack-contrib/webpack-bundle-analyzer
 
 4. 运行 `npm run analyze` ，会看到自动打开浏览器访问 http://127.0.0.1:8888/
 
-   ![webpack-bundle-analyzer 分析 bundle]()
+   ![webpack-bundle-analyzer 分析 bundle](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/webpack-bundle-analyzer%20%E5%88%86%E6%9E%90%20bundle.png)
 
