@@ -1848,3 +1848,458 @@ https://github.com/webpack-contrib/webpack-bundle-analyzer
 
    ![webpack-bundle-analyzer 分析 bundle](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/webpack-bundle-analyzer%20%E5%88%86%E6%9E%90%20bundle.png)
 
+
+
+#### prefech & preload
+
+- preload 会在父 chunk 加载时，以并行方式开始加载；prefetch 会在父 chunk 加载结束后开始加载
+- preload 具有中等优先级，并立即下载；prefetch 在浏览器闲置时下载
+- preload 会在父 chunk 中立即请求，用于当下时刻；prefetch 会用于未来的某个时刻
+
+**prefetch**
+
+1. 修改 src/index.js 文件
+
+   ```diff
+   function component() {
+   - return import(/* webpackChunkName: 'lodash' */'lodash').then(({ default: _ }) => {
+   + return import(/* webpackPrefetch: true */'lodash').then(({ default: _ }) => {
+       const elem = document.createElement('div')
+       elem.innerHTML = _.join(['lodash', 'join'], ',')
+       return elem
+     })
+   }
+   ```
+
+2. 运行 `npm run build:dev` ，打开浏览器访问 dist/index.html
+
+   ![prefetch]()
+
+
+
+### CSS 文件的代码分割
+
+#### output 的 filename 和 chunkFilename 区别
+
+1. filename 是入口文件的命名
+2. chunkFilename 是间接引入的模块的命名
+
+1. 修改 src/index.js 文件
+
+   ```js
+   import Icon from './Lynk&Co.jpg'
+   import style from './style.scss'
+   // import printMe from './print.js'
+   // import { add } from './math.js'
+   // import _ from 'lodash'
+   
+   function component() {
+     const elem = document.createElement('div')
+     elem.innerHTML = ['Hello', 'webpack'].join(' ')
+     elem.classList.add(style.hello)
+   
+     const myIcon = new Image()
+     myIcon.src = Icon
+     elem.appendChild(myIcon)
+   
+     return elem
+   }
+   
+   document.body.appendChild(component())
+   
+   // if (module.hot) {
+   //   module.hot.accept('./print.js', () => {
+   //     console.log('Accepting the updated printMe module!')
+   //     printMe()
+   //   })
+   // }
+   
+   // ['babel-loader', '@babel/core', '@babel/preset-env'].map(item => `npm i ${item} -D`)
+   // Promise.resolve('@babel/polyfill').then(data => data)
+   
+   // console.log(add(1, 2))
+   
+   // console.log(_.join(['Code', 'Splitting'], ' '))
+   
+   // function component() {
+   //   return import(/* webpackPrefetch: true */'lodash').then(({ default: _ }) => {
+   //     const elem = document.createElement('div')
+   //     elem.innerHTML = _.join(['lodash', 'join'], ',')
+   //     return elem
+   //   })
+   // }
+   
+   // document.addEventListener('click', () => {
+   //   component().then(elem => {
+   //     document.body.appendChild(elem)
+   //   })
+   // })
+   ```
+
+2. 安装 mini-css-extract-plugin ，运行 `npm i mini-css-extract-plugin -D`
+
+3. 修改 build-code-splitting-conf/webpack.prod.js 文件
+
+   ```diff
+   const { merge } = require('webpack-merge')
+   const commonConfig = require('./webpack.common.js')
+   -const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+   +const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+   
+   module.exports = merge(commonConfig, {
+     mode: 'production',
+     devtool: 'cheap-module-source-map',
+     target: 'browserslist',
+   + module: {
+   +   rules: [
+   +     {
+   +       test: /\.(png|svg|jpg|gif)$/,
+   +       use: {
+   +         loader: 'url-loader',
+   +         options: {
+   +           name: '[name]_[hash].[ext]',
+   +           outputPath: 'images/',
+   +           limit: 20480 // 小于 20kb 以 base64 形式打包到 JS 文件中，否则打包到 images 文件夹下
+   +         }
+   +       }
+   +     },
+   +     {
+   +       test: /\.css$/,
+   +       use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'] // 逆序执行
+   +     },
+   +     {
+   +       test: /\.s[ac]ss$/,
+   +       use: [
+   +         MiniCssExtractPlugin.loader,
+   +         {
+   +           loader: 'css-loader',
+   +           options: {
+   +             importLoaders: 2, // 经过测试，importLoaders 没有效果
+   +             // 0 => no loaders (default)
+   +             // 1 => postcss-loader
+   +             // 2 => postcss-loader, sass-loader
+   +             modules: true
+   +           }
+   +         },
+   +         'postcss-loader',
+   +         'sass-loader'
+   +       ]
+   +     },
+   +     {
+   +       test: /\.js$/,
+   +       exclude: /node_modules/,
+   +       use: ['babel-loader']
+   +     }
+   +   ]
+   + },
+     plugins: [
+   -   new BundleAnalyzerPlugin()
+   +   new MiniCssExtractPlugin()
+     ]
+   })
+   ```
+
+4. 修改 build-code-splitting-conf/webpack.dev.js 文件
+
+   ```diff
+   const webpack = require('webpack')
+   const { merge } = require('webpack-merge')
+   const commonConfig = require('./webpack.common.js')
+   
+   module.exports = merge(commonConfig, {
+     mode: 'development',
+     devtool: 'eval-cheap-module-source-map',
+     devServer: {
+       contentBase: './dist', // 告诉服务器内容的来源
+       open: true, // 在服务器启动后打开浏览器
+       hot: true, // 开启热模块更新
+       hotOnly: true // 即使热模块更新失败，也不让浏览器自动刷新
+     },
+     target: 'web', // 浏览器自动刷新需要开启 target: 'web'
+   + module: {
+   +   rules: [
+   +     {
+   +       test: /\.(png|svg|jpg|gif)$/,
+   +       use: {
+   +         loader: 'url-loader',
+   +         options: {
+   +           name: '[name]_[hash].[ext]',
+   +           outputPath: 'images/',
+   +           limit: 20480 // 小于 20kb 以 base64 形式打包到 JS 文件中，否则打包到 images 文件夹下
+   +         }
+   +       }
+   +     },
+   +     {
+   +       test: /\.css$/,
+   +       use: ['style-loader', 'css-loader', 'postcss-loader'] // 逆序执行
+   +     },
+   +     {
+   +       test: /\.s[ac]ss$/,
+   +       use: [
+   +         'style-loader',
+   +         {
+   +           loader: 'css-loader',
+   +           options: {
+   +             importLoaders: 2, // 经过测试，importLoaders 没有效果
+   +             // 0 => no loaders (default)
+   +             // 1 => postcss-loader
+   +             // 2 => postcss-loader, sass-loader
+   +             modules: true
+   +           }
+   +         },
+   +         'postcss-loader',
+   +         'sass-loader'
+   +       ]
+   +     },
+   +     {
+   +       test: /\.js$/,
+   +       exclude: /node_modules/,
+   +       use: ['babel-loader']
+   +     }
+   +   ]
+   + },
+     plugins: [
+       new webpack.HotModuleReplacementPlugin()
+     ],
+     optimization: {
+       usedExports: true
+     }
+   })
+   ```
+
+5. 修改 build-code-splitting-conf/webpack.common.js 文件
+
+   ```diff
+   const path = require('path')
+   const HtmlWebpackPlugin = require('html-webpack-plugin')
+   const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+   
+   module.exports = {
+     entry: {
+       main: './src/index.js'
+     },
+     output: {
+       // publicPath: 'https://www.negro.chn/', // 如果项目中的静态资源上传到 CDN ，可以通过配置 publicPath 添加前缀
+       filename: '[name].js',
+       path: path.resolve(__dirname, '../dist') // 此处相对于 build-base-conf/webpack.config.js 的文件路径
+     },
+   - module: {
+   -   rules: [
+   -     {
+   -       test: /\.(png|svg|jpg|gif)$/,
+   -       use: {
+   -         loader: 'url-loader',
+   -         options: {
+   -           name: '[name]_[hash].[ext]',
+   -           outputPath: 'images/',
+   -           limit: 20480 // 小于 20kb 以 base64 形式打包到 JS 文件中，否则打包到 images 文件夹下
+   -         }
+   -       }
+   -     },
+   -     {
+   -       test: /\.css$/,
+   -       use: ['style-loader', 'css-loader', 'postcss-loader'] // 逆序执行
+   -     },
+   -     {
+   -       test: /\.s[ac]ss$/,
+   -       use: [
+   -         'style-loader',
+   -         {
+   -           loader: 'css-loader',
+   -           options: {
+   -             importLoaders: 2, // 经过测试，importLoaders 没有效果
+   -             // 0 => no loaders (default)
+   -             // 1 => postcss-loader
+   -             // 2 => postcss-loader, sass-loader
+   -             modules: true
+   -           }
+   -         },
+   -         'postcss-loader',
+   -         'sass-loader'
+   -       ]
+   -     },
+   -     {
+   -       test: /\.js$/,
+   -       exclude: /node_modules/,
+   -       use: ['babel-loader']
+   -     }
+   -   ]
+   - },
+     plugins: [
+       new HtmlWebpackPlugin({
+         template: 'index.html'
+       }),
+       new CleanWebpackPlugin({
+         cleanStaleWebpackAssets: false // 防止 watch 触发增量构建后删除 index.html 文件
+       })
+     ],
+     optimization: {
+       splitChunks: {
+         // all ：全部 chunk
+         // async ：异步 chunk ，只处理异步导入的文件
+         // initial ：入口 chunk ，不处理异步导入的文件
+         chunks: 'all',
+         minSize: 0,
+         minRemainingSize: 0,
+         minChunks: 1, // 当一个模块被引用至少一次才进行代码分割
+         maxAsyncRequests: 30, // 同时加载的模块数最多是 30
+         maxInitialRequests: 30, // 入口文件引入的库最多分割出 30 个
+         enforceSizeThreshold: 50000,
+         // 缓存分组
+         cacheGroups: {
+           defaultVendors: {
+             test: /[\\/]node_modules[\\/]/,
+             priority: -10,
+             reuseExistingChunk: true, // 如果一个模块已经被打包了，再打包会忽略这个模块
+             chunks: 'async',
+             filename: 'vendors.js'
+           },
+           default: {
+             priority: -20,
+             reuseExistingChunk: true,
+             chunks: 'initial',
+             filename: 'common.js'
+           }
+         }
+       }
+     }
+   }
+   ```
+
+6. 修改 package.json 文件
+
+   ```diff
+   {
+   - "build": "webpack --config build-tree-shaking-conf/webpack.prod.js",
+   + "build": "webpack --config build-code-splitting-conf/webpack.prod.js",
+   }
+   ```
+
+7. 运行 `npm run build` ，会看到 dist 文件夹下生成 main.css 文件
+
+   ![Code Splitting CSS]()
+
+8. 取消 CSS Modules ，修改build-code-splitting-conf/webpack.prod.js 文件
+
+   ```diff
+   module.exports = merge(commonConfig, {
+     mode: 'production',
+     devtool: 'cheap-module-source-map',
+     target: 'browserslist',
+     module: {
+       rules: [
+         {
+           test: /\.(png|svg|jpg|gif)$/,
+           use: {
+             loader: 'url-loader',
+             options: {
+               name: '[name]_[hash].[ext]',
+               outputPath: 'images/',
+               limit: 20480 // 小于 20kb 以 base64 形式打包到 JS 文件中，否则打包到 images 文件夹下
+             }
+           }
+         },
+         {
+           test: /\.css$/,
+           use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'] // 逆序执行
+         },
+         {
+           test: /\.s[ac]ss$/,
+           use: [
+             MiniCssExtractPlugin.loader,
+             {
+               loader: 'css-loader',
+               options: {
+                 importLoaders: 2, // 经过测试，importLoaders 没有效果
+                 // 0 => no loaders (default)
+                 // 1 => postcss-loader
+                 // 2 => postcss-loader, sass-loader
+   -             modules: true
+               }
+             },
+             'postcss-loader',
+             'sass-loader'
+           ]
+         },
+         {
+           test: /\.js$/,
+           exclude: /node_modules/,
+           use: ['babel-loader']
+         }
+       ]
+     },
+     plugins: [
+       // new BundleAnalyzerPlugin()
+       new MiniCssExtractPlugin()
+     ]
+   })
+   ```
+
+9. 修改 src/index.js 文件
+
+   ```diff
+   import Icon from './Lynk&Co.jpg'
+   -import style from './style.scss'
+   +import './style.scss'
+   
+   function component() {
+     const elem = document.createElement('div')
+     elem.innerHTML = ['Hello', 'webpack'].join(' ')
+   - elem.classList.add(style.hello)
+   + elem.classList.add('hello')
+   
+     const myIcon = new Image()
+     myIcon.src = Icon
+     elem.appendChild(myIcon)
+   
+     return elem
+   }
+   
+   document.body.appendChild(component())
+   ```
+
+10. 修改 package.json 文件
+
+    ```diff
+    {
+    - "sideEffects": false,
+    }
+    ```
+
+11. 运行 `npm run build` ，会看到 dist 文件夹下生成 main.css 文件
+
+    ![Code Splitting CSS]()
+
+12. 修改 build-code-splitting-conf/webpack.prod.js 文件
+
+    ```diff
+    module.exports = merge(commonConfig, {
+      plugins: [
+    -   new MiniCssExtractPlugin()
+    +   new MiniCssExtractPlugin({
+    +     filename: '[name].[contenthash:8].css'
+    +   })
+      ]
+    })
+    ```
+
+13. 运行 `npm run build` ，会看到 dist 文件夹下生成 main.9ae6907e.css
+
+    ![Code Splitting CSS 自定义 filename]()
+
+14. 安装 optimize-css-assets-webpack-plugin ，运行 `npm i optimize-css-assets-webpack-plugin -D`
+
+15. 修改 build-code-splitting-conf/webpack.prod.js 文件
+
+    ```diff
+    +const OptimizationCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+    
+    module.exports = merge(commonConfig, {
+    + optimization: {
+    +   minimizer: [new OptimizationCssAssetsPlugin()]
+    + }
+    })
+    ```
+
+16. 运行 `npm run build` ，会看到 dist 文件夹下生成 main.9ae6907e.css
+

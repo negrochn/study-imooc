@@ -1,22 +1,22 @@
-// import Icon from './Lynk&Co.jpg'
-// import style from './style.scss'
+import Icon from './Lynk&Co.jpg'
+import './style.scss'
 // import printMe from './print.js'
 // import { add } from './math.js'
 // import _ from 'lodash'
 
-// function component() {
-//   const elem = document.createElement('div')
-//   elem.innerHTML = ['Hello', 'webpack'].join(' ')
-//   elem.classList.add(style.hello)
+function component() {
+  const elem = document.createElement('div')
+  elem.innerHTML = ['Hello', 'webpack'].join(' ')
+  elem.classList.add('hello')
 
-//   const myIcon = new Image()
-//   myIcon.src = Icon
-//   elem.appendChild(myIcon)
+  const myIcon = new Image()
+  myIcon.src = Icon
+  elem.appendChild(myIcon)
 
-//   return elem
-// }
+  return elem
+}
 
-// document.body.appendChild(component())
+document.body.appendChild(component())
 
 // if (module.hot) {
 //   module.hot.accept('./print.js', () => {
@@ -32,16 +32,16 @@
 
 // console.log(_.join(['Code', 'Splitting'], ' '))
 
-function component() {
-  return import(/* webpackChunkName: 'lodash' */'lodash').then(({ default: _ }) => {
-    const elem = document.createElement('div')
-    elem.innerHTML = _.join(['lodash', 'join'], ',')
-    return elem
-  })
-}
+// function component() {
+//   return import(/* webpackPrefetch: true */'lodash').then(({ default: _ }) => {
+//     const elem = document.createElement('div')
+//     elem.innerHTML = _.join(['lodash', 'join'], ',')
+//     return elem
+//   })
+// }
 
-document.addEventListener('click', () => {
-  component().then(elem => {
-    document.body.appendChild(elem)
-  })
-})
+// document.addEventListener('click', () => {
+//   component().then(elem => {
+//     document.body.appendChild(elem)
+//   })
+// })
