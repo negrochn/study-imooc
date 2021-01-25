@@ -1873,7 +1873,7 @@ https://github.com/webpack-contrib/webpack-bundle-analyzer
 
 2. 运行 `npm run build:dev` ，打开浏览器访问 dist/index.html
 
-   ![prefetch]()
+   ![prefetch](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/prefetch.gif)
 
 
 
@@ -2177,7 +2177,7 @@ https://github.com/webpack-contrib/webpack-bundle-analyzer
 
 7. 运行 `npm run build` ，会看到 dist 文件夹下生成 main.css 文件
 
-   ![Code Splitting CSS]()
+   ![Code Splitting CSS](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Code%20Splitting%20CSS.png)
 
 8. 取消 CSS Modules ，修改build-code-splitting-conf/webpack.prod.js 文件
 
@@ -2268,7 +2268,7 @@ https://github.com/webpack-contrib/webpack-bundle-analyzer
 
 11. 运行 `npm run build` ，会看到 dist 文件夹下生成 main.css 文件
 
-    ![Code Splitting CSS]()
+    ![Code Splitting CSS](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Code%20Splitting%20CSS.png)
 
 12. 修改 build-code-splitting-conf/webpack.prod.js 文件
 
@@ -2285,7 +2285,7 @@ https://github.com/webpack-contrib/webpack-bundle-analyzer
 
 13. 运行 `npm run build` ，会看到 dist 文件夹下生成 main.9ae6907e.css
 
-    ![Code Splitting CSS 自定义 filename]()
+    ![Code Splitting CSS 自定义 filename](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Code%20Splitting%20CSS%20%E8%87%AA%E5%AE%9A%E4%B9%89%20filename.png)
 
 14. 安装 optimize-css-assets-webpack-plugin ，运行 `npm i optimize-css-assets-webpack-plugin -D`
 
