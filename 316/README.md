@@ -1520,7 +1520,7 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
 
 1. 新建 build-code-splitting-conf 文件夹
 
-2. 将 build-tree-shaking 文件夹下的所有文件拷贝至 build-code-splitting-conf 文件夹
+2. 将 build-tree-shaking-conf 文件夹下的所有文件拷贝至 build-code-splitting-conf 文件夹
 
    ```diff
    └─webpack5
@@ -2423,4 +2423,200 @@ https://github.com/webpack-contrib/webpack-bundle-analyzer
     ![重新设置 output 带 contenthash]()
 
 
+
+### Shimming 的作用
+
+1. 新建 build-shimming-conf 文件夹
+
+2. 将 build-code-splitting-conf 文件夹下的所有文件拷贝至 build-shimming-conf 文件夹
+
+3. 进入 src 文件夹，创建 jquery.ui.js 文件
+
+   ```js
+   export function ui() {
+     $('body').css('background', '#ccc')
+   }
+   ```
+
+   ```diff
+   └─webpack5
+       │  .babelrc
+       │  index.html
+       │  package-lock.json
+       │  package.json
+       │  postcss.config.js
+       │  react.html
+       │  server.js
+       │  stats.json
+       ├─build-babel-conf
+       │      webpack.config.js
+       ├─build-base-conf
+       │      webpack.config.js
+       ├─build-code-splitting-conf
+       │      webpack.common.js
+       │      webpack.dev.js
+       │      webpack.prod.js
+       ├─build-hmr-conf
+       │      webpack.config.js
+       ├─build-react-conf
+       │      webpack.config.js
+   +   ├─build-shimming-conf
+   +   │      webpack.common.js
+   +   │      webpack.dev.js
+   +   │      webpack.prod.js
+       ├─build-tree-shaking-conf
+       │      webpack.common.js
+       │      webpack.dev.js
+       │      webpack.prod.js
+       ├─dist
+       │      index.html
+       │      main.d4a285731aee8ff0eb69.js
+       │      vendors.d8316b4bfc69b566b679.js
+       └─src
+              index.js
+   +          jquery.ui.js
+              Lynk&Co.jpg
+              math.js
+              print.js
+              react.jsx
+              style.scss
+   ```
+
+4. 修改 src/index.js 文件
+
+   ```diff
+   import _ from 'lodash'
+   import $ from 'jquery'
+   +import { ui } from './jquery.ui.js'
+   
+   +ui()
+   
+   const elem = $('<div>')
+   elem.html(_.join(['webpack', 'caching'], ' '))
+   $('body').append(elem)
+   ```
+
+5. 修改 package.json 文件
+
+   ```diff
+   {
+     "scripts": {
+   -   "start": "webpack serve --config build-tree-shaking-conf/webpack.dev.js",
+   +   "start": "webpack serve --config build-shimming-conf/webpack.dev.js",
+     }
+   }
+   ```
+
+6. 运行 `npm run start` ，会看到浏览器自动访问 http://localhost:8080/
+
+   ![$ is not defined]()
+
+7. 修改 build-shimming-conf/webpakc.common.js 文件
+
+   ```diff
+   +const webpack = require('webpack')
+   
+   module.exports = {
+     plugins: [
+       new HtmlWebpackPlugin({
+         template: 'index.html'
+       }),
+       new CleanWebpackPlugin({
+         cleanStaleWebpackAssets: false // 防止 watch 触发增量构建后删除 index.html 文件
+       }),
+   +   new webpack.ProvidePlugin({
+   +     $: 'jquery'
+   +   })
+     ],
+   }
+   ```
+
+8. 运行 `npm run start` ，会看到浏览器自动访问 http://localhost:8080/
+
+   ![使用 shimming 不报 $ is not defined]()
+
+9. 修改 src/index.js 文件
+
+   ```diff
+   import _ from 'lodash'
+   import $ from 'jquery'
+   import { ui } from './jquery.ui.js'
+   
+   ui()
+   
+   const elem = $('<div>')
+   elem.html(_.join(['webpack', 'caching'], ' '))
+   $('body').append(elem)
+   
+   +console.log(this === window)
+   ```
+
+   ![this === window 为 false]()
+
+10. 模块里的 this 指向模块本身，即 `this !== window` ，如果想要 JS 模块的 this 指向 window ，需要使用 imports-loader
+
+11. 安装 imports-loader ，运行 `npm i imports-loader -D`
+
+12. 修改 build-shimming-conf/webpack.dev.js 文件
+
+    ```diff
+    module.exports = merge(commonConfig, {
+      module: {
+        rules: [
+          {
+            test: /\.(png|svg|jpg|gif)$/,
+            use: {
+              loader: 'url-loader',
+              options: {
+                name: '[name]_[hash].[ext]',
+                outputPath: 'images/',
+                limit: 20480 // 小于 20kb 以 base64 形式打包到 JS 文件中，否则打包到 images 文件夹下
+              }
+            }
+          },
+          {
+            test: /\.css$/,
+            use: ['style-loader', 'css-loader', 'postcss-loader'] // 逆序执行
+          },
+          {
+            test: /\.s[ac]ss$/,
+            use: [
+              'style-loader',
+              {
+                loader: 'css-loader',
+                options: {
+                  importLoaders: 2, // 经过测试，importLoaders 没有效果
+                  // 0 => no loaders (default)
+                  // 1 => postcss-loader
+                  // 2 => postcss-loader, sass-loader
+                  modules: true
+                }
+              },
+              'postcss-loader',
+              'sass-loader'
+            ]
+          },
+          {
+            test: /\.js$/,
+            exclude: /node_modules/,
+    -       use: ['babel-loader']
+    +       use: [
+    +         'babel-loader',
+    +         {
+    +           loader: 'imports-loader',
+    +           options: {
+    +             type: 'module',
+    +             wrapper: 'window'
+    +           }
+    +         }
+    +       ]
+          }
+        ]
+      },
+    })
+    ```
+
+13. 运行 `npm run start` ，会看到浏览器自动访问 http://localhost:8080/
+
+    ![使用 imports-loader 后 this === window 为 true]()
 
