@@ -1,14 +1,9 @@
-// import _ from 'lodash'
-// import $ from 'jquery'
-// import { ui } from './jquery.ui.js'
+import _ from 'lodash'
+import $ from 'jquery'
 
-// ui()
-
-// const elem = $('<div>')
-// elem.html(_.join(['webpack', 'caching'], ' '))
-// $('body').append(elem)
-
-console.log(this === window)
+const elem = $('<div>')
+elem.html(_.join(['webpack', 'caching'], ' '))
+$('body').append(elem)
 
 // import Icon from './Lynk&Co.jpg'
 // import './style.scss'

@@ -50,16 +50,7 @@ module.exports = merge(commonConfig, {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: [
-          'babel-loader',
-          {
-            loader: 'imports-loader',
-            options: {
-              type: 'module',
-              wrapper: 'window'
-            }
-          }
-        ]
+        use: ['babel-loader']
       }
     ]
   },
