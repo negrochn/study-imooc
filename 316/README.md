@@ -2333,7 +2333,7 @@ https://github.com/webpack-contrib/webpack-bundle-analyzer
 
 3. 运行 `npm run build` ，会看到 `WARNING in asset size limit: The following asset(s) exceed the recommended size limit (244 KiB).`
 
-   ![WARNING in asset size limit]()
+   ![WARNING in asset size limit](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/WARNING%20in%20asset%20size%20limit.png)
 
 4. 修改 build-code-splitting-conf/webpack.common.js 文件
 
@@ -2399,7 +2399,7 @@ https://github.com/webpack-contrib/webpack-bundle-analyzer
 
 8. 运行 `npm run build` ，会看到 dist 文件夹下有 index.html 、main.js 和 vendors.js 三个文件
 
-   ![重新设置 splitChunks]()
+   ![重新设置 splitChunks](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E9%87%8D%E6%96%B0%E8%AE%BE%E7%BD%AE%20splitChunks.png)
 
 9. 设置 webpack ，使其能够清除浏览器的缓存
 
@@ -2420,7 +2420,7 @@ https://github.com/webpack-contrib/webpack-bundle-analyzer
 
 11. 运行 `npm run build` ，会看到 dist 文件夹下的 main 和 vendors 文件名带 contenthash
 
-    ![重新设置 output 带 contenthash]()
+    ![重新设置 output 带 contenthash](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E9%87%8D%E6%96%B0%E8%AE%BE%E7%BD%AE%20output%20%E5%B8%A6%20contenthash.png)
 
 
 
@@ -2509,7 +2509,7 @@ https://github.com/webpack-contrib/webpack-bundle-analyzer
 
 6. 运行 `npm run start` ，会看到浏览器自动访问 http://localhost:8080/
 
-   ![$ is not defined]()
+   ![$ is not defined](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%24%20is%20not%20defined.png)
 
 7. 修改 build-shimming-conf/webpakc.common.js 文件
 
@@ -2533,7 +2533,7 @@ https://github.com/webpack-contrib/webpack-bundle-analyzer
 
 8. 运行 `npm run start` ，会看到浏览器自动访问 http://localhost:8080/
 
-   ![使用 shimming 不报 $ is not defined]()
+   ![使用 shimming 不报 $ is not defined](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E4%BD%BF%E7%94%A8%20shimming%20%E4%B8%8D%E6%8A%A5%20%24%20is%20not%20defined.png)
 
 9. 修改 src/index.js 文件
 
@@ -2551,7 +2551,7 @@ https://github.com/webpack-contrib/webpack-bundle-analyzer
    +console.log(this === window)
    ```
 
-   ![this === window 为 false]()
+   ![this === window 为 false](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/this%20%3D%3D%3D%20window%20%E4%B8%BA%20false.png)
 
 10. 模块里的 this 指向模块本身，即 `this !== window` ，如果想要 JS 模块的 this 指向 window ，需要使用 imports-loader
 
@@ -2618,5 +2618,5 @@ https://github.com/webpack-contrib/webpack-bundle-analyzer
 
 13. 运行 `npm run start` ，会看到浏览器自动访问 http://localhost:8080/
 
-    ![使用 imports-loader 后 this === window 为 true]()
+    ![使用 imports-loader 后 this === window 为 true](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E4%BD%BF%E7%94%A8%20imports-loader%20%E5%90%8E%20this%20%3D%3D%3D%20window%20%E4%B8%BA%20true.png)
 
