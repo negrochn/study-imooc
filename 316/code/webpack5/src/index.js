@@ -1,22 +1,29 @@
-import Icon from './Lynk&Co.jpg'
-import './style.scss'
+import _ from 'lodash'
+import $ from 'jquery'
+
+const elem = $('<div>')
+elem.html(_.join(['webpack', 'caching'], ' '))
+$('body').append(elem)
+
+// import Icon from './Lynk&Co.jpg'
+// import './style.scss'
 // import printMe from './print.js'
 // import { add } from './math.js'
 // import _ from 'lodash'
 
-function component() {
-  const elem = document.createElement('div')
-  elem.innerHTML = ['Hello', 'webpack'].join(' ')
-  elem.classList.add('hello')
+// function component() {
+//   const elem = document.createElement('div')
+//   elem.innerHTML = ['Hello', 'webpack'].join(' ')
+//   elem.classList.add('hello')
 
-  const myIcon = new Image()
-  myIcon.src = Icon
-  elem.appendChild(myIcon)
+//   const myIcon = new Image()
+//   myIcon.src = Icon
+//   elem.appendChild(myIcon)
 
-  return elem
-}
+//   return elem
+// }
 
-document.body.appendChild(component())
+// document.body.appendChild(component())
 
 // if (module.hot) {
 //   module.hot.accept('./print.js', () => {

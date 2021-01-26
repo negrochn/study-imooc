@@ -1,3 +1,4 @@
+const path = require('path')
 const { merge } = require('webpack-merge')
 const commonConfig = require('./webpack.common.js')
 // const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
@@ -6,7 +7,11 @@ const OptimizationCssAssetsPlugin = require('optimize-css-assets-webpack-plugin'
 
 module.exports = merge(commonConfig, {
   mode: 'production',
-  devtool: 'cheap-module-source-map',
+  // devtool: 'cheap-module-source-map',
+  output: {
+    filename: '[name].[contenthash].js', // contenthash 根据打包的内容改变值，如果两次打包的内容没有改变，则 contenthash 的值是一样的
+    chunkFilename: '[name].[contenthash].js'
+  },
   target: 'browserslist',
   module: {
     rules: [

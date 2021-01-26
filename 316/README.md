@@ -238,6 +238,17 @@ url-loader 功能类似于 file-loader ，但是在文件大小（单位 byte）
    module.exports = {
      module: {
        rules: [
+         {
+           test: /\.(png|svg|jpg|gif)$/,
+           use: {
+             loader: 'url-loader',
+             options: {
+               name: '[name]_[hash].[ext]',
+               outputPath: 'images/',
+               limit: 20480 // 小于 20kb 以 base64 形式打包到 JS 文件中，否则打包到 images 文件夹下
+             }
+           }
+         },
    +     {
    +       test: /\.css$/,
    +       use: ['style-loader', 'css-loader', 'postcss-loader'] // 逆序执行
@@ -388,7 +399,7 @@ url-loader 功能类似于 file-loader ，但是在文件大小（单位 byte）
 
 3. 运行 `npm run build` ，打开浏览器访问 dist/index.html
 
-   ![使用 Loader 打包静态资源（样式篇）](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E4%BD%BF%E7%94%A8%20Loader%20%E6%89%93%E5%8C%85%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90%EF%BC%88%E6%A0%B7%E5%BC%8F%E7%AF%87%EF%BC%89.png)
+   ![使用 Loader 打包静态资源（样式篇）开启 CSS Modules]()
 
 
 
@@ -2302,4 +2313,114 @@ https://github.com/webpack-contrib/webpack-bundle-analyzer
     ```
 
 16. 运行 `npm run build` ，会看到 dist 文件夹下生成 main.9ae6907e.css
+
+
+
+### Webpack 与浏览器缓存（Catching）
+
+1. 安装 jquery ，运行 `npm i jquery -D`
+
+2. 修改 src/index.js 文件
+
+   ```js
+   import _ from 'lodash'
+   import $ from 'jquery'
+   
+   const elem = $('<div>')
+   elem.html(_.join(['webpack', 'caching'], ' '))
+   $('body').append(elem)
+   ```
+
+3. 运行 `npm run build` ，会看到 `WARNING in asset size limit: The following asset(s) exceed the recommended size limit (244 KiB).`
+
+   ![WARNING in asset size limit]()
+
+4. 修改 build-code-splitting-conf/webpack.common.js 文件
+
+   ```diff
+   module.exports = {
+   + performance: false // 忽略性能上的提示
+   }
+   ```
+
+5. 运行 `npm run build` ，会看到编译成功且没有 Warning
+
+6. 修改 build-code-splitting-conf/webpack.prod.js 文件
+
+   ```diff
+   module.exports = merge(commonConfig, {
+     mode: 'production',
+   - devtool: 'cheap-module-source-map',
+   }
+   ```
+
+7. 修改 build-code-splitting-conf/webpack.common.js 文件
+
+   ```diff
+   module.exports = {
+     optimization: {
+       splitChunks: {
+         // all ：全部 chunk
+         // async ：异步 chunk ，只处理异步导入的文件
+         // initial ：入口 chunk ，不处理异步导入的文件
+         chunks: 'all',
+   -     minSize: 0,
+   -     minRemainingSize: 0,
+   -     minChunks: 1, // 当一个模块被引用至少一次才进行代码分割
+   -     maxAsyncRequests: 30, // 同时加载的模块数最多是 30
+   -     maxInitialRequests: 30, // 入口文件引入的库最多分割出 30 个
+   -     enforceSizeThreshold: 50000,
+         // 缓存分组
+         cacheGroups: {
+   -       defaultVendors: {
+   -         test: /[\\/]node_modules[\\/]/,
+   -         priority: -10,
+   -         reuseExistingChunk: true, // 如果一个模块已经被打包了，再打包会忽略这个模块
+   -         chunks: 'async',
+   -         filename: 'vendors.js'
+   -       },
+   -       default: {
+   -         priority: -20,
+   -         reuseExistingChunk: true,
+   -         chunks: 'initial',
+   -         filename: 'common.js'
+   -       }
+   +       vendors: {
+   +         test: /[\\/]node_modules[\\/]/,
+   +         priority: -10,
+   +         reuseExistingChunk: true, // 如果一个模块已经被打包了，再打包会忽略这个模块
+   +         name: 'vendors'
+   +       }
+         }
+       }
+     },
+   }
+   ```
+
+8. 运行 `npm run build` ，会看到 dist 文件夹下有 index.html 、main.js 和 vendors.js 三个文件
+
+   ![重新设置 splitChunks]()
+
+9. 设置 webpack ，使其能够清除浏览器的缓存
+
+10. 修改 build-code-splitting-conf/webpack.prod.js 文件
+
+    ```diff
+    +const path = require('path')
+    
+    module.exports = merge(commonConfig, {
+      mode: 'production',
+      // devtool: 'cheap-module-source-map',
+    + output: {
+    +   filename: '[name].[contenthash].js', // contenthash 根据打包的内容改变值，如果两次打包的内容没有改变，则 contenthash 的值是一样的
+    +   chunkFilename: '[name].[contenthash].js'
+    + },
+    }
+    ```
+
+11. 运行 `npm run build` ，会看到 dist 文件夹下的 main 和 vendors 文件名带 contenthash
+
+    ![重新设置 output 带 contenthash]()
+
+
 
