@@ -2535,88 +2535,282 @@ https://github.com/webpack-contrib/webpack-bundle-analyzer
 
    ![使用 shimming 不报 $ is not defined](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E4%BD%BF%E7%94%A8%20shimming%20%E4%B8%8D%E6%8A%A5%20%24%20is%20not%20defined.png)
 
-9. 修改 src/index.js 文件
+
+
+### 环境变量的使用
+
+1. 新建 build-env-conf 文件夹
+
+2. 将 build-shimming-conf 文件夹下的所有文件拷贝至 build-env-conf 文件夹
 
    ```diff
-   import _ from 'lodash'
-   import $ from 'jquery'
-   import { ui } from './jquery.ui.js'
-   
-   ui()
-   
-   const elem = $('<div>')
-   elem.html(_.join(['webpack', 'caching'], ' '))
-   $('body').append(elem)
-   
-   +console.log(this === window)
+   └─webpack5
+       │  .babelrc
+       │  index.html
+       │  package-lock.json
+       │  package.json
+       │  postcss.config.js
+       │  react.html
+       │  server.js
+       │  stats.json
+       ├─build-babel-conf
+       │      webpack.config.js
+       ├─build-base-conf
+       │      webpack.config.js
+       ├─build-code-splitting-conf
+       │      webpack.common.js
+       │      webpack.dev.js
+       │      webpack.prod.js
+   +   ├─build-env-conf
+   +   │      webpack.common.js
+   +   │      webpack.dev.js
+   +   │      webpack.prod.js
+       ├─build-hmr-conf
+       │      webpack.config.js
+       ├─build-react-conf
+       │      webpack.config.js
+       ├─build-shimming-conf
+       │      webpack.common.js
+       │      webpack.dev.js
+       │      webpack.prod.js
+       ├─build-tree-shaking-conf
+       │      webpack.common.js
+       │      webpack.dev.js
+       │      webpack.prod.js
+       ├─dist
+       └─src
+              index.js
+              jquery.ui.js
+              Lynk&Co.jpg
+              math.js
+              print.js
+              react.jsx
+              style.scss
    ```
 
-   ![this === window 为 false](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/this%20%3D%3D%3D%20window%20%E4%B8%BA%20false.png)
+3. 修改 build-env-conf/webpack.dev.js 文件
 
-10. 模块里的 this 指向模块本身，即 `this !== window` ，如果想要 JS 模块的 this 指向 window ，需要使用 imports-loader
+   ```diff
+   const webpack = require('webpack')
+   -const { merge } = require('webpack-merge')
+   -const commonConfig = require('./webpack.common.js')
+   
+   -module.exports = merge(commonConfig, {
+   +module.exports = {
+     mode: 'development',
+     devtool: 'eval-cheap-module-source-map',
+     devServer: {
+       contentBase: './dist', // 告诉服务器内容的来源
+       open: true, // 在服务器启动后打开浏览器
+       hot: true, // 开启热模块更新
+       hotOnly: true // 即使热模块更新失败，也不让浏览器自动刷新
+     },
+     target: 'web', // 浏览器自动刷新需要开启 target: 'web'
+     module: {
+       rules: [
+         {
+           test: /\.(png|svg|jpg|gif)$/,
+           use: {
+             loader: 'url-loader',
+             options: {
+               name: '[name]_[hash].[ext]',
+               outputPath: 'images/',
+               limit: 20480 // 小于 20kb 以 base64 形式打包到 JS 文件中，否则打包到 images 文件夹下
+             }
+           }
+         },
+         {
+           test: /\.css$/,
+           use: ['style-loader', 'css-loader', 'postcss-loader'] // 逆序执行
+         },
+         {
+           test: /\.s[ac]ss$/,
+           use: [
+             'style-loader',
+             {
+               loader: 'css-loader',
+               options: {
+                 importLoaders: 2, // 经过测试，importLoaders 没有效果
+                 // 0 => no loaders (default)
+                 // 1 => postcss-loader
+                 // 2 => postcss-loader, sass-loader
+                 modules: true
+               }
+             },
+             'postcss-loader',
+             'sass-loader'
+           ]
+         },
+         {
+           test: /\.js$/,
+           exclude: /node_modules/,
+           use: ['babel-loader']
+         }
+       ]
+     },
+     plugins: [
+       new webpack.HotModuleReplacementPlugin()
+     ],
+     optimization: {
+       usedExports: true
+     }
+   -})
+   +}
+   ```
 
-11. 安装 imports-loader ，运行 `npm i imports-loader -D`
+4. 修改 build-env-conf/webpack.prod.js 文件
 
-12. 修改 build-shimming-conf/webpack.dev.js 文件
+   ```diff
+   const path = require('path')
+   -const { merge } = require('webpack-merge')
+   -const commonConfig = require('./webpack.common.js')
+   const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+   const OptimizationCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+   
+   -module.exports = merge(commonConfig, {
+   +module.exports = {
+     mode: 'production',
+     output: {
+       filename: '[name].[contenthash].js', // contenthash 根据打包的内容改变值，如果两次打包的内容没有改变，则 contenthash 的值是一样的
+       chunkFilename: '[name].[contenthash].js'
+     },
+     target: 'browserslist',
+     module: {
+       rules: [
+         {
+           test: /\.(png|svg|jpg|gif)$/,
+           use: {
+             loader: 'url-loader',
+             options: {
+               name: '[name]_[hash].[ext]',
+               outputPath: 'images/',
+               limit: 20480 // 小于 20kb 以 base64 形式打包到 JS 文件中，否则打包到 images 文件夹下
+             }
+           }
+         },
+         {
+           test: /\.css$/,
+           use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'] // 逆序执行
+         },
+         {
+           test: /\.s[ac]ss$/,
+           use: [
+             MiniCssExtractPlugin.loader,
+             {
+               loader: 'css-loader',
+               options: {
+                 importLoaders: 2, // 经过测试，importLoaders 没有效果
+                 // 0 => no loaders (default)
+                 // 1 => postcss-loader
+                 // 2 => postcss-loader, sass-loader
+               }
+             },
+             'postcss-loader',
+             'sass-loader'
+           ]
+         },
+         {
+           test: /\.js$/,
+           exclude: /node_modules/,
+           use: ['babel-loader']
+         }
+       ]
+     },
+     plugins: [
+       new MiniCssExtractPlugin({
+         filename: '[name].[contenthash:8].css'
+       })
+     ],
+     optimization: {
+       minimizer: [new OptimizationCssAssetsPlugin()]
+     }
+   -})
+   +}
+   ```
 
-    ```diff
-    module.exports = merge(commonConfig, {
-      module: {
-        rules: [
-          {
-            test: /\.(png|svg|jpg|gif)$/,
-            use: {
-              loader: 'url-loader',
-              options: {
-                name: '[name]_[hash].[ext]',
-                outputPath: 'images/',
-                limit: 20480 // 小于 20kb 以 base64 形式打包到 JS 文件中，否则打包到 images 文件夹下
-              }
-            }
-          },
-          {
-            test: /\.css$/,
-            use: ['style-loader', 'css-loader', 'postcss-loader'] // 逆序执行
-          },
-          {
-            test: /\.s[ac]ss$/,
-            use: [
-              'style-loader',
-              {
-                loader: 'css-loader',
-                options: {
-                  importLoaders: 2, // 经过测试，importLoaders 没有效果
-                  // 0 => no loaders (default)
-                  // 1 => postcss-loader
-                  // 2 => postcss-loader, sass-loader
-                  modules: true
-                }
-              },
-              'postcss-loader',
-              'sass-loader'
-            ]
-          },
-          {
-            test: /\.js$/,
-            exclude: /node_modules/,
-    -       use: ['babel-loader']
-    +       use: [
-    +         'babel-loader',
-    +         {
-    +           loader: 'imports-loader',
-    +           options: {
-    +             type: 'module',
-    +             wrapper: 'window'
-    +           }
-    +         }
-    +       ]
-          }
-        ]
-      },
-    })
-    ```
+5. 修改 build-env-conf/webpack.common.js 文件
 
-13. 运行 `npm run start` ，会看到浏览器自动访问 http://localhost:8080/
+   ```diff
+   const path = require('path')
+   const HtmlWebpackPlugin = require('html-webpack-plugin')
+   const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+   const webpack = require('webpack')
+   +const { merge } = require('webpack-merge')
+   +const devConfig = require('./webpack.dev.js')
+   +const prodConfig = require('./webpack.prod.js')
+   
+   -module.exports = {
+   +const commonConfig = {
+     entry: {
+       main: './src/index.js'
+     },
+     output: {
+       // publicPath: 'https://www.negro.chn/', // 如果项目中的静态资源上传到 CDN ，可以通过配置 publicPath 添加前缀
+       filename: '[name].js',
+       path: path.resolve(__dirname, '../dist') // 此处相对于 build-base-conf/webpack.config.js 的文件路径
+     },
+     plugins: [
+       new HtmlWebpackPlugin({
+         template: 'index.html'
+       }),
+       new CleanWebpackPlugin({
+         cleanStaleWebpackAssets: false // 防止 watch 触发增量构建后删除 index.html 文件
+       }),
+       new webpack.ProvidePlugin({
+         $: 'jquery'
+       })
+     ],
+     optimization: {
+       splitChunks: {
+         // all ：全部 chunk
+         // async ：异步 chunk ，只处理异步导入的文件
+         // initial ：入口 chunk ，不处理异步导入的文件
+         chunks: 'all',
+         // 缓存分组
+         cacheGroups: {
+           vendors: {
+             test: /[\\/]node_modules[\\/]/,
+             priority: -10,
+             reuseExistingChunk: true, // 如果一个模块已经被打包了，再打包会忽略这个模块
+             name: 'vendors'
+           }
+         }
+       }
+     },
+     performance: false // 忽略性能上的提示
+   }
+   
+   +module.exports = (env) => {
+   + if (env && env.production) {
+   +   return merge(commonConfig, prodConfig)
+   + } else {
+   +   return merge(commonConfig, devConfig)
+   + }
+   +}
+   ```
 
-    ![使用 imports-loader 后 this === window 为 true](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E4%BD%BF%E7%94%A8%20imports-loader%20%E5%90%8E%20this%20%3D%3D%3D%20window%20%E4%B8%BA%20true.png)
+6. 修改 package.json 文件
+
+   ```diff
+   {
+     "scripts": {
+   -   "build": "webpack --config build-code-splitting-conf/webpack.prod.js",
+   +   "build": "webpack --env production --config build-env-conf/webpack.common.js",
+   -   "build:dev": "webpack --config build-code-splitting-conf/webpack.dev.js",
+   +   "build:dev": "webpack --config build-env-conf/webpack.common.js",
+   -   "start": "webpack serve --config build-shimming-conf/webpack.dev.js",
+   +   "start": "webpack serve --config build-env-conf/webpack.common.js",
+     },
+   }
+   ```
+
+7. 运行 `npm run build`
+
+   ![环境变量 npm run build]()
+
+8. 运行 `npm run build:dev`
+
+   ![环境变量 npm run build dev]()
+
+
 

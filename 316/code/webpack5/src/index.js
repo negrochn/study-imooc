@@ -1,5 +1,8 @@
 import _ from 'lodash'
 import $ from 'jquery'
+import { ui } from './jquery.ui.js'
+
+ui()
 
 const elem = $('<div>')
 elem.html(_.join(['webpack', 'caching'], ' '))

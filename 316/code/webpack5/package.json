@@ -4,10 +4,10 @@
   "description": "",
   "private": true,
   "scripts": {
-    "build": "webpack --config build-code-splitting-conf/webpack.prod.js",
-    "build:dev": "webpack --config build-code-splitting-conf/webpack.dev.js",
+    "build": "webpack --env production --config build-env-conf/webpack.common.js",
+    "build:dev": "webpack --config build-env-conf/webpack.common.js",
     "watch": "webpack --watch --config build-base-conf/webpack.config.js",
-    "start": "webpack serve --config build-shimming-conf/webpack.dev.js",
+    "start": "webpack serve --config build-env-conf/webpack.common.js",
     "server": "node server.js",
     "analyze": "webpack --config build-code-splitting-conf/webpack.prod.js"
   },
