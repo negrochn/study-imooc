@@ -2915,7 +2915,7 @@ https://github.com/webpack-contrib/webpack-bundle-analyzer
 
 11. 运行 `node dist/index.js` ，提示 `TypeError: Cannot read property 'add' of undefined`
 
-    ![Library 的打包 Cannot read property 'add' of undefined]()
+    ![Library 的打包 Cannot read property 'add' of undefined](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Library%20%E7%9A%84%E6%89%93%E5%8C%85%20Cannot%20read%20property%20'add'%20of%20undefined.png)
 
 12. 修改 webpack.config.js 文件
 
@@ -2939,7 +2939,7 @@ https://github.com/webpack-contrib/webpack-bundle-analyzer
 
 14. 运行 `node dist/index.js`
 
-    ![Library 的打包成功]()
+    ![Library 的打包成功](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Library%20%E7%9A%84%E6%89%93%E5%8C%85%E6%88%90%E5%8A%9F.png)
 
 15. 修改 dist/index.js 文件
 
@@ -2953,7 +2953,7 @@ https://github.com/webpack-contrib/webpack-bundle-analyzer
 
 16. 运行 `node dist/index.js` ，提示 `SyntaxError: Cannot use import statement outside a module`
 
-    ![Library 的打包 Cannot use import statement outside a module]()
+    ![Library 的打包 Cannot use import statement outside a module](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Library%20%E7%9A%84%E6%89%93%E5%8C%85%20Cannot%20use%20import%20statement%20outside%20a%20module.png)
 
 17. node 无法识别 import 语句，需要通过 babel 进行转换
 
@@ -2969,7 +2969,7 @@ https://github.com/webpack-contrib/webpack-bundle-analyzer
 
 20. 运行 `npx balbel dist/index.js` ，输出的编译后的代码后面替换到 dist/index.js
 
-    ![Library 的打包 npx babel]()
+    ![Library 的打包 npx babel](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Library%20%E7%9A%84%E6%89%93%E5%8C%85%20npx%20babel.png)
 
 21. 修改 dist/index.js 文件
 
@@ -2987,7 +2987,7 @@ https://github.com/webpack-contrib/webpack-bundle-analyzer
 
 22. 运行 `node dist/index.js`
 
-    ![Library 的打包成功]()
+    ![Library 的打包成功](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Library%20%E7%9A%84%E6%89%93%E5%8C%85%E6%88%90%E5%8A%9F.png)
 
 23. 进入 dist 文件夹，创建 index.html 文件
 
@@ -3014,5 +3014,5 @@ https://github.com/webpack-contrib/webpack-bundle-analyzer
 
 24. 打开浏览器访问 dist/index.html
 
-    ![Library 的打包 index.html]()
+    ![Library 的打包 index.html](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Library%20%E7%9A%84%E6%89%93%E5%8C%85%20index.html.png)
 
