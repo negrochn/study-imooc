@@ -8,8 +8,8 @@ webpack 是一个用于现代 JS 应用程序的静态模块打包工具（modul
 
 **设置淘宝镜像**
 
-1. 设置镜像，执行 `npm set registry http://registry.npm.taobao.org/`
-2. 查看镜像，执行 `npm get registry`
+1. 设置镜像，运行 `npm set registry http://registry.npm.taobao.org/`
+2. 查看镜像，运行 `npm get registry`
 
 
 
@@ -19,9 +19,9 @@ webpack 是一个用于现代 JS 应用程序的静态模块打包工具（modul
 
 1. 创建并进入 webpack5 文件夹
 
-2. 初始化项目，执行 `npm init -y`
+2. 初始化项目，运行 `npm init -y`
 
-3. 安装 webpack 和 webpack-cli ，执行 `npm i webpack webpack-cli -D`
+3. 安装 webpack 和 webpack-cli ，运行 `npm i webpack webpack-cli -D`
 
 4. 创建并进入 src 文件夹，创建 index.js
 
@@ -147,7 +147,7 @@ webpack 是一个用于现代 JS 应用程序的静态模块打包工具（modul
 
 url-loader 功能类似于 file-loader ，但是在文件大小（单位 byte）低于指定的限制时，可以返回一个 DataURI 。
 
-1. 安装 url-loader ，执行 `npm i url-loader -D`
+1. 安装 url-loader ，运行 `npm i url-loader -D`
 
 2. 修改 build-base-conf/webpack.config.js 文件
 
@@ -216,9 +216,9 @@ url-loader 功能类似于 file-loader ，但是在文件大小（单位 byte）
 
 ### 使用 Loader 打包静态资源（样式篇）
 
-1. 安装 style-loader 、css-loader 、postcss-loader ，执行 `npm i style-loader css-loader postcss-loader -D`
+1. 安装 style-loader 、css-loader 、postcss-loader ，运行 `npm i style-loader css-loader postcss-loader -D`
 
-2. 安装 autoprefixer ，执行 `npm i autoprefixer -D`
+2. 安装 autoprefixer ，运行 `npm i autoprefixer -D`
 
 3. 创建 postcss.config.js 文件
 
@@ -230,7 +230,7 @@ url-loader 功能类似于 file-loader ，但是在文件大小（单位 byte）
    }
    ```
 
-4. 安装 sass-loader 和 node-sass ，执行 `npm i sass-loader node-sass -D`
+4. 安装 sass-loader 和 node-sass ，运行 `npm i sass-loader node-sass -D`
 
 5. 修改 build-base-conf/webpack.config.js 文件
 
@@ -251,7 +251,7 @@ url-loader 功能类似于 file-loader ，但是在文件大小（单位 byte）
          },
    +     {
    +       test: /\.css$/,
-   +       use: ['style-loader', 'css-loader', 'postcss-loader'] // 逆序执行
+   +       use: ['style-loader', 'css-loader', 'postcss-loader'] // 逆序运行
    +     },
    +     {
    +       test: /\.s[ac]ss$/,
@@ -413,7 +413,7 @@ plugin 可以在 webpack 运行到某个时刻时，帮我们做一些事情。
 
 html-webpack-plugin 会在打包结束后，自动生成一个 HTML 文件，并把打包生成的 JS 自动引入到这个 HTML 文件中。
 
-1. 安装 html-webpack-plugin ，执行 `npm i html-webpack-plugin -D`
+1. 安装 html-webpack-plugin ，运行 `npm i html-webpack-plugin -D`
 
 2. 修改 build-base-conf/webpack.config.js 文件
 
@@ -464,7 +464,7 @@ html-webpack-plugin 会在打包结束后，自动生成一个 HTML 文件，并
 
 #### 清理 dist 文件夹
 
-1. 安装 clean-webpack-plugin ，执行 `npm i clean-webpack-plugin -D`
+1. 安装 clean-webpack-plugin ，运行 `npm i clean-webpack-plugin -D`
 
 2. 修改 build-base-conf/webpack.config.js 文件
 
@@ -1219,7 +1219,7 @@ HMR 允许在运行时更新所有类型的模块，而无需完全刷新。HMR 
          },
          {
            test: /\.css$/,
-           use: ['style-loader', 'css-loader', 'postcss-loader'] // 逆序执行
+           use: ['style-loader', 'css-loader', 'postcss-loader'] // 逆序运行
          },
          {
            test: /\.s[ac]ss$/,
@@ -2806,11 +2806,213 @@ https://github.com/webpack-contrib/webpack-bundle-analyzer
 
 7. 运行 `npm run build`
 
-   ![环境变量 npm run build]()
+   ![环境变量 npm run build](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%20npm%20run%20build.png)
 
 8. 运行 `npm run build:dev`
 
-   ![环境变量 npm run build dev]()
+   ![环境变量 npm run build dev](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%20npm%20run%20build%20dev.png)
 
 
+
+## webpack 实战配置案例讲解
+
+### Library 的打包
+
+1. 创建并进入 webpack5-library 文件夹
+
+2. 初始化项目，运行 `npm init -y`
+
+3. 安装 webpack 和 webpack-cli ，运行 `npm i webpack webpack-cli -D`
+
+4. 创建并进入 src 文件夹，创建 math.js 文件
+
+   ```js
+   export function add(a, b) {
+     return a + b
+   }
+   
+   export function minus(a, b) {
+     return a - b
+   }
+   
+   export function multiply(a, b) {
+     return a * b
+   }
+   
+   export function divide(a, b) {
+     return a / b
+   }
+   ```
+
+5. 进入 src 文件夹，创建 string.js 文件
+
+   ```js
+   export function join(a, b) {
+     return a + ' ' + b
+   }
+   ```
+
+6. 进入 src 文件夹，创建 index.js 文件
+
+   ```js
+   import * as math from './math.js'
+   import * as string from './string.js'
+   
+   export default {
+     math,
+     string
+   }
+   ```
+
+7. 创建 webpack.config.js 文件
+
+   ```js
+   const path = require('path')
+   
+   module.exports = {
+     mode: 'production',
+     entry: './src/index.js',
+     output: {
+       path: path.resolve(__dirname, 'dist'),
+       filename: 'library.js'
+     }
+   }
+   ```
+
+8. 修改 package.json 文件
+
+   ```diff
+   {
+     "name": "webpack5-library",
+     "version": "1.0.0",
+     "description": "",
+     "main": "index.js",
+     "scripts": {
+   -   "test": "echo \"Error: no test specified\" && exit 1"
+   +   "build": "webpack"
+     },
+     "keywords": [],
+     "author": "",
+     "license": "ISC",
+     "devDependencies": {
+       "webpack": "^5.18.0",
+       "webpack-cli": "^4.4.0"
+     }
+   }
+   
+   ```
+
+9. 运行 `npm run build` ，会看到 dist 文件夹下生成 library.js 文件
+
+10. 进入 dist 文件夹，创建 index.js 文件
+
+    ```js
+    const { math, string } = require('./library')
+    
+    console.log(math.add(1, 2))
+    console.log(string.join('webpack5', 'library'))
+    ```
+
+11. 运行 `node dist/index.js` ，提示 `TypeError: Cannot read property 'add' of undefined`
+
+    ![Library 的打包 Cannot read property 'add' of undefined]()
+
+12. 修改 webpack.config.js 文件
+
+    ```diff
+    const path = require('path')
+    
+    module.exports = {
+      mode: 'production',
+      entry: './src/index.js',
+      output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: 'library.js',
+    +   libraryTarget: 'umd',
+    +   libraryExport: 'default',
+    +   globalObject: `typeof self !== 'undefined' ? self : this`
+      }
+    }
+    ```
+
+13. 运行 `npm run build`
+
+14. 运行 `node dist/index.js`
+
+    ![Library 的打包成功]()
+
+15. 修改 dist/index.js 文件
+
+    ```diff
+    +const { math, string } = require('./library')
+    -import { math, string } from require('./library')
+    
+    console.log(math.add(1, 2))
+    console.log(string.join('webpack5', 'library'))
+    ```
+
+16. 运行 `node dist/index.js` ，提示 `SyntaxError: Cannot use import statement outside a module`
+
+    ![Library 的打包 Cannot use import statement outside a module]()
+
+17. node 无法识别 import 语句，需要通过 babel 进行转换
+
+18. 安装 @babel/core 、@babel/cli 和 @babel/preset-env ，运行 `npm @babel/core @babel/cli @babel/preset-env -D`
+
+19. 创建 .babelrc 文件
+
+    ```diff
+    {
+      "presets": ["@babel/preset-env"]
+    }
+    ```
+
+20. 运行 `npx balbel dist/index.js` ，输出的编译后的代码后面替换到 dist/index.js
+
+    ![Library 的打包 npx babel]()
+
+21. 修改 dist/index.js 文件
+
+    ```diff
+    -import { math, string } from './library'
+    +"use strict";
+    
+    +var _library = require("./library");
+    
+    -console.log(math.add(1, 2))
+    -console.log(string.join('webpack5', 'library'))
+    +console.log(_library.math.add(1, 2));
+    +console.log(_library.string.join('webpack5', 'library'));
+    ```
+
+22. 运行 `node dist/index.js`
+
+    ![Library 的打包成功]()
+
+23. 进入 dist 文件夹，创建 index.html 文件
+
+    ```html
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>webpack5-library</title>
+    </head>
+    <body>
+      <script src="./library.js"></script>
+      <script>
+        window.addEventListener('load', () => {
+          const { math, string } = library
+          console.log(math.add(1, 2))
+          console.log(string.join('webpack5', 'library'))
+        })
+      </script>
+    </body>
+    </html>
+    ```
+
+24. 打开浏览器访问 dist/index.html
+
+    ![Library 的打包 index.html]()
 
