@@ -3101,11 +3101,11 @@ PWA ，是一种强缓存技术，访问过的页面即使服务器断开，也�
 
 7. 打开浏览器访问 http://127.0.0.1:8080/
 
-   ![PWA 的打包配置打开浏览器]()
+   ![PWA 的打包配置打开浏览器](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/PWA%20%E7%9A%84%E6%89%93%E5%8C%85%E9%85%8D%E7%BD%AE%E6%89%93%E5%BC%80%E6%B5%8F%E8%A7%88%E5%99%A8.png)
 
 8. 按下 Ctrl + C 停止 http-server 服务，并 F5 刷新浏览器
 
-   ![PWA 的打包配置 无法访问此网站]()
+   ![PWA 的打包配置 无法访问此网站](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/PWA%20%E7%9A%84%E6%89%93%E5%8C%85%E9%85%8D%E7%BD%AE%20%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E6%AD%A4%E7%BD%91%E7%AB%99.png)
 
 9. 安装 workbox-webpack-plugin ，运行 `npm i workbox-webpack-plugin@3 -D`
 
@@ -3156,7 +3156,7 @@ PWA ，是一种强缓存技术，访问过的页面即使服务器断开，也�
 
 12. 运行 `npm run build` ，会看到 dist 文件夹下生成 service-worker.js 文件
 
-    ![PWA 的打包配置 service-worker.js]()
+    ![PWA 的打包配置 service-worker.js](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/PWA%20%E7%9A%84%E6%89%93%E5%8C%85%E9%85%8D%E7%BD%AE%20service-worker.js.png)
 
 13. 修改 dist/service-worker.js 文件
 
@@ -3193,9 +3193,9 @@ PWA ，是一种强缓存技术，访问过的页面即使服务器断开，也�
 
 16. 打开浏览器访问 http://127.0.0.1:8080/
 
-    ![PWA 的打包配置打开浏览器]()
+    ![PWA 的打包配置打开浏览器](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/PWA%20%E7%9A%84%E6%89%93%E5%8C%85%E9%85%8D%E7%BD%AE%E6%89%93%E5%BC%80%E6%B5%8F%E8%A7%88%E5%99%A8.png)
 
 17. 按下 Ctrl + C 停止 http-server 服务，并 F5 刷新浏览器
 
-    ![PWA 的打包配置打开浏览器]()
+    ![PWA 的打包配置打开浏览器](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/PWA%20%E7%9A%84%E6%89%93%E5%8C%85%E9%85%8D%E7%BD%AE%E6%89%93%E5%BC%80%E6%B5%8F%E8%A7%88%E5%99%A8.png)
 
