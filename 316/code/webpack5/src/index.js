@@ -8,6 +8,16 @@ const elem = $('<div>')
 elem.html(_.join(['webpack', 'caching'], ' '))
 $('body').append(elem)
 
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js').then(registration => {
+      console.log('SW registred:', registration)
+    }).catch(registrationError => {
+      console.log('SW registration failed:', registrationError)
+    })
+  })
+}
+
 // import Icon from './Lynk&Co.jpg'
 // import './style.scss'
 // import printMe from './print.js'

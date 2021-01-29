@@ -4,7 +4,7 @@
   "description": "",
   "private": true,
   "scripts": {
-    "build": "webpack --env production --config build-env-conf/webpack.common.js",
+    "build": "webpack --config build-pwa-conf/webpack.prod.js",
     "build:dev": "webpack --config build-env-conf/webpack.common.js",
     "watch": "webpack --watch --config build-base-conf/webpack.config.js",
     "start": "webpack serve --config build-env-conf/webpack.common.js",
@@ -28,6 +28,7 @@
     "css-loader": "^5.0.1",
     "express": "^4.17.1",
     "html-webpack-plugin": "^4.5.1",
+    "http-server": "^0.12.3",
     "jquery": "^3.5.1",
     "lodash": "^4.17.20",
     "mini-css-extract-plugin": "^1.3.4",
@@ -42,7 +43,8 @@
     "webpack-cli": "^4.4.0",
     "webpack-dev-middleware": "^4.1.0",
     "webpack-dev-server": "^3.11.2",
-    "webpack-merge": "^5.7.3"
+    "webpack-merge": "^5.7.3",
+    "workbox-webpack-plugin": "^3.6.3"
   },
   "browserslist": [
     "last 1 version",
