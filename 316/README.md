@@ -3016,3 +3016,186 @@ https://github.com/webpack-contrib/webpack-bundle-analyzer
 
     ![Library 的打包 index.html](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/Library%20%E7%9A%84%E6%89%93%E5%8C%85%20index.html.png)
 
+
+
+### PWA 的打包配置
+
+PWA ，是一种强缓存技术，访问过的页面即使服务器断开，也能通过缓存浏览之前访问的页面。
+
+
+
+1. 新建 build-pwa-conf 文件夹
+
+2. 将 build-shimming-conf 文件下的所有文件拷贝至 build-pwa-conf 文件
+
+   ```diff
+   └─webpack5
+       │  .babelrc
+       │  index.html
+       │  package-lock.json
+       │  package.json
+       │  postcss.config.js
+       │  react.html
+       │  server.js
+       │  stats.json
+       ├─build-babel-conf
+       │      webpack.config.js
+       ├─build-base-conf
+       │      webpack.config.js
+       ├─build-code-splitting-conf
+       │      webpack.common.js
+       │      webpack.dev.js
+       │      webpack.prod.js
+       ├─build-env-conf
+       │      webpack.common.js
+       │      webpack.dev.js
+       │      webpack.prod.js
+       ├─build-hmr-conf
+       │      webpack.config.js
+   +   ├─build-pwa-conf
+   +   │      webpack.common.js
+   +   │      webpack.dev.js
+   +   │      webpack.prod.js
+       ├─build-react-conf
+       │      webpack.config.js
+       ├─build-shimming-conf
+       │      webpack.common.js
+       │      webpack.dev.js
+       │      webpack.prod.js
+       ├─build-tree-shaking-conf
+       │      webpack.common.js
+       │      webpack.dev.js
+       │      webpack.prod.js
+       ├─dist
+       │      index.html
+       │      main.5eb5d535f0ee0d9bba74.js
+       │      vendors.d8316b4bfc69b566b679.js
+       └─src
+              index.js
+              jquery.ui.js
+              Lynk&Co.jpg
+              math.js
+              print.js
+              react.jsx
+              style.scss
+   ```
+
+3. 修改 package.json 文件
+
+   ```diff
+   {
+     "scripts": {
+   -   "build": "webpack --env production --config build-env-conf/webpack.common.js",
+   +   "build": "webpack --config build-pwa-conf/webpack.prod.js",
+     }
+   }
+   ```
+
+4. 运行 `npm run build`
+
+5. 安装 http-server ，运行 `npm i http-server -D`
+
+6. 运行 `npx http-server dist`
+
+   ![PWA 的打包配置 npx http-server dist]()
+
+7. 打开浏览器访问 http://127.0.0.1:8080/
+
+   ![PWA 的打包配置打开浏览器]()
+
+8. 按下 Ctrl + C 停止 http-server 服务，并 F5 刷新浏览器
+
+   ![PWA 的打包配置 无法访问此网站]()
+
+9. 安装 workbox-webpack-plugin ，运行 `npm i workbox-webpack-plugin@3 -D`
+
+10. 修改 build-pwa-conf/webpack.prod.js 文件
+
+    ```diff
+    +const WorkboxPlugin = require('workbox-webpack-plugin')
+    
+    module.exports = merge(commonConfig, {
+      plugins: [
+        // new BundleAnalyzerPlugin()
+        new MiniCssExtractPlugin({
+          filename: '[name].[contenthash:8].css'
+        }),
+    +   new WorkboxPlugin.GenerateSW({
+    +     // 这些选项帮助快速启用 ServiceWorkers
+    +     // 不允许遗留任何“旧的” ServiceWorkers
+    +     clientsClaim: true,
+    +     skipWaiting: true
+    +   })
+      ],
+    })
+    ```
+
+11. 修改 src/index.js 文件
+
+    ```diff
+    import _ from 'lodash'
+    import $ from 'jquery'
+    import { ui } from './jquery.ui.js'
+    
+    ui()
+    
+    const elem = $('<div>')
+    elem.html(_.join(['webpack', 'caching'], ' '))
+    $('body').append(elem)
+    
+    +if ('serviceWorker' in navigator) {
+    + window.addEventListener('load', () => {
+    +   navigator.serviceWorker.register('/service-worker.js').then(registration => {
+    +     console.log('SW registred:', registration)
+    +   }).catch(registrationError => {
+    +     console.log('SW registration failed:', registrationError)
+    +   })
+    + })
+    +}
+    ```
+
+12. 运行 `npm run build` ，会看到 dist 文件夹下生成 service-worker.js 文件
+
+    ![PWA 的打包配置 service-worker.js]()
+
+13. 修改 dist/service-worker.js 文件
+
+    ```diff
+    importScripts(
+    - "autoprecache-manifest.3a8e68753ccb6acf9c0707d644ff165b.js"
+    + "precache-manifest.3a8e68753ccb6acf9c0707d644ff165b.js"
+    );
+    ```
+
+14. 修改 dist/precache-manifest.3a8e68753ccb6acf9c0707d644ff165b.js 文件
+
+    ```diff
+    self.__precacheManifest = [
+      {
+        "revision": "393b34e1e534856a01e4",
+    -   "url": "automain.cf2f6317abeb2861178d.js"
+    +   "url": "main.cf2f6317abeb2861178d.js"
+      },
+      {
+        "revision": "b84fe6680ab9374770dd",
+    -   "url": "autovendors.d8316b4bfc69b566b679.js"
+    +   "url": "vendors.d8316b4bfc69b566b679.js"
+      },
+      {
+        "revision": "57552d6b65e9c61acdd1fcc00e614a35",
+    -   "url": "autoindex.html"
+    +   "url": "index.html"
+      }
+    ];
+    ```
+
+15. 运行 `npx http-server dist`
+
+16. 打开浏览器访问 http://127.0.0.1:8080/
+
+    ![PWA 的打包配置打开浏览器]()
+
+17. 按下 Ctrl + C 停止 http-server 服务，并 F5 刷新浏览器
+
+    ![PWA 的打包配置打开浏览器]()
+
