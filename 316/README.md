@@ -3199,3 +3199,196 @@ PWA ，是一种强缓存技术，访问过的页面即使服务器断开，也�
 
     ![PWA 的打包配置打开浏览器](https://raw.githubusercontent.com/negrochn/study-imooc/master/316/img/PWA%20%E7%9A%84%E6%89%93%E5%8C%85%E9%85%8D%E7%BD%AE%E6%89%93%E5%BC%80%E6%B5%8F%E8%A7%88%E5%99%A8.png)
 
+
+
+### TypeScript 的打包配置
+
+1. 创建并进入 webpack5-ts 文件夹
+
+2. 初始化项目，运行 `npm init -y`
+
+3. 安装 webpack 和 webpack-cli ，运行 `npm i webpack webpack-cli -D`
+
+4. 创建并进入 src 文件夹，创建 index.tsx 文件
+
+   ```tsx
+   class Greeter {
+     greeting: string
+     constructor(message: string) {
+       this.greeting = message
+     }
+     greet() {
+       return 'Hello, ' + this.greeting
+     }
+   }
+   
+   let greeter = new Greeter('world')
+   
+   let button = document.createElement('button')
+   button.textContent = 'Say Hello'
+   button.onclick = function() {
+     alert(greeter.greet())
+   }
+   
+   document.body.appendChild(button)
+   ```
+
+5. 安装 typescript ，运行 `npm i typescript -D`
+
+6. 修改 package.json 文件
+
+   ```diff
+   {
+     "scripts": {
+   -   "test": "echo \"Error: no test specified\" && exit 1"
+   +   "build": "webpack"
+     }
+   }
+   ```
+
+7. 创建 webpack.config.js 文件
+
+   ```js
+   const path = require('path')
+   
+   module.exports = {
+     entry: './src/index.tsx',
+     output: {
+       path: path.resolve(__dirname, 'dist'),
+       filename: '[name].js'
+     }
+   }
+   ```
+
+8. 运行 `npm run build`
+
+   ![TypeScript 的打包配置 未配置 ts-loader 打包失败]()
+
+9. 安装 ts-loader ，运行 `npm i ts-loader -D`
+
+10. 修改 webpack.config.js 文件
+
+    ```diff
+    const path = require('path')
+    
+    module.exports = {
+      entry: './src/index.tsx',
+      output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: '[name].js'
+      },
+    + module: {
+    +   rules: [
+    +     {
+    +       test: /\.tsx?$/,
+    +       exclude: /node_modules/,
+    +       use: ['ts-loader']
+    +     }
+    +   ]
+    + }
+    }
+    ```
+
+11. 运行 `npm run build`
+
+    ![TypeScript 的打包配置 The 'files' list in config file 'tsconfig.json' is empty]()
+
+12. 创建 tsconfig.json 文件
+
+    ```json
+    {
+      "compilerOptions": {
+        "outDir": "./dist",
+        "module": "es6",
+        "target": "es5",
+        "allowJs": true
+      }
+    }
+    ```
+
+13. 运行 `npm run build` ，会看到 dist 文件夹下生成main.js 文件
+
+14. 进入 dist 文件夹，创建 index.html 文件
+
+    ```html
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>webpack5-ts</title>
+    </head>
+    <body>
+      <script src="./main.js"></script>
+    </body>
+    </html>
+    ```
+
+15. 打开浏览器访问 dist/index.html
+
+    ![TypeScript 的打包配置 配置 ts-loader 和 tsconfig.json 后打包成功]()
+
+16. 安装 lodash ，运行 `npm i lodash -D`
+
+17. 修改 src/index.tsx 文件，发现输入 `_.` 时没有语法提示，想要使用 lodash 有语法提示，需要安装 @types/lodash
+
+    ```diff
+    +import _ from 'lodash'
+    
+    class Greeter {
+      greeting: string
+      constructor(message: string) {
+        this.greeting = message
+      }
+      greet() {
+    -   return 'Hello, ' + this.greeting
+    +   return _.join(['Hello', this.greeting], ', ')
+      }
+    }
+    
+    let greeter = new Greeter('world')
+    
+    let button = document.createElement('button')
+    button.textContent = 'Say Hello'
+    button.onclick = function() {
+      alert(greeter.greet())
+    }
+    
+    document.body.appendChild(button)
+    ```
+
+18. 安装 @types/lodash ，运行 `npm i @types/lodash -D`
+
+19. 修改 src/index.tsx 文件
+
+    ```diff
+    -import _ from 'lodash'
+    +import * as _ from 'lodash'
+    
+    class Greeter {
+      greeting: string
+      constructor(message: string) {
+        this.greeting = message
+      }
+      greet() {
+        return _.join(['Hello', this.greeting], ', ')
+      }
+    }
+    
+    let greeter = new Greeter('world')
+    
+    let button = document.createElement('button')
+    button.textContent = 'Say Hello'
+    button.onclick = function() {
+      alert(greeter.greet())
+    }
+    
+    document.body.appendChild(button)
+    ```
+
+    ![TypeScript 的打包配置 lodash 有语法提示]()
+
+20. 运行 `npm run build` ，打开浏览器访问 dist/index.html
+
+    ![TypeScript 的打包配置 配置 ts-loader 和 tsconfig.json 后打包成功]()
+
