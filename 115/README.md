@@ -398,5 +398,103 @@ for (let key in f) {
 
 
 
+### 2-9 原型和原型链 - 原型链
 
+```js
+// 构造函数
+function Foo(name) {
+  this.name = name
+}
+Foo.prototype.alertName = function() {
+  alert(this.name)
+}
+
+// 创建实例
+let f = new Foo('negrochn')
+f.printName = function() {
+  console.log(this.name)
+}
+// 测试
+f.printName()
+f.alertName()
+f.toString() // 要去 f.__proto__.__proto__ 中查找
+```
+
+![原型链]()
+
+
+
+### 2-10 原型和原型链 - instanceof
+
+```js
+// instanceof 用于判断引用类型属于哪个构造函数的方法
+console.log(f instanceof Foo) // true， f 的 __proto__ 一层一层往上，能否对应到 Foo.prototype
+console.log(f instanceof Object) // true
+```
+
+
+
+### 2-11 原型和原型链 - 解答 1
+
+**解题**
+
+如何准确判断一个变量是数组类型
+
+答：使用 `instanceof Array`
+
+```js
+let arr = []
+console.log(arr instanceof Array) // true
+console.log(typeof arr) // "object" ，typeof 是无法判断是否是数组的
+```
+
+写一个原型链继承的例子
+
+```js
+// 动物
+function Animal() {
+  this.eat = function() {
+    console.log('animal eat')
+  }
+}
+// 狗
+function Dog() {
+  this.bark = function() {
+    console.log('dog bark')
+  }
+}
+Dog.prototype = new Animal()
+// 哈士奇
+let hashiqi = new Dog()
+
+// 接下来代码演示时，会推荐更加贴近实战的原型继承示例
+```
+
+描述 `new` 一个对象的过程
+
+答：
+
+1. 创建一个新对象
+2. `this` 指向这个新对象
+3. 执行代码，即对 `this` 赋值
+4. 返回 `this`
+
+```js
+function Foo(name, age) {
+  this.name = name
+  this.age = age
+  this.class = 'class__1'
+  // return this // 默认有这一行
+}
+
+let f = new Foo('negrochn', 18)
+```
+
+zepto 或其他框架源码中如何使用原型链
+
+答：
+
+- 阅读源码是高效提高技巧的方式
+- 但不能“埋头苦钻”，有技巧在其中
+- 慕课网搜索“zepto 设计和源码分析”
 
