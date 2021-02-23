@@ -379,7 +379,7 @@ f.printName = function() {
 }
 // 测试
 f.printName()
-f.alertName()
+f.alertName() // 原则 5
 ```
 
 
@@ -420,7 +420,7 @@ f.alertName()
 f.toString() // 要去 f.__proto__.__proto__ 中查找
 ```
 
-![原型链]()
+![原型链](https://raw.githubusercontent.com/negrochn/study-imooc/master/115/img/%E5%8E%9F%E5%9E%8B%E9%93%BE.png)
 
 
 
@@ -497,4 +497,37 @@ zepto 或其他框架源码中如何使用原型链
 - 阅读源码是高效提高技巧的方式
 - 但不能“埋头苦钻”，有技巧在其中
 - 慕课网搜索“zepto 设计和源码分析”
+
+
+
+### 2-12 原型和原型链 - 解答 2
+
+写一个封装 DOM 查询的例子
+
+```js
+function Elem(id) {
+  this.elem = document.getElementById(id)
+}
+
+Elem.prototype.html = function(val) {
+  let elem = this.elem
+  if (val) {
+    elem.innerHTML = val
+    return this // 为了链式操作
+  } else {
+    return elem.innerHTML
+  }
+}
+
+Elem.prototype.on = function(type, fn) {
+  let elem = this.elem
+  elem.addEventListener(type, fn)
+  return this // 为了链式操作
+}
+
+let div1 = new Elem('div1')
+div1.html('<p>Hello World</p>').on('click', function() {
+  alert('clicked')
+})
+```
 
