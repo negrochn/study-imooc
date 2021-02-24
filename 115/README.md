@@ -564,8 +564,8 @@ div1.html('<p>Hello World</p>').on('click', function() {
 执行上下文
 
 - 范围：一段 `<script>` 或者一个函数
-- 全局：变量定义、函数声明（注意函数声明和函数表达式的区别）
-- 函数：变量定义、函数声明、`this` 、`arguments`
+- 全局上下文：执行前，会先把变量定义、函数声明拿出来（注意函数声明和函数表达式的区别）
+- 函数上下文：执行前，先把变量定义、函数声明、`this` 、`arguments` 拿出来
 
 ```js
 console.log(a) // undefined
@@ -874,3 +874,382 @@ console.log(firstLoad(20)) // true
 ### 3-11 作用域和闭包 - 解题 代码演示
 
 无
+
+
+
+## 第4章 JS 基础知识（下）
+
+### 4-1 异步和单线程 - 什么是异步
+
+题目
+
+- 同步和异步的区别是什么？分别举一个同步和异步的例子
+- 一个关于 setTimeout 的笔试题
+- 前端使用异步的场景有哪些？
+
+知识点
+
+- 什么是异步（对比同步）
+- 前端使用异步的场景
+- 异步和单线程
+
+
+
+什么是异步
+
+- 同步阻塞后续代码执行
+- 异步不会阻塞程序的运行
+
+```js
+console.log(100)
+setTimeout(function() {
+  console.log(200)
+}, 1000)
+console.log(300)
+```
+
+对比同步
+
+```js
+console.log(100)
+alert(200) // 1 秒之后手动点击确认
+console.log(300)
+```
+
+何时需要异步
+
+- 在可能发生等待的情况
+- 等待过程中不能像 `alert` 一样阻塞程序运行
+- 因此，所有的“等待的情况”都需要异步
+
+
+
+前端使用异步的场景
+
+- 定时任务，`setTimeout` 、`setInterval`
+- 网络请求，AJAX 请求、动态 `<img>` 加载
+- 事件绑定
+
+```js
+// AJAX 请求
+console.log('start')
+$.get('./data1.json', function(data1) {
+  console.log(data1)
+})
+console.log('end')
+```
+
+```js
+// 动态 <img> 加载
+console.log('start')
+document.getElementById('btn1').addEventListener('click', function() {
+  alert('clicked')
+})
+console.log('end')
+```
+
+
+
+### 4-2 异步和单线程 - 什么是异步 代码演示
+
+无
+
+
+
+### 4-3 异步和单线程 - 单线程
+
+```js
+console.log(100)
+setTimeout(function() {
+  console.log(200)
+})
+console.log(300)
+```
+
+1. 执行第 1 行，打印 100
+2. 执行 `setTimeout` 后，传入 `setTimeout` 的函数会被暂存起来，不会立即执行（单线程的特点，不能同时干两件事）
+3. 执行第 5 行，打印 300
+4. 待所有程序执行完，处于空闲状态时，会立马看有没有暂存起来要执行的
+5. 发现暂存起来的 setTimeout 中的函数，无须等待时间，就立即过来执行
+
+
+
+单线程
+
+- JS 是单线程语言，即一次只能干一件事，如果同时有两件事，另一件就先上一边排队去，我先干完这件事再说，如果没有异步，那就会出现阻塞现象
+- 由于 JS 是单线程，在代码执行的时候又不能因为执行需要等待的代码而造成阻塞，因此 JS 会首先将无需等待的（同步）代码执行完成后，再来处理异步代码，如果达到异步代码的执行条件的话，就会执行
+
+
+
+### 4-4 异步和单线程 - 解答
+
+同步和异步的区别是什么？分别举一个同步和异步的例子
+
+- 同步会阻塞代码执行，而异步不会
+- `alert` 是同步，`setTimeout` 是异步
+
+
+
+一个关于 setTimeout 的笔试题
+
+```js
+console.log(1)
+setTimeout(function() {
+  console.log(2)
+}, 0)
+console.log(3)
+setTimeout(function() {
+  console.log(4)
+}, 1000)
+console.log(5)
+// 1
+// 3
+// 5
+// 2
+// 4 ，一秒后
+```
+
+
+
+前端使用异步的场景有哪些？
+
+- 定时任务，`setTimeout` 、`setInterval`
+- 网络请求，AJAX 请求、动态 `<img>` 加载
+- 事件绑定
+
+
+
+重点总结
+
+- 异步和同步的区别
+- 异步和单线程的关系
+- 异步在前端的使用场景
+
+
+
+### 4-5 其他知识点 - Date 和 Math
+
+题目
+
+- 获取 `2020-02-24` 格式的日期
+- 获取随机数，要求长度一致的字符串格式
+- 写一个能遍历对象和数组的通用 `forEach` 函数
+
+知识点
+
+- Date
+- Math
+- 数组 API
+- 对象 API
+
+
+
+Date
+
+```js
+Date.now() // 获取当前时间毫秒数
+var dt = new Date()
+dt.getTime() // 获取毫秒数
+dt.getFullYear() // 年
+dt.getMonth() // 月（0-11）
+dt.getDate() // 日（1-31）
+dt.getHours() // 时（0-23）
+dt.getMinutes() // 分（0-59）
+dt.getSeconds() // 秒（0-59）
+```
+
+Math
+
+```js
+Math.random() // 获取随机数
+```
+
+
+
+### 4-6 其他知识点 - 数组和对象的 API
+
+数组 API
+
+- `forEach` ，遍历所有元素
+- `every` ，判断所有元素是否都符合条件
+- `some` ，判断是否有至少一个元素符合条件
+- `sort` ，排序
+- `map` ，对元素重新组装，生成新数组
+- `filter` ，过滤符合条件的元素
+
+```js
+// forEach
+var arr = [1, 2, 3]
+arr.forEach(function(item, index) {
+  // 遍历数组的所有元素
+  console.log(index, item)
+})
+// 0 1
+// 1 2
+// 2 3
+```
+
+```js
+// every
+var arr = [1, 2, 3]
+var result = arr.every(function(item, index) {
+  // 用来判断所有的数组元素，都满足条件
+  if (item < 4) {
+    return true
+  }
+})
+console.log(result) // true
+```
+
+```js
+// some
+var arr = [1, 2, 3]
+var result = arr.some(function(item, index) {
+  // 用来判断只要有一个数组元素满足条件
+  if (item < 2) {
+    return true
+  }
+})
+console.log(result) // true
+```
+
+```js
+// sort
+var arr = [1, 4, 2, 3, 5]
+var result = arr.sort(function(a, b) {
+  // 从小到大排序
+  return a - b // 从大到小排序 return b - a
+})
+console.log(result) // [1, 2, 3, 4, 5]
+```
+
+```js
+// map
+var arr = [1, 2, 3]
+var result = arr.map(function(item, index) {
+  // 将元素重新组装并返回
+  return '<b>' + item + '</b>'
+})
+console.log(result) //  ["<b>1</b>", "<b>2</b>", "<b>3</b>"]
+```
+
+```js
+// filter
+var arr = [1, 2, 3]
+var result = arr.filter(function(item, index) {
+  // 通过某一个条件过滤数组
+  if (item >= 2) {
+    return true
+  }
+})
+console.log(result) // [2, 3]
+```
+
+
+
+对象 API
+
+```js
+var obj = {
+  x: 100,
+  y: 200,
+  z: 300
+}
+var key
+for (key in obj) {
+  // 注意这里的 hasOwnProperty ，在将原型链的时候讲过了
+  if (obj.hasOwnProperty(key)) {
+    console.log(key, obj[key])
+  }
+}
+// x 100
+// y 200
+// z 300
+```
+
+
+
+### 4-7 其他知识点 - 知识点 代码演示
+
+无
+
+
+
+### 4-8 其他知识点 - 解答
+
+获取 `2020-02-24` 格式的日期
+
+```js
+function formatDate(dt) {
+  if (!dt) {
+    dt = new Date()
+  }
+  var year = dt.getFullYear()
+  var month = dt.getMonth() + 1
+  var date = dt.getDate()
+  return year + '-' + month.toString().padStart(2, '0') + '-' + date.toString().padStart(2, '0')
+}
+
+formatDate(new Date()) // "2021-02-24"
+```
+
+
+
+获取随机数，要求长度一致的字符串格式
+
+```js
+var random = Math.random()
+random = random + '0000000000'
+random = random.slice(0, 10)
+console.log(random)
+```
+
+
+
+写一个能遍历对象和数组的通用 `forEach` 函数
+
+```js
+function forEach(obj, fn) {
+  var key
+  if (obj instanceof Array) {
+    obj.forEach(function(item, index) {
+      fn(index, item)
+    })
+  } else {
+    for (key in obj) {
+      fn(key, obj[key])
+    }
+  }
+}
+
+var arr = [1, 2, 3]
+forEach(arr, function(key, value) {
+  console.log(key, value)
+})
+// 0 1
+// 1 2
+// 2 3
+
+var obj = {
+  x: 100,
+  y: 200
+}
+forEach(obj, function(key, value) {
+  console.log(key, value)
+})
+// x 100
+// y 200
+```
+
+
+
+重点总结
+
+- Date
+- Math
+- 数组 API
+- 对象 API
+
+
+
+### 4-9 其他知识点 - 代码演示
