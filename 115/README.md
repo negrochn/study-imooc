@@ -1253,3 +1253,311 @@ forEach(obj, function(key, value) {
 
 
 ### 4-9 其他知识点 - 代码演示
+
+
+
+## 第5章 JS Web API
+
+### 5-1 从基础知识到 JS Web API
+
+回顾 JS 基础知识
+
+- 变量类型和计算
+- 原型和原型链
+- 闭包和作用域
+- 异步和单线程
+- 其他（如 Date 、Math 、各种常用 API）
+- 特点：表面看起来并不能用于工作中开发代码
+- 内置函数：Object 、Array 、Boolean 、String ...
+- 内置对象：Math 、JSON ...
+- 我们连在网页弹出一句 `Hello World` 都不能实现
+
+
+
+JS Web API
+
+- JS 基础知识：ECMA262 标准
+- JS Web API：W3C 标准
+
+
+
+W3C 标准中关于 JS 的规定有
+
+- DOM 操作
+- BOM 操作
+- 事件绑定
+- AJAX 请求（包括 http 协议）
+- 存储
+
+
+
+页面弹框是 `window.alert(123)` ，浏览器需要做
+
+- 定义一个 `window` 全局变量，对象类型
+- 给他定义一个 `alert` 属性，属性值是一个函数
+
+获取元素 `document.getElementById(id)` ，浏览器需要
+
+- 定义一个 `document` 全局变量，对象类型
+- 给它定义一个 `getElementById` 的属性，属性值是一个函数
+
+但是 W3C 标准没有规定任何 JS 基础相关的东西
+
+- 不管什么变量类型、原型、作用域和异步
+- 只管定义用于浏览器中 JS 操作页面的 API 和全局变量
+
+全面考虑，JS 内置的全局函数和对象有哪些？
+
+- 之前讲过的 Object 、Array 、Boolean 、String 、Math 、JSON 等
+- 刚刚提到的 window 、document
+- 接下来还有继续讲到的所有未定义的全局变量，如 `navigator.userAgent`
+
+
+
+总结
+
+常说的 JS（浏览器执行的 JS）包含两部分
+
+- JS 基础知识（ECMA262 标准）
+- JS Web API（W3C 标准）
+
+
+
+### 5-2 DOM 本质
+
+DOM ，全称 Document Object Model
+
+题目
+
+- DOM  是哪种基本的数据结构？
+- DOM 操作的常用 API 有哪些？
+- DOM 节点的 Attribute 和 Property 有何区别？
+
+知识点
+
+- DOM 本质
+- DOM 节点操作
+- DOM 结构操作
+
+
+
+DOM 本质
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<note>
+  <to>Tove</to>
+  <from>Jani</from>
+  <heading>Reminder</heading>
+  <body>Don't forget me this weekend</body>
+  <other>
+    <a></a>
+    <b></b>
+  </other>
+</note>
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div>
+    <p>this is p</p>
+  </div>
+</body>
+</html>
+```
+
+DOM 本质：浏览器拿到 HTML 代码后，DOM 把 HTML 代码结构化成浏览器可识别以及 JS 可识别的东西。
+
+HTML 代码就是一个字符串，但是浏览器已经把字符串结构化成树形结构了。
+
+
+
+### 5-3 DOM 节点操作
+
+DOM 可以理解为：浏览器把拿到的 HTML 代码，结构化成一个浏览器能识别并且 JS 可操作的一个模型而已。
+
+
+
+DOM 节点操作
+
+- 获取 DOM 节点
+- Property ，JS 对象属性
+- Attribute ，HTML 标签属性
+
+
+
+获取 DOM 节点
+
+```js
+var div1 = document.getElementById('div1') // 元素
+var divList = document.getElementsByTagName('div') // 集合
+console.log(divList.length)
+console.log(divList[0])
+
+var containerList = document.getElementsByClassName('container') // 集合
+var pList = document.querySelectorAll('p') // 集合
+```
+
+Property ，JS 对象属性
+
+```js
+var pList = document.querySelectorAll('p')
+var p = pList[0]
+console.log(p.style.width) // 获取样式
+p.style.width = '100px' // 修改样式
+console.log(p.className) // 获取 class
+p.className = 'p1' // 修改 class
+
+// 获取 nodeName 和 nodeType
+console.log(p.nodeName) // "P"
+console.log(p.nodeType) // 1
+```
+
+Attribute ，HTML 标签属性
+
+```js
+var pList = document.querySelectorAll('p')
+var p = pList[0]
+p.getAttribute('data-name')
+p.setAttribute('data-name', 'imooc')
+p.getAttribute('style')
+p.setAttribute('style', 'font-size: 30px;')
+```
+
+
+
+### 5-4 DOM 节点操作 - 代码演示
+
+无
+
+### 5-5 DOM 结构操作
+
+DOM 结构操作
+
+- 新增节点
+- 获取父元素
+- 获取子元素
+- 删除节点
+
+新增节点
+
+```js
+var div1 = document.getElementById('div1')
+// 添加新节点
+var p = document.createElement('p')
+p.innerHTML = 'new p'
+div1.appendChild(p) // 添加新创建的元素
+// 移动已有节点
+var p4 = document.getElementById('p4')
+div1.appendChild(p4)
+```
+
+获取父元素和子元素
+
+```js
+var div1 = document.getElementById('div1')
+var parent = div1.parentNode
+
+var children = div1.childNodes
+```
+
+删除节点
+
+```js
+div1.removeChild(children[0])
+```
+
+
+
+### 5-6 DOM 结构操作 - 代码演示
+
+无
+
+
+
+### 5-7 DOM 结构操作 - 解答
+
+DOM  是哪种基本的数据结构？
+
+答：树
+
+DOM 操作的常用 API 有哪些？
+
+答：
+
+- 获取 DOM 节点，以及节点的 Property 和 Attribute
+- 获取父节点，获取子节点
+- 新增节点，删除节点
+
+DOM 节点的 Attribute 和 Property 有何区别？
+
+答：
+
+- Property 只是一个 JS 对象的属性的修改
+- Attribute 是对 HTML 标签属性的修改
+
+
+
+重点总结
+
+- DOM 本质
+- DOM 节点操作
+- DOM 结构操作
+
+
+
+### 5-8 BOM 操作
+
+题目
+
+- 如何检测浏览器的类型
+- 拆解 URL 的各部分
+
+知识点
+
+- `navigator`
+- `srceen`
+- `location`
+- `history`
+
+
+
+navigator & screen
+
+```js
+// navigator
+var ua = navigator.userAgent
+var isChrome = ua.indexOf('Chrome')
+console.log(isChrome) // 81
+
+// screen
+console.log(screen.width) // 1920
+console.log(screen.height) // 1080
+```
+
+location & history
+
+```js
+// location ，以 http://localhost:8080/login?username=negrochn&password=123456#mid=1 为例
+console.log(location.href) // http://localhost:8080/login?username=negrochn&password=123456#mid=1
+console.log(location.protocol) // http:
+console.log(location.host) // localhost:8080
+console.log(location.hostname) // localhost
+console.log(location.port) // 8080
+console.log(location.pathname) // /login
+console.log(location.search) // ?username=negrochn&password=123456
+console.log(location.hash) // #mid=1
+
+// history
+history.back()
+history.forward()
+```
+
