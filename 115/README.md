@@ -1561,3 +1561,441 @@ history.back()
 history.forward()
 ```
 
+
+
+### 5-9 BOM 操作 - 代码演示
+
+无
+
+
+
+## 第6章 JS Web API（下）
+
+### 6-1 事件
+
+题目
+
+- 编写一个通用的事件监听函数
+- 描述事件冒泡流程
+- 对一个无限下拉加载图片的页面，如何给每个图片绑定事件
+
+知识点
+
+- 通用事件绑定
+- 事件冒泡
+- 代理
+
+通用事件绑定
+
+```js
+var btn = document.getElementById('btn1')
+btn.addEventListener('click', function(e) {
+  console.log('clicked')
+})
+
+function bindEvent(elem, type, fn) {
+  elem.addEventListener(type, fn)
+}
+var a = document.getElementById('link1')
+bindEvent(a, 'click', function(e) {
+  e.preventDefault() // 阻止默认行为
+  alert('clicked')
+})
+```
+
+关于 IE 低版本的兼容性
+
+- IE 低版本使用 `attachEvent` 绑定事件，和 W3C 标准不一样
+- IE 低版本使用量已非常少，很多网站都早已不支持
+- 建议对 IE 低版本的兼容性：了解即可，无需深究
+- 如果遇到对 IE 低版本要求苛刻的面试，果断放弃
+
+
+
+事件冒泡
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>事件冒泡</title>
+</head>
+<body>
+  <div id="div1">
+    <p id="p1">激活</p>
+    <p id="p2">取消</p>
+    <p id="p3">取消</p>
+    <p id="p4">取消</p>
+  </div>
+  <div id="div2">
+    <p id="p5">取消</p>
+    <p id="p6">取消</p>
+  </div>
+  <script>
+    function bindEvent(elem, type, fn) {
+      elem.addEventListener(type, fn)
+    }
+    
+    var p1 = document.getElementById('p1')
+    var body = document.body
+    bindEvent(p1, 'click', function(e) {
+      e.stopPropagation()
+      alert('激活')
+    })
+    bindEvent(body, 'click', function(e) {
+      alert('取消')
+    })
+  </script>
+</body>
+</html>
+```
+
+代理
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>事件冒泡</title>
+</head>
+<body>
+  <div id="div1">
+    <a href="#">a1</a>
+    <a href="#">a2</a>
+    <a href="#">a3</a>
+    <a href="#">a4</a>
+    <!-- 会随时新增更多 a 标签 -->
+  </div>
+  <script>
+    var div1 = document.getElementById('div1')
+    div1.addEventListener('click', function(e) {
+      var target = e.target
+      if (target.nodeName === 'A') {
+        alert(target.innerHTML)
+      }
+    })
+  </script>
+</body>
+</html>
+```
+
+完善通用绑定事件的函数
+
+```js
+function bindEvent(elem, type, selector, fn) {
+  if (fn == null) {
+    fn = selector
+    selector = null
+  }
+  elem.addEventListener(type, function(e) {
+    var target
+    if (selector) {
+      target = e.target
+      if (target.matches(selector)) {
+        fn.call(target, e)
+      }
+    } else {
+      fn(e)
+    }
+  })
+}
+
+// 使用代理
+var div1 = document.getElementById('div1')
+bindEvent(div1, 'click', 'a', function(e) {
+  console.log(this.innerHTML)
+})
+
+// 不使用代理
+var a = document.getElementById('a1')
+bindEvent(div1, 'click', function(e) {
+  console.log(a.innerHTML)
+})
+```
+
+代理的好处
+
+- 代码简洁
+- 减少浏览器内存占用
+
+
+
+### 6-2 事件 - 代码演示
+
+无
+
+
+
+### 6-3 事件 - 解答
+
+编写一个通用的事件监听函数
+
+答：
+
+```js
+function bindEvent(elem, type, selector, fn) {
+  if (fn == null) {
+    fn = selector
+    selector = null
+  }
+  elem.addEventListener(type, function(e) {
+    let target
+    if (selector) {
+      target = e.target
+      if (target.matches(selector)) {
+        fn.call(target, e)
+      }
+    } else {
+      fn(e)
+    }
+  })
+}
+```
+
+
+
+描述事件冒泡流程
+
+答：
+
+1. DOM 树形结构
+2. 事件冒泡
+3. 阻止冒泡
+4. 冒泡的应用
+
+
+
+对一个无限下拉加载图片的页面，如何给每个图片绑定事件
+
+答：
+
+- 使用代理
+- 代理的两个优点（代码简洁、减少浏览器内存占用）
+
+
+
+重点总结
+
+- 通用事件绑定
+- 事件冒泡
+- 事件代理
+
+
+
+### 6-4 Ajax - XMLHttpRequest
+
+题目
+
+- 手写一个 Ajax ，不依赖第三方库
+- 跨域的几种实现方式
+
+知识点
+
+- XMLHttpRequest
+- 状态码说明
+- 跨域
+
+
+
+XMLHttpRequest
+
+```js
+var xhr = new XMLHttpRequest()
+xhr.open('GET', '/api', false)
+xhr.onreadystatechange = function() {
+  // 这里的函数异步执行
+  if (xhr.readyState == 4) {
+    if (xhr.status == 200) {
+      alert(xhr.responseText)
+    }
+  }
+}
+xhr.send(null)
+```
+
+
+
+IE 兼容性问题
+
+- IE 低版本使用 ActiveXObject ，和 W3C 标准不一样
+- IE 低版本使用量已非常少，很多网站都早已不支持
+- 建议对 IE 低版本的兼容性：了解即可，无需深究
+- 如果遇到对 IE 低版本要求苛刻的面试，果断放弃
+
+
+
+readyState
+
+- 0 - 未初始化，还没有调用 send() 方法
+- 1 - 载入，已调用 send() 方法，正在发送请求
+- 2 - 载入完成，send() 方法执行完成，已经接收到全部响应内容
+- 3 - 交互，正在解析响应内容
+- 4 - 完成，响应内容解析完成，可以在客户端调用了
+
+
+
+status
+
+- 1XX - 信息，服务器收到请求，需要请求者继续执行操作
+- 2XX - 成功，操作被成功接收并处理
+- 3XX - 重定向，需要进一步的操作以完成请求
+- 4XX - 客户端错误，请求包含语法错误或无法完成请求
+- 5XX - 服务器错误，服务器在处理请求的过程中发生了错误
+
+| 状态码 | 英文描述              | 中文描述                                                     |
+| ------ | --------------------- | ------------------------------------------------------------ |
+| 100    | Continue              | 继续。客户端应继续其请求。                                   |
+| 200    | OK                    | 请求成功。                                                   |
+| 204    | No Content            | 无内容。服务器成功处理，但未返回内容。                       |
+| 206    | Partial Content       | 部分内容。服务器成功处理了部分 GET 请求。                    |
+| 301    | Moved Permanently     | 永久移动。请求的资源已被永久的移动到新 URI ，返回信息会包括新的 URI ，浏览器会自动定向到新 URI 。 |
+| 302    | Found                 | 临时移动。客户端应继续使用原有 URI 。                        |
+| 304    | Not Modified          | 未修改。所请求的资源未修改，服务器返回此状态码时，不会返回任何资源。 |
+| 307    | Temporary Redirect    | 临时重定向。使用 GET 请求重定向。                            |
+| 400    | Bad Request           | 客户端请求的语法错误，服务器无法理解。                       |
+| 401    | Unauthorized          | 请求要求用户的身份认证。                                     |
+| 403    | Forbidden             | 服务器理解请求客户端的请求，但是拒绝执行此请求。             |
+| 404    | Not Found             | 服务器无法根据客户端的请求找到资源（网页）。                 |
+| 500    | Internal Server Error | 服务器内部错误，无法完成请求。                               |
+| 502    | Bad Gateway           | 作为网关或代理工作的服务器尝试执行请求时，从远程服务器接收到了一个无效的响应。 |
+| 503    | Service Unavailable   | 由于超载或系统维护，服务器暂时的无法处理客户端的请求。       |
+
+
+
+### 6-5 Ajax - 跨域
+
+什么是跨域
+
+- 浏览器有同源策略，不允许 Ajax 访问其他域接口
+- 跨域条件：协议、域名、端口，有一个不同就算跨域
+- 有三个标签允许跨域加载资源
+  - `<img src=xxx>` ，用于打点统计，统计网站可能是其他域
+  - `<link href=xxx>` ，可以使用 CDN
+  - `<script src=xxx>` ，可以使用 CDN ，用于 JSONP
+
+
+
+跨域注意事项
+
+- 所有的跨域请求都必须经过信息提供方允许
+- 如果未经允许即可获取，那是浏览器同源策略出现楼栋
+
+
+
+JSONP 实现原理
+
+- 加载 https://coding.imooc.com/lesson/115.html#mid=5387
+- 不一定服务器端真正有一个 115.html 文件
+- 服务器可以根据请求，动态生成一个文件返回
+- 同理，`<script src="http://coding.imooc.com/api.js">`
+- 例如你的网站要跨域访问慕课网的一个接口
+- 慕课给你一个地址 http://coding.imooc.com/api.js
+- 返回内容格式如 `callback({ x: 100, y: 200 })`（可动态生成）
+
+```html
+<script>
+window.callback = function(data) {
+  // 这是我们跨域得到的信息
+  console.log(data)
+}
+</script>
+<script src="http://coding.imooc.com/api.js"></script>
+<!-- 以上将返回 callback({ x: 100, y: 200 }) -->
+```
+
+
+
+服务器设置 http header
+
+- 另外一个解决跨域的简洁方法，需要服务器来做
+- 但是作为交互方，我们必须知道这个方法
+- 是将来解决跨域问题的一个趋势
+
+```js
+// 注意：不同后端语言的写法可能不一样
+
+// 第二个参数填写允许跨域的域名称，不建议直接写 *
+response.setHeader('Access-Control-Allow-Origin', 'http://a.com, http://b.com')
+response.setHeader('Access-Control-Allow-Headers', 'X-Requested-With')
+response.setHeader('Access-Control-Allow-Methods', 'PUT,POST,GET,DELETE,OPTIONS')
+
+// 接收跨域的 Cookie
+response.setHeader('Access-Control-Allow-Credentials', 'true')
+```
+
+
+
+手写一个 Ajax ，不依赖第三方库
+
+```js
+var xhr = new XMLHttpRequest()
+xhr.open('GET', '/api', false)
+xhr.onreadystatechange = function() {
+  if (xhr.readyState == 4) {
+    if (xhr.status == 200) {
+      alert(xhr.responseText)
+    }
+  }
+}
+xhr.send(null)
+```
+
+
+
+跨域的几种实现方式
+
+- JSONP
+- 服务器端设置 http header
+
+
+
+重点总结
+
+- XMLHttpRequest
+- 状态码
+- 跨域
+
+
+
+### 6-6 存储
+
+题目
+
+- 请描述一下 Cookie 、sessionStorage 和 localStorage 的区别？
+
+知识点
+
+- Cookie
+- sessionStorage 和 localStorage
+
+
+
+Cookie
+
+- 本身用于客户端和服务器端通信
+- 但是它有本地存储的功能，于是就被“借用”
+- 使用 `document.cookie` 获取和修改
+
+Cookie 用于存储的缺点
+
+- 存储量太小，只有 4KB
+- 所有 http 请求都带着，会影响获取资源的效率
+- API 简单，需要封装才能用 `document.cookie`
+
+
+
+localStorage 和 sessionStorage
+
+- HTML5 专门为存储而设计，最大容量 5MB
+- API 简单易用，`getItem(key)` 、`setItem(key, value)`
+- iOS Safari 隐藏模式下，localStorage.getItem 会报错，建议统一使用 try-catch 封装
+
+
+
+请描述一下 Cookie 、sessionStorage 和 localStorage 的区别？
+
+- 容量
+- 是否携带到请求中
+- API 易用性
