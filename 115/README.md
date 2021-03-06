@@ -1999,3 +1999,278 @@ localStorage 和 sessionStorage
 - 容量
 - 是否携带到请求中
 - API 易用性
+
+
+
+## 第7章 开发环境
+
+### 7-1 介绍
+
+关于开发环境
+
+- 面试官想通过开发环境了解面试者的经验
+- 开发环境，最能体现工作产出的效率
+- 会以聊天的形式为主，而不是出具体的问题
+
+
+
+开发环境包含
+
+- IDE（写代码的效率）
+- Git（代码版本管理，多人协作开发）
+- JS 模块化
+- 打包工具
+- 上线回滚的流程
+
+
+
+### 7-2 IDE
+
+IDE
+
+- WebStorm
+- Sublime
+- VS Code（推荐）
+- Atom
+
+
+
+### 7-3 Git - 常用命令
+
+Git
+
+- 正式项目都需要代码版本管理
+- 大型项目需要多人协作开发
+- Git 和 Linux 是一个作者
+- 网络 Git 服务器，如 github
+- 一般公司代码非开源，都有自己的 Git 服务器
+- 搭建 Git 服务器无需你了解太多
+- Git 的基本操作必须很熟练
+
+
+
+常用 Git 命令
+
+- `git add .`
+- `git checkout xxx` ，还原文件
+- `git commit -m 'xxx'` ，提交到本地仓库
+- `git push origin master` ，提交到远程仓库
+- `git pull origin master` ，下载远程仓库的文件
+- `git branch` ，创建分支
+- `git checkout -b xxx`/`git checkout xxx` ，新建一个分支/切换到另一个分支
+- `git merge xxx` ，把之前的分支拷贝到这里
+
+
+
+### 7-4 Git - 代码演示
+
+无
+
+
+
+### 7-5 Git - 代码演示 多人协作
+
+多人开发
+
+- 为了编写属于自己的功能，可以创建自己的分支，而不要在主分支上改动，最后进行合并即可
+
+步骤
+
+1. `git checkout -b dev` ，创建一个 dev 分支
+2. `vi a.js`修改内容（vi 属于 Linux 命令，`git status` 查看是否被修改，`git diff` 查看修改的内容）
+3. `git add .`
+4. `git commit -m 'update dev'`
+5. `git push origin dev` ，提交到远程仓库的 dev 分支
+6. 半个月之后，合并到 master 分支
+7. `git checkout master` ，切换到 master 分支
+8. `git pull origin master` ，下载远程仓库的 master 分支的文件
+9. `git merge dev` ，把 dev 分支的修改内容拷贝到 master 分支
+10. `git push origin master` ，提交到远程仓库的 master 分支
+
+附加命令
+
+- `cat 文件名`，查看文件内容
+- `git diff` ，查看修改的内容
+- `git branch` ，查看分支和当前在哪条分支上
+- `git status` ，查看文件是否被修改的状态
+- `vi 文件` ，新建文件并打开文件
+- `esc + :wq` ，退出并保存文件
+
+
+
+### 7-6 模块化 - AMD
+
+不使用模块化
+
+```js
+// util.js
+function getFormatDate(date, type) {
+  // type === 1 返回 2021-03-06
+  // type === 2 返回 2021年3月6日
+  // ...
+}
+```
+
+```js
+// a-util.js
+function aGetFormatDate(date) {
+  // 要求返回 2021年3月6日格式
+  return getFormatDate(date, 2)
+}
+```
+
+```js
+// a.js
+var dt = new Date()
+console.log(aGetFormatDate(dt))
+```
+
+```html
+<script src="util.js"></script>
+<script src="a-util.js"></script>
+<script src="a.js"></script>
+<!-- 1. 这些代码中的函数必须是全局变量，才能暴露给使用方。全局变量污染。 -->
+<!-- 2. a.js 知道要引用 a-util.js ，但是他知道还需要依赖于 util.js 吗 -->
+```
+
+AMD
+
+- require.js
+- 全局 `define` 函数
+- 全局 `require` 函数
+- 依赖 JS 会自动、异步加载
+
+使用 require.js
+
+```js
+// util.js
+define(function() {
+  return {
+    getFormatDate: function(date, type) {
+      if (type === 1) {
+        return '2021-03-06'
+      } else if (type === 2) {
+        return '2021年3月6日'
+      }
+    }
+  }
+})
+```
+
+```js
+// a-util.js
+define(['./util.js'], function(util) {
+  return {
+    aGetFormatDate: function(date) {
+      return util.getFormatDate(date, 2)
+    }
+  }
+})
+```
+
+```js
+// a.js
+define(['./a-util.js'], function(aUtil) {
+  return {
+    printDate: function(date) {
+      console.log(aUtil.aGetFormatDate(date))
+    }
+  }
+})
+```
+
+```js
+// main.js
+require(['./a.js'], function(a) {
+  var date = new Date()
+  a.printDate(date)
+})
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AMD</title>
+</head>
+<body>
+  <script src="https://cdn.bootcdn.net/ajax/libs/require.js/2.3.6/require.min.js" data-main="./main.js"></script>
+</body>
+</html>
+```
+
+
+
+### 7-7 模块化 - AMD 代码演示
+
+无
+
+
+
+### 7-8 模块化 - CommonJS
+
+CommonJS
+
+- Node.js 模块化规范，现在被前端大量使用，原因：
+- 前端开发依赖的插件和库，都可以从 npm 中获取
+- 构建工具的高度自动化，使得使用 npm 的成本非常低
+- CommonJS 不会异步加载 JS ，而是同步一次性加载出来
+
+
+
+使用 CommonJS
+
+```js
+// util.js
+module.exports = {
+  getFormatDate: function(date, type) {
+    if (type === 1) {
+      return '2021-03-06'
+    } else if (type === 2) {
+      return '2021年3月6日'
+    }
+  }
+}
+```
+
+```js
+// a-util.js
+var util = require('util.js')
+module.exports = {
+  aGetFormatDate: function(date) {
+    return util.getFormatDate(date, 2)
+  }
+}
+```
+
+
+
+AMD 和 CommonJS 的使用场景
+
+- 需要异步加载 JS ，使用 AMD
+- 使用了 npm 之后建议使用 CommonJS
+
+
+
+重点总结
+
+- AMD
+- CommonJS
+- 两者的区别
+
+
+
+### 7-9 构建工具 - 安装 Node.js
+
+### 7-10 构建工具 - 安装 Webpack
+
+### 7-11 构建工具 - 配置 Webpack
+
+### 7-12 构建工具 - 使用 jQuery
+
+### 7-13 构建工具 - 压缩 JS
+
+### 7-14 上线回滚 - 上线回滚流程
+
+### 7-15 上线回滚 - Linux 基础命令
