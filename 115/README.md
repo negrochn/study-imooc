@@ -2559,3 +2559,655 @@ XSRF
 - 学会给面试官惊喜，但不要太多
 - 遇到不会回答的问题，说出你知道的也可以
 - 谈谈你的缺点——说一下你最近正在学什么就可以了
+
+
+
+## 第10章 真题模拟
+
+1. **`var` 和 `let` 、`const` 的区别**
+
+   答：
+
+   - `var` 是 ES5 语法，`let` 、`const` 是ES6 语法，`var` 有变量提升
+   - `var` 和 `let` 是变量，可修改，`const` 是常量，不可修改
+   - `let` 、`const` 有块级作用域，`var` 没有
+
+2. **`typeof` 返回哪些类型**
+
+   答：
+
+   - undefined 、string 、number 、boolean 、symbol
+   - object（注意，`typeof null === 'object'`）
+   - function
+
+3. **列举强制类型转换和隐式类型转换**
+
+   答：
+
+   - 强制：`parseInt` 、`parseFloat` 、`toString` 等
+   - 隐式：if 、逻辑运算、== 、+ 拼接字符串
+
+4. **手写深度比较，模拟 lodash 的 `isEqual`**
+
+   答：
+
+   ```js
+   // 判断是否是对象或数组
+   function isObject(obj) {
+     return typeof obj === 'object' && obj !== null
+   }
+   function isEqual(obj1, obj2) {
+     if (!isObject(obj1) || !isObject(obj2)) {
+       // 值类型（注意，参与 equal 的一般不会是函数）
+       return obj1 === obj2
+     }
+     if (obj1 === obj2) {
+       return true
+     }
+     // 两个都是对象或数组，而且不相等
+     // 1. 先取出 obj1 和 obj2 的 keys ，比较个数
+     const obj1Keys = Object.keys(obj1)
+     const obj2Keys = Object.keys(obj2)
+     if (obj1Keys.length !== obj2Keys.length) {
+       return false
+     }
+     // 2. 以 obj1 为基准，和 obj2 一次递归比较
+     for (let key in obj1) {
+       if (!isEqual(obj1[key], obj2[key])) {
+         return false
+       }
+     }
+     // 3. 全相等
+     return true
+   }
+   
+   const obj1 = {
+     a: 100,
+     b: {
+       x: 100,
+       y: 200
+     }
+   }
+   const obj2 = {
+     a: 100,
+     b: {
+       x: 100,
+       y: 200
+     }
+   }
+   console.log(obj1 === obj2) // false
+   console.log(isEqual(obj1, obj2)) // true
+   ```
+
+5. **`split` 和 `join` 的区别**
+
+   答：
+
+   ```js
+   '1-2-3'.split('-') // [1, 2, 3]
+   [1, 2, 3].join('-') /// '1-2-3'
+   ```
+
+6. **数组的 `pop` 、`push` 、`unshift` 、`shift` 分别做什么**
+
+   答：
+
+   - 功能是什么？
+   - 返回值是什么？
+   - 是否会对原数组造成影响？
+
+   ```js
+   const arr = [10, 20, 30, 40]
+   const result = arr.pop()
+   console.log(result, arr) // 40, [10, 20, 30]
+   ```
+
+   ```js
+   const arr = [10, 20, 30, 40]
+   const result = arr.push(50) // 返回 length
+   console.log(result, arr) // 5, [10, 20, 30, 40, 50]
+   ```
+
+   ```js
+   const arr = [10, 20, 30, 40]
+   const result = arr.unshift(5) // 返回 length
+   console.log(result, arr) // 5, [5, 10, 20, 30, 40]
+   ```
+
+   ```js
+   const arr = [10, 20, 30, 40]
+   const result = arr.shift()
+   console.log(result, arr) // 10, [20, 30, 40]
+   ```
+
+   纯函数：1. 不改变源数组；2. 返回一个数组
+
+   ```js
+   // 纯函数
+   const arr = [10, 20, 30, 40]
+   
+   const cArr = arr.concat([50, 60, 70]) // [10, 20, 30, 40, 50, 60, 70]
+   const mArr = arr.map(item => item * 10) // [100, 200, 300, 400]
+   const fArr = arr.filter(item => item > 20) // [30, 40]
+   const sArr = arr.slice() // [10, 20, 30, 40]
+   
+   
+   // 非纯函数
+   // push 、pop 、shift 、unshift
+   // forEach
+   // some every reduce
+   ```
+
+7. **数组 `slice` 和 `splice` 的区别**
+
+   答：
+
+   - 功能区别，`slice` 是切片，`splice` 是剪接
+   - 参数和返回值
+   - 是否纯函数？
+
+   ```js
+   const arr = [10, 20, 30, 40, 50]
+   
+   // slice 是纯函数
+   const sliceArr = arr.slice(1, 4)
+   
+   // splice 不是纯函数
+   const spliceArr = arr.splice(1, 2, 'a', 'b', 'c')
+   console.log(arr, spliceArr) // [10, "a", "b", "c", 40, 50]，[20, 30]
+   ```
+
+8. **`[10, 20, 30].map(parseInt)` 返回结果是什么？**
+
+   答：
+
+   - `map` 的参数和返回值
+   - `parseInt` 的参数和返回值
+
+   ```js
+   [10, 20, 30].map(parseInt)
+   // 相当于
+   [10, 20, 30].map((item, index) => {
+     return parseInt(item, index)
+   })
+   // 分解为
+   parseInt(10, 0) // 10
+   parseInt(20, 1) // NaN
+   parseInt(30, 2) // NaN
+   ```
+
+9. **Ajax 请求 get 和 post 的区别？**
+
+   答：
+
+   - get 一般用于查询操作，post 一般用于提交操作
+   - get 参数拼接在 url 上，post 放在请求体内（数据体积可更大）
+   - 安全性，post 易于防止 CSRF
+
+10. **函数 call 和 apply 的区别？**
+
+    答：
+
+    ```js
+    fn.call(this, p1, p2, p3)
+    fn.apply(this, arguments)
+    ```
+
+11. **事件代理（委托）是什么？**
+
+    答：
+
+    ```js
+    function bindEvent(elem, type, selector, fn) {
+      if (fn == null) {
+        fn = selector
+        selector = null
+      }
+      elem.addEventListener(type, function(e) {
+        var target
+        if (selector) {
+          target = e.target
+          if (target.matches(selector)) {
+            fn.call(target, e)
+          }
+        } else {
+          fn(e)
+        }
+      })
+    }
+    
+    // 使用代理
+    var div1 = document.getElementById('div1')
+    bindEvent(div1, 'click', 'a', function(e) {
+      console.log(this.innerHTML)
+    })
+    
+    // 不使用代理
+    var a = document.getElementById('a1')
+    bindEvent(div1, 'click', function(e) {
+      console.log(a.innerHTML)
+    })
+    ```
+
+12. **闭包是什么，有什么特性？有什么负面影响？**
+
+    答：
+
+    - 回顾作用域和自由变量
+    - 回顾闭包应用场景：作为参数被传入，作为返回值被返回
+    - 回顾：自由变量的查找，要在函数定义的地方（而非执行的地方）
+    - 影响：变量会常驻内存，得不到释放。闭包不要乱用
+    
+13. **如何阻止事件冒泡和默认行为？**
+
+    答：
+
+    - `event.stopPropagation()`
+    - `event.preventDefault()`
+
+14. **查找、添加、删除、移动 DOM 节点的方法？**
+
+    答：
+
+    - `getElementById` 、`getElementsByTagName` 、`getElementsByClassName` 、`querySelectorAll`
+    - `appendChild`（添加和移动）
+    - `removeChild`
+    - `parentNode` 、`childNodes`
+
+15. **如何减少 DOM 操作？**
+
+    答：
+
+    - 缓存 DOM 查询结果
+    - 多次 DOM 操作，合并到一次插入
+
+16. **解释 JSONP 的原理，为何它不是真正的 Ajax ？**
+
+    答：
+
+    - 浏览器的同源策略（服务端没有同源策略）和跨域
+    - 哪些 HTML 标签能绕过跨域？
+    - JSONP 的原理
+
+17. **`document` 的 load 和 ready 的区别**
+
+    答：
+
+    ```js
+    window.addEventListener('load', function() {
+      // 页面的全部资源加载完才会执行，包括图片、视频等
+    })
+    document.addEventListener('DOMContentLoaded', function() {
+      // DOM 渲染完即可执行，此时图片、视频还可能没有加载完
+    })
+    ```
+
+18. **`==` 和 `===` 的不同**
+
+    答：
+
+    - `==` 会尝试类型转换
+    - `===` 严格相等
+    - 哪些场景才会用 `==` ？
+
+19. **函数声明和函数表达式的区别**
+
+    答：
+
+    - 函数声明 `function fn() {}`
+    - 函数表达式 `const fn = function() {}`
+    - 函数声明会在代码执行前预加载，而函数表达式不会
+
+20. **`new Object()` 和 `Object.create()` 的区别**
+
+    答：
+
+    - `{}` 等同于 `new Object()` ，原型是 `Object.prototype`
+    - `Object.create(null)` 没有原型
+    - `Object.crate({...})` 可指定原型
+
+    ```js
+    const obj1 = {
+      a: 10,
+      b: 20,
+      sum() {
+        return this.a + this.b
+      }
+    }
+    const obj2 = new Object({
+      a: 10,
+      b: 20,
+      sum() {
+        return this.a + this.b
+      }
+    })
+    const obj3 = new Object(obj1)
+    console.log(obj1 === obj2) // false
+    console.log(obj1 === obj3) // true
+    
+    const obj4 = Object.create(null) // {} ，但没有原型
+    const obj5 = new Object() // {}
+    const obj6 = Object.create(obj1) // 创建一个空对象，把空对象的原型指向 obj1
+    console.log(obj1 === obj6) // false
+    console.log(obj1 === obj6.__proto__) // true
+    ```
+
+21. **关于 `this` 的场景题**
+
+    ```js
+    const User = {
+      count: 1,
+      getCount: function() {
+        return this.count
+      }
+    }
+    console.log(User.getCount()) // 1
+    const func = User.getCount
+    console.log(func()) // undefined
+    ```
+
+22. **关于作用域和自由变量的场景题（1）**
+
+    ```js
+    let i
+    for (i = 1; i <=3; i++) {
+      setTimeout(function() {
+        console.log(i)
+      }, 0)
+    }
+    // 4
+    // 4
+    // 4
+    ```
+
+23. **判断字符串以字母开头，后面字母数字下划线，长度 6-30**
+
+    答：
+
+    ```js
+    const reg = /^[a-zA-Z]\w{5,29}$/
+    ```
+
+24. **关于作用域和自由变量的场景题（2）**
+
+    ```js
+    let a = 100
+    function test() {
+      alert(a) // 100
+      a = 10
+      alert(a) // 10
+    }
+    test()
+    alert(a) // 10
+    ```
+
+25. **手写字符串 `trim` 方法，保证浏览器兼容性**
+
+    答：
+
+    ```js
+    String.prototype.trim = function() {
+      return this.replace(/^\s+/, '').replace(/\s+$/, '')
+    }
+    // （原型、this 、正则表达式）
+    ```
+
+26. **如何获取多个数字中的最大值**
+
+    答：
+
+    ```js
+    function max() {
+      const nums = Array.prototype.slice.call(arguments) // 变为数组
+      let max = -Infinity
+      nums.forEach(n => {
+        if (n > max) {
+          max = n
+        }
+      })
+      return max
+    }
+    // 或者使用 Math.max()
+    ```
+
+27. **如何用 JS 实现继承？**
+
+    答：
+
+    - class 继承
+    - prototype 继承
+
+28. **如何捕获 JS 程序中的异常？**
+
+    答：
+
+    ```js
+    // 第一种方式
+    try {
+      // TODO
+    } catch(error) {
+      console.error(error) // 手动捕获
+    } finally {
+      // TODO
+    }
+    
+    // 第二种方式
+    // 自动捕获
+    window.onerror = function(message, source, lineNum, colNum, error) {
+      // 第一，对跨域的 JS ，如 CDN 的不会有详细的报错信息
+      // 第二，对于压缩的 JS ，还要配合 SourceMap 反查到未压缩代码的行、列
+    }
+    ```
+
+29. **什么是 JSON ？**
+
+    答：
+
+    - JSON 是一种数据格式，本质是一段字符串
+    - JSON 格式和 JS 对象结构一致，对 JS 语言更友好
+    - `window.JSON` 是一个全局对象，`JSON.stringify` 和 `JSON.parse`
+
+30. **获取当前页面 URL 参数**
+
+    答：
+
+    - 传统方式，查找 `location.search`
+    - 新 API ，`URLSearchParams`
+
+    ```js
+    // 传统方式
+    function query(name) {
+      const search = location.search.substr(1)
+      const reg = new RegExp(`(^|&)${name}=([^&]*)(&|$)`, 'i')
+      const res = search.match(reg)
+      if (res === null) {
+        return null
+      }
+      return res[2]
+    }
+    ```
+
+    ```js
+    // URLSearchParams
+    function query(name) {
+      const search = location.search
+      const p = new URLSearchParams(search)
+      return p.get(name)
+    }
+    ```
+
+31. **将 URL 参数解析为 JS 对象**
+
+    答：
+
+    ```js
+    // 传统方式，分析 search
+    function query2Obj() {
+      const res = {}
+      const search = location.search.substr(1) // 去掉前面的 ?
+      search.split('&').forEach(paramStr => {
+        const arr = paramStr.split('=')
+        const [key, val] = arr
+        res[key] = val
+      })
+      return res
+    }
+    ```
+
+    ```js
+    // 使用 URLSearchParams
+    function query2Obj() {
+      const res = {}
+      const pList = new URLSearchParams(location.search)
+      pList.forEach((val, key) => {
+        res[key] = val
+      })
+      return res
+    }
+    ```
+
+32. **手写数组 faltern ，考虑多层级**
+
+    答：
+
+    ```js
+    function flat(arr) {
+      // 验证 arr 中，还有没有深层数组
+      const isDeep = arr.some(item => item instanceof Array)
+      if (!isDeep) {
+        return arr
+      }
+      return flat(Array.prototype.concat.apply([], arr))
+    }
+    
+    const res = flat([1, 2, [3, 4], [5, [6, 7]]])
+    console.log(res) // [1, 2, 3, 4, 5, 6, 7]
+    ```
+
+33. **数组去重**
+
+    答：
+
+    - 传统方式，遍历元素挨个比较、去重
+    - 使用 Set
+    - 考虑计算效率
+
+    ```js
+    // 传统方式
+    function unique(arr) {
+      const res = []
+      arr.forEach(item => {
+        if (res.indexOf(item) < 0) {
+          res.push(item)
+        }
+      })
+      return res
+    }
+    console.log(unique([1, 2, 3, 1, 2, 3, 4])) // 1 2 3 4
+    ```
+
+    ```js
+    // 使用 Set（无序、不重复）
+    function unique(arr) {
+      const set = new Set(arr)
+      return [...set]
+    }
+    console.log(unique([1, 2, 3, 1, 2, 3, 4])) // 1 2 3 4
+    ```
+
+34. **手写深拷贝**
+
+    答：
+
+    ```js
+    function deepClone(obj = {}) {
+      // 如果不是数组或对象，直接返回
+      if (typeof obj !== 'object' || obj == null) {
+        return obj
+      }
+      // 初始化返回结果
+      let result
+      if (obj instanceof Array) {
+        result = []
+      } else {
+        result = {}
+      }
+      // 遍历数组或对象的属性
+      for (let key in obj) {
+        // 保证 key 不是原型的属性
+        if (obj.hasOwnProperty(key)) {
+          // 递归调用
+          result[key] = deepClone(obj[key])
+        }
+      }
+      // 返回结果
+      return result
+    }
+    
+    // 注意 Object.assign 不是深拷贝
+    ```
+
+35. **介绍一下 RAF（`requestAnimationFrame`）**
+
+    答：
+
+    - 要想动画流畅，更新频率要 60 帧/秒，即 16.67ms 更新一次视图
+    - `setTimeout` 要手动更新频率，而 RAF 浏览器会自动控制
+    - 后台标签或隐藏 iframe 中，RAF 会暂停，而 `setTimeout` 依然执行
+
+    ```html
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>setTimeout</title>
+      <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+      <style>
+        #div1, #div2 {
+          width: 100px;
+          height: 50px;
+          margin-bottom: 20px;
+          background-color: red;
+        }
+      </style>
+    </head>
+    <body>
+      <div id="div1">setTimeout</div>
+      <div id="div2">requestAnimateFrame</div>
+      <script>
+        const $div1 = $('#div1')
+        let curWidth = 100
+        const maxWidth = 640
+        function animate() {
+          curWidth += 3
+          $div1.css('width', curWidth)
+          if (curWidth < maxWidth) {
+            setTimeout(animate, 16.7)
+          }
+        }
+        animate()
+    
+        const $div2 = $('#div2')
+        let curWidth2 = 100
+        function animate2() {
+          curWidth2 += 3
+          $div2.css('width', curWidth2)
+          if (curWidth2 < maxWidth) {
+            window.requestAnimationFrame(animate2)
+          }
+        }
+        animate2()
+      </script>
+    </body>
+    </html>
+    ```
+
+36. **前端性能如何优化？一般从哪几个方面考虑？**
+
+    答：
+
+    - 原则：多使用内存、缓存，减少计算、减少网络请求
+    - 方向：加载页面，页面渲染，页面操作流畅度
+
