@@ -256,7 +256,7 @@ JSON.parse('{"a":10,"b":20}')
 
 `if` 语句中条件为 `false` 的情况有哪些？
 
-答：`false` 、0 、`NaN` 、`null` 、`undefined`
+答：`''` 、`0` 、`NaN`  、`false`、`null` 、`undefined`
 
 JS 中有哪些内置对象？
 
@@ -927,11 +927,11 @@ console.log(300)
 前端使用异步的场景
 
 - 定时任务，`setTimeout` 、`setInterval`
-- 网络请求，AJAX 请求、动态 `<img>` 加载
+- 网络请求，Ajax 请求、动态 `<img>` 加载
 - 事件绑定
 
 ```js
-// AJAX 请求
+// Ajax 请求
 console.log('start')
 $.get('./data1.json', function(data1) {
   console.log(data1)
@@ -1025,7 +1025,7 @@ console.log(5)
 前端使用异步的场景有哪些？
 
 - 定时任务，`setTimeout` 、`setInterval`
-- 网络请求，AJAX 请求、动态 `<img>` 加载
+- 网络请求，Ajax 请求、动态 `<img>` 加载
 - 事件绑定
 
 
@@ -1297,7 +1297,7 @@ W3C 标准中关于 JS 的规定有
 - DOM 操作
 - BOM 操作
 - 事件绑定
-- AJAX 请求（包括 http 协议）
+- Ajax 请求（包括 http 协议）
 - 存储
 
 
@@ -1891,7 +1891,7 @@ status
 跨域注意事项
 
 - 所有的跨域请求都必须经过信息提供方允许
-- 如果未经允许即可获取，那是浏览器同源策略出现楼栋
+- 如果未经允许即可获取，那是浏览器同源策略出现漏洞
 
 
 
@@ -2335,8 +2335,8 @@ AMD 和 CommonJS 的使用场景
 
 浏览器渲染页面的过程
 
-- 根据 HTML 结构生产 DOM Tree
-- 根据 CSS 生产 CSSOM
+- 根据 HTML 结构生成 DOM Tree
+- 根据 CSS 生成 CSSOM
 - 将 DOM 和 CSSOM 整合形成 Render Tree
 - 根据 Render Tree 开始渲染和展示
 - 遇到 `<script>` 时，会执行并阻塞渲染
@@ -2437,7 +2437,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 缓存
 
-- 通过连接名称控制缓存
+- 通过链接名称控制缓存
 - 只有内容改变的时候，链接名称才会改变
 
 CDN
@@ -2473,7 +2473,7 @@ for (i = 0; i < document.getElementByTagName('p').length; i++) {
 // 缓存了 DOM 查询
 var pList = document.getElementByTagName('p')
 var i
-for (i = 0; i <pList.length; i++) {
+for (i = 0; i < pList.length; i++) {
   
 }
 ```
@@ -2561,7 +2561,7 @@ XSRF
 - 简洁明了，重点突出项目经理和解决方案
 - 把个人博客放在简历中，并且定期维护更新博客
 - 把个人的开源项目放在简历中，并维护开源项目
-- 简历千万不要造假，要保持能力和经理上的真实性
+- 简历千万不要造假，要保持能力和经历上的真实性
 
 面试过程中
 
@@ -2921,7 +2921,7 @@ XSRF
 
     ```js
     let i
-    for (i = 1; i <=3; i++) {
+    for (i = 1; i <= 3; i++) {
       setTimeout(function() {
         console.log(i)
       }, 0)
