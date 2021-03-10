@@ -311,7 +311,7 @@ console.log(obj[sym2]) // 123
 
 ```js
 function Foo(name, age) {
-  this.name = nage
+  this.name = name
   this.age = age
   this.class = 'class__1'
   // return this // 默认有这一行
@@ -942,6 +942,17 @@ console.log('end')
 ```js
 // 动态 <img> 加载
 console.log('start')
+var img = document.createElement('img')
+img.onload = function() {
+  console.log('loaded')
+}
+img.src = '/xxx.png'
+console.log('end')
+```
+
+```js
+// 事件绑定
+console.log('start')
 document.getElementById('btn1').addEventListener('click', function() {
   alert('clicked')
 })
@@ -1256,7 +1267,7 @@ forEach(obj, function(key, value) {
 
 
 
-## 第5章 JS Web API
+## 第5章 JS Web API（上）
 
 ### 5-1 从基础知识到 JS Web API
 
@@ -2277,9 +2288,9 @@ AMD 和 CommonJS 的使用场景
 
 
 
-## 第9章 运行环境
+## 8章 运行环境
 
-### 9-1 介绍
+### 8-1 介绍
 
 运行环境
 
@@ -2295,7 +2306,7 @@ AMD 和 CommonJS 的使用场景
 
 
 
-### 9-2 页面加载 - 渲染过程
+### 8-2 页面加载 - 渲染过程
 
 题目
 
@@ -2332,7 +2343,7 @@ AMD 和 CommonJS 的使用场景
 
 
 
-### 9-3 页面加载 - 几个示例
+### 8-3 页面加载 - 几个示例
 
 为何要把 CSS 放在 head 中？
 
@@ -2359,7 +2370,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-### 9-4 页面加载 - 解答
+### 8-4 页面加载 - 解答
 
 从输入 URL 到得到 HTML 的详细过程
 
@@ -2375,7 +2386,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-### 9-5 性能优化 - 优化策略
+### 8-5 性能优化 - 优化策略
 
 性能优化
 
@@ -2410,7 +2421,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-### 9-6 性能优化 - 几个示例
+### 8-6 性能优化 - 几个示例
 
 资源合并
 
@@ -2511,7 +2522,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-### 9-7 安全性 - XSS
+### 8-7 安全性 - XSS
 
 知识点
 
@@ -2531,7 +2542,7 @@ XSS
 
 
 
-### 9-8 安全性 - XSRF
+### 8-8 安全性 - XSRF
 
 XSRF
 
@@ -2543,7 +2554,7 @@ XSRF
 
 
 
-### 9-9 面试技巧
+### 8-9 面试技巧
 
 简历
 
@@ -2562,7 +2573,7 @@ XSRF
 
 
 
-## 第10章 真题模拟
+## 第9章 真题模拟
 
 1. **`var` 和 `let` 、`const` 的区别**
 
